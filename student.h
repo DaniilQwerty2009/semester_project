@@ -1,35 +1,61 @@
 #ifndef STUDENT_H
 #define STUDENT_H
 
+#include <cstring>
 
 struct Student
 {
 private:
-    const long* const studentID;
-    const char* name;
-    const char* lastname;
+    
+    const unsigned ID;
 
-    const unsigned short* groupID;
+    char* lastname = nullptr;
+    unsigned groupID;
 
-    unsigned visits;
+    unsigned visits = 0;
+    unsigned* dates = nullptr;
 
 public:
-    Student(const long* studenID, const char* name, const char* lastname, const unsigned short* groupID = 0, unsigned visits = 0)
-        :studentID(studenID),
-        name(name),
-        lastname(lastname),
-        groupID(groupID),
-        visits(visits)
-        {   }
-    
-    // для деструктора определить freeID для studentID
+    Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
+        :ID(studentID),
+        groupID(groupID)
+        { 
+            size_t len = std::strlen(lastname) + 1;
+            this->lastname = new char[len]; 
+            std::strcpy(this->lastname, lastname); 
+        }
+
+    ~Student()
+    {
+        delete[] lastname;
+        delete[] dates;
+    }
+
+    const unsigned getID()
+        { return ID; }
+
+    const char* getLastname()
+        { return lastname; }
+
+    unsigned getGroup()
+        { return groupID; }
+
+    unsigned getVisits()
+        { return visits; }
+
+    inline void increaseVisits()
+        { ++visits; }
+
+    inline void changeVisits(int unsigned visits)
+        { this->visits = visits; }
+
+    void printInfo()
+    {
+        std::cout << ID << '/' << lastname << '/';
+        std::cout << groupID << '/' << visits << std::endl;
+    }
+
 };
-
-
-
-
-
-
 
 
 
