@@ -19,8 +19,8 @@ int main()
     School::iterator iterator;
     
     iterator = ourSchool.begin();
-     
     
+    std::cout << iterator.getLastname() << std::endl;
 
     return 0;
 }

@@ -23,9 +23,6 @@ private:
     Node* head = nullptr;
     Node* tail = nullptr;
 
-    const Node* getHead()
-        { return head; }
-
 public:
 
     class iterator
@@ -33,17 +30,24 @@ public:
         private:
             Node* pointer;
         public:
-            iterator()
-                {   }   
+            iterator():pointer(nullptr)
+            {   }   
             
-            Node* operator=(Node* nodePtr)
-            {
-                pointer = nodePtr;
-            }
+            void operator=(Node* nodePtr);
 
-            
-            
+            Student* operator*();
 
+            const char*           getLastname() const; 
+
+            const unsigned&       getID() const; 
+
+            const unsigned&       getVisits() const; 
+
+            const unsigned short* getVisitsDates() const; 
+
+            const unsigned&       getGroup() const; 
+
+            void                  printInfo() const;
         };
 
     School()
@@ -81,6 +85,15 @@ public:
     {
         return head;
     }
+
+    inline Node* end() const
+    {
+        return tail;
+    }
+
+    
+
+
 };
 
 
