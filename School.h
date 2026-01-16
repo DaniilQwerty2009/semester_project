@@ -23,10 +23,32 @@ private:
     Node* head = nullptr;
     Node* tail = nullptr;
 
+    const Node* getHead()
+        { return head; }
+
 public:
+
+    class iterator
+        {
+        private:
+            Node* pointer;
+        public:
+            iterator()
+                {   }   
+            
+            Node* operator=(Node* nodePtr)
+            {
+                pointer = nodePtr;
+            }
+
+            
+            
+
+        };
 
     School()
         {   }
+ 
 
     void addStudent(unsigned studentID, const char* lastname, unsigned groupID = 0)
     {
@@ -44,14 +66,20 @@ public:
         }
     }
 
-    void printList()
+    void printList() const
     {
         Node* iterator = head;
 
         while(iterator)
         {
             iterator->studentInfo.printInfo();
+            iterator = iterator->next;
         }
+    }
+
+    inline Node* begin() const
+    {
+        return head;
     }
 };
 
