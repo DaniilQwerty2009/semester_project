@@ -10,12 +10,19 @@ private:
     struct Student
     {
         const unsigned ID;
-
         char* lastname = nullptr;
         unsigned groupID;
-
         size_t visits = 0;
-        unsigned short* visitsDates = nullptr;
+
+        struct visitDays
+        {
+        public:
+            enum averageStudyDays {studyDays = 165};
+
+            size_t len = studyDays;
+            unsigned* visitsDates = new unsigned[len];
+        };
+        
 
         Student* prev = nullptr;
         Student* next = nullptr;
@@ -90,70 +97,11 @@ public:
     }
  
 
-    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0)
-    {
-        if(!head)
-        {
-            head = new Student(studentID, lastname, groupID);
-            tail = head;
-        }
-        else
-        {
-            tail->next = new Student(studentID, lastname, groupID);
-            Student* oldTail = tail;
-            tail = tail->next;
-            tail->prev = oldTail;
-        }
+    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
 
-    }
+    void pop(iterator iterator);
 
-    void pop(iterator iterator)
-    {
-        if(iterator.pointer)
-        {
-            if(iterator.pointer == head && head->next == nullptr)
-            {
-                delete iterator.pointer;
-                iterator.pointer = nullptr;
-
-                head = nullptr;
-
-                return;
-            }
-
-            if(iterator.pointer == head)
-            {
-                head = head->next;
-                head->prev = nullptr;
-
-                delete iterator.pointer;
-                iterator.pointer = nullptr;
-
-                return;
-            }
-            if(iterator.pointer == tail)
-            {
-                tail = tail->prev;
-                tail->next = nullptr;
-
-                delete iterator.pointer;
-                iterator.pointer = nullptr;
-
-                return;
-            }
-            else
-            {
-            iterator.pointer->prev->next = iterator.pointer->next;
-            iterator.pointer->next->prev = iterator.pointer->prev;
-
-            delete iterator.pointer;
-            iterator.pointer = nullptr;
-
-            return;
-            }
-        }
-
-    }
+    bool pop(unsigned ID);
 
     inline Student* begin() const
     {
@@ -164,9 +112,6 @@ public:
     {
         return nullptr;
     }
-
-    
-
 
 };
 

@@ -12,7 +12,7 @@ int main()
     
     ourSchool->push_back(1, "LastName111", 12);
     ourSchool->push_back(2, "LastName222", 13);
-    ourSchool->push_back(2, "LastName333", 13);
+    ourSchool->push_back(3, "LastName333", 13);
     
     
 
@@ -30,7 +30,17 @@ int main()
     }
     iterator2 = iterator++;
 
-    
+    ourSchool->pop(2);
 
+    iterator = ourSchool->begin();
+
+    while(iterator != ourSchool->end())
+    {
+        std::cout << iterator.getLastname() << std::endl;
+        ++iterator;
+    }
+
+    
+    
     return 0;
 }
