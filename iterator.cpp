@@ -1,43 +1,71 @@
 #include "School.h"
 
 
-void School::iterator::operator=(Node* nodePtr)
-            {
-                pointer = nodePtr;
-            }
-
-Student* School::iterator::operator*()
+void School::iterator::operator=(Student* nodePtr)
 {
-    return &(pointer->studentInfo);
+    pointer = nodePtr;
+}
+
+bool School::iterator::operator!=(Student* nodePtr)
+{
+    return pointer != nodePtr;
+}
+
+bool School::iterator::operator==(Student* nodePtr)
+{
+    return pointer == nodePtr;
+}
+
+School::Student* School::iterator::operator++()
+{
+    if(pointer)
+        pointer = pointer->next;
+
+    return pointer;
+}
+
+School::Student* School::iterator::operator++(int)
+{
+    School::Student* temp = pointer;
+
+    if(pointer)
+        pointer = pointer->next;
+
+    return temp;
+}
+
+const unsigned& School::iterator::operator*() const
+{
+    return pointer->ID;
 }
 
 const char* School::iterator::getLastname() const
 {
-    return pointer->studentInfo.lastname;
+    return pointer->lastname;
 }
 
 const unsigned& School::iterator::getID() const
 {
-    return pointer->studentInfo.ID;
+    return pointer->ID;
 } 
 
-const unsigned& School::iterator::getVisits() const
+const size_t& School::iterator::getVisits() const
 {
-    return pointer->studentInfo.visits;
+    return pointer->visits;
 }
 
-const unsigned short* School::iterator::getVisitsDates() const
+unsigned short* School::iterator::getVisitsDates() const
 {
-    return pointer->studentInfo.dates;
+    return pointer->visitsDates;
 }
 
 const unsigned& School::iterator::getGroup() const
 {
-    return pointer->studentInfo.groupID;
+    return pointer->groupID;
 }
 
 void School::iterator::printInfo() const
     {
-        std::cout << pointer->studentInfo.ID << '/' << pointer->studentInfo.lastname << '/';
-        std::cout << pointer->studentInfo.groupID << '/' << pointer->studentInfo.visits << std::endl;
+        std::cout << pointer->ID << '/' << pointer->lastname << '/';
+        std::cout << pointer->groupID << '/' << pointer->visits << std::endl;
     }

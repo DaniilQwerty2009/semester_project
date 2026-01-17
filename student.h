@@ -15,14 +15,14 @@ struct Student
     unsigned visits = 0;
     unsigned short* dates = nullptr;
 
-    // ?? addVisit - dates
-    inline void increaseVisits()
-        { ++visits; }
-    // ??
-    inline void changeVisits(int unsigned visits)
-        { this->visits = visits; }
+    // // ?? addVisit - dates
+    // inline void increaseVisits()
+    //     { ++visits; }
+    // // ??
+    // inline void changeVisits(int unsigned visits)
+    //     { this->visits = visits; }
 
-public:
+
     Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
         :ID(studentID),
         groupID(groupID)
@@ -38,27 +38,23 @@ public:
         delete[] dates;
     }
 
-    const unsigned& getID()
-        { return ID; }
+    // const unsigned& getID()
+    //     { return ID; }
 
-    const char* getLastname()
-        { return lastname; }
+    // const char* getLastname()
+    //     { return lastname; }
 
-    const unsigned& getGroup()
-        { return groupID; }
+    // const unsigned& getGroup()
+    //     { return groupID; }
 
-    const unsigned& getVisits()
-        { return visits; }
+    // const unsigned& getVisits()
+    //     { return visits; }
 
-    const unsigned short* getVisitsDates()
-        { return dates; }
+    // const unsigned short* getVisitsDates()
+    //     { return dates; }
     
 
-    void printInfo()
-    {
-        std::cout << ID << '/' << lastname << '/';
-        std::cout << groupID << '/' << visits << std::endl;
-    }
+    
 
 };
 

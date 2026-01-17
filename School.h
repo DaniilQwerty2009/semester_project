@@ -2,93 +2,167 @@
 #define SCHOOL_H
 
 #include <iostream>
-
-#include "Student.h"
+#include <cstring>
 
 class School
 {
 private:
-    struct Node
+    struct Student
     {
-        Student studentInfo;
+        const unsigned ID;
 
-        Node* prev = nullptr;
-        Node* next = nullptr;
+        char* lastname = nullptr;
+        unsigned groupID;
 
-        Node(unsigned studentID, const char* lastname, unsigned groupID = 0)
-        :studentInfo(studentID, lastname, groupID)
-            {   }
+        size_t visits = 0;
+        unsigned short* visitsDates = nullptr;
+
+        Student* prev = nullptr;
+        Student* next = nullptr;
+
+        Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
+        :ID(studentID), groupID(groupID)
+        {
+            this->lastname = new char[std::strlen(lastname) + 1];
+            std::strcpy(this->lastname, lastname);
+        }
+
+        ~Student()
+        {
+            delete[] lastname;
+            delete[] visitsDates;
+        }
     };
 
-    Node* head = nullptr;
-    Node* tail = nullptr;
+
+    Student* head = nullptr;
+    Student* tail = nullptr;
 
 public:
 
     class iterator
         {
         private:
-            Node* pointer;
+            Student* pointer;
         public:
             iterator():pointer(nullptr)
-            {   }   
+                {   }   
+            iterator(School::Student* ptr):pointer(ptr)
+                {   }
             
-            void operator=(Node* nodePtr);
+            void operator=(Student* nodePtr);
+            bool operator!=(Student* nodePtr);
+            bool operator==(Student* nodePtr);
 
-            Student* operator*();
+            Student* operator++();
+            Student* operator++(int);
+
+            const unsigned&       operator*() const;
 
             const char*           getLastname() const; 
 
             const unsigned&       getID() const; 
 
-            const unsigned&       getVisits() const; 
+            const size_t&       getVisits() const; 
 
-            const unsigned short* getVisitsDates() const; 
+            unsigned short*       getVisitsDates() const; 
 
             const unsigned&       getGroup() const; 
 
             void                  printInfo() const;
+
+            friend class School;
         };
 
     School()
         {   }
+
+    ~School()
+    {
+        iterator iter(begin());
+
+        while(iter != end())
+        {
+            iterator temp = iter;
+            ++iter;
+            delete temp.pointer;
+        }
+    }
  
 
-    void addStudent(unsigned studentID, const char* lastname, unsigned groupID = 0)
+    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0)
     {
         if(!head)
         {
-            head = new Node(studentID, lastname, groupID);
+            head = new Student(studentID, lastname, groupID);
             tail = head;
         }
         else
         {
-            tail->next = new Node(studentID, lastname, groupID);
-            Node* oldTail = tail;
+            tail->next = new Student(studentID, lastname, groupID);
+            Student* oldTail = tail;
             tail = tail->next;
             tail->prev = oldTail;
         }
+
     }
 
-    void printList() const
+    void pop(iterator iterator)
     {
-        Node* iterator = head;
-
-        while(iterator)
+        if(iterator.pointer)
         {
-            iterator->studentInfo.printInfo();
-            iterator = iterator->next;
+            if(iterator.pointer == head && head->next == nullptr)
+            {
+                delete iterator.pointer;
+                iterator.pointer = nullptr;
+
+                head = nullptr;
+
+                return;
+            }
+
+            if(iterator.pointer == head)
+            {
+                head = head->next;
+                head->prev = nullptr;
+
+                delete iterator.pointer;
+                iterator.pointer = nullptr;
+
+                return;
+            }
+            if(iterator.pointer == tail)
+            {
+                tail = tail->prev;
+                tail->next = nullptr;
+
+                delete iterator.pointer;
+                iterator.pointer = nullptr;
+
+                return;
+            }
+            else
+            {
+            iterator.pointer->prev->next = iterator.pointer->next;
+            iterator.pointer->next->prev = iterator.pointer->prev;
+
+            delete iterator.pointer;
+            iterator.pointer = nullptr;
+
+            return;
+            }
         }
+
     }
 
-    inline Node* begin() const
+    inline Student* begin() const
     {
         return head;
     }
 
-    inline Node* end() const
+    inline Student* end() const
     {
-        return tail;
+        return nullptr;
     }
 
     
