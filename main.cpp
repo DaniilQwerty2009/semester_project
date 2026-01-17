@@ -30,7 +30,7 @@ int main()
     }
     iterator2 = iterator++;
 
-    delete ourSchool;
+    
 
     return 0;
 }
