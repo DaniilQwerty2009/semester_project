@@ -9,18 +9,8 @@ class Group
 {
 private:
     unsigned short ID;
-
-    struct Node
-    {
-        Student student;
-
-        Node* prev  = nullptr;
-        Node* next = nullptr;
-    };
-
-    Node* head = nullptr;
-
 public:
+    
    
 
 };

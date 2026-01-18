@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstring>
 
+#include "VisitDays.h"
+
 class School
 {
 private:
@@ -14,15 +16,7 @@ private:
         unsigned groupID;
         size_t visits = 0;
 
-        struct visitDays
-        {
-        public:
-            enum averageStudyDays {studyDays = 165};
-
-            size_t len = studyDays;
-            unsigned* visitsDates = new unsigned[len];
-        };
-        
+        VisitDays dates;
 
         Student* prev = nullptr;
         Student* next = nullptr;
@@ -37,7 +31,6 @@ private:
         ~Student()
         {
             delete[] lastname;
-            delete[] visitsDates;
         }
     };
 
@@ -60,6 +53,7 @@ public:
             void operator=(Student* nodePtr);
             bool operator!=(Student* nodePtr);
             bool operator==(Student* nodePtr);
+            bool operator!();
 
             Student* operator++();
             Student* operator++(int);
@@ -70,9 +64,9 @@ public:
 
             const unsigned&       getID() const; 
 
-            const size_t&       getVisits() const; 
+            const size_t&         getVisits() const; 
 
-            unsigned short*       getVisitsDates() const; 
+            const unsigned*      getDates() const; 
 
             const unsigned&       getGroup() const; 
 
@@ -101,7 +95,15 @@ public:
 
     void pop(iterator iterator);
 
-    bool pop(unsigned ID);
+    bool pop(unsigned studentID);
+
+    void addVisit(iterator iterator, unsigned day);
+
+    bool addVisit(unsigned studentID, unsigned day);
+
+    void printStudentInfo(iterator iterator) const;
+
+    void printStudentInfo(unsigned studentID) const;
 
     inline Student* begin() const
     {

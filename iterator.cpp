@@ -16,6 +16,11 @@ bool School::iterator::operator==(Student* nodePtr)
     return pointer == nodePtr;
 }
 
+bool School::iterator::operator!()
+{
+    return pointer == nullptr;
+}
+
 School::Student* School::iterator::operator++()
 {
     if(pointer)
@@ -33,6 +38,7 @@ School::Student* School::iterator::operator++(int)
 
     return temp;
 }
+
 
 const unsigned& School::iterator::operator*() const
 {
@@ -54,9 +60,9 @@ const size_t& School::iterator::getVisits() const
     return pointer->visits;
 }
 
-unsigned short* School::iterator::getVisitsDates() const
+const unsigned* School::iterator::getDates() const
 {
-    return pointer->visitsDates;
+    return pointer->dates.dates;
 }
 
 const unsigned& School::iterator::getGroup() const
