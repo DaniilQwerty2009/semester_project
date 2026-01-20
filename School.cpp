@@ -157,6 +157,18 @@ bool School::addVisit(unsigned studentID, unsigned day)
     return false;
 }
 
+bool School::addGroupVisit(unsigned groupID, unsigned day)
+{
+    School::iterator iterator = School::begin();
+
+    for(; iterator != School::end(); ++iterator)
+    {
+        if(iterator.getGroup() == groupID)
+            School::addVisit(iterator, day);
+    }
+
+    return true; // !!!!
+}
 
 void School::printStudentInfo(iterator iterator) const
 {
@@ -184,3 +196,30 @@ void School::printStudentInfo(unsigned studentID) const
         ++iterator;
     }    
 }
+
+// Сортировка
+
+School::Student* School::split(Student* head)
+{
+    Student* tortle = head;
+    Student* rabbit = head;
+
+    while(rabbit->next && rabbit->next->next)
+    {
+        tortle = tortle->next;
+        rabbit = rabbit->next->next;
+    }
+
+    Student* right = tortle->next;
+    tortle->next = nullptr;
+
+    if(right)
+        right->prev = nullptr;
+
+    return right;
+
+}
+
+
+
+

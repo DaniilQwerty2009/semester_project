@@ -9,7 +9,6 @@
     public:
         enum averageStudyDays {studyDays = 165};
 
-        size_t len;
         size_t elementsQty = 0;
         unsigned* dates = nullptr;
 
@@ -42,7 +41,11 @@
             dates[elementsQty++] = day;
         }
 
+
+
     private:
+        size_t len;
+
         void expand()
         {
             len *= 2;

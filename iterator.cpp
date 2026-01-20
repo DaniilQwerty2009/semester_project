@@ -21,22 +21,40 @@ bool School::iterator::operator!()
     return pointer == nullptr;
 }
 
-School::Student* School::iterator::operator++()
+School::iterator School::iterator::operator++()
 {
     if(pointer)
         pointer = pointer->next;
 
-    return pointer;
+    return *this;
 }
 
-School::Student* School::iterator::operator++(int)
+School::iterator School::iterator::operator++(int)
 {
-    School::Student* temp = pointer;
+    School::iterator temp = *this;
 
     if(pointer)
         pointer = pointer->next;
 
     return temp;
+}
+
+School::iterator School::iterator::operator--()
+{
+    if(pointer)
+        pointer = pointer->prev;
+    return *this;
+}
+
+School::iterator School::iterator::operator--(int)
+{
+    School::iterator temp = *this;
+
+    if(pointer)
+        pointer = pointer->prev;
+
+    return temp;
+
 }
 
 

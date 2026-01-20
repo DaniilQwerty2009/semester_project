@@ -32,14 +32,60 @@ private:
         {
             delete[] lastname;
         }
+
+        friend class ByLastname;
     };
 
 
     Student* head = nullptr;
     Student* tail = nullptr;
 
-public:
+    // методы для сортировки
+    Student* split(Student* head);
+    template <typename Compare> Student* merge(Student* a, Student* b, Compare cmp)
+        {
+            if(!a) return b;
+            if(!b) return b;
 
+            if(cmp(a, b) || (!cmp(a, b) && !cmp(b, a)))
+            {
+                a->next = merge(a->next, b, cmp);
+                
+                if(a->next)
+                    a->next->prev = a;
+
+                a->prev = nullptr;
+
+                return a;
+            }
+
+            else
+            {
+                b->next = merge(a, b->next, cmp);
+
+                if(b->next)
+                    b->next->prev = b;
+
+                b->prev = nullptr;
+
+                return b;
+            }
+        }
+    template <typename Compare> Student* mergeSort(Student* head, Compare cmp)
+    {
+        if(!head || !head->next)
+            return head;
+
+        Student* right = split(head);
+
+        mergeSort(head, cmp);
+        mergeSort(right, cmp);
+
+        return merge(head, right, cmp);
+    }
+
+public:
+    // валидность итераторов. когда??
     class iterator
         {
         private:
@@ -54,9 +100,11 @@ public:
             bool operator!=(Student* nodePtr);
             bool operator==(Student* nodePtr);
             bool operator!();
-
-            Student* operator++();
-            Student* operator++(int);
+            
+            iterator operator --();
+            iterator operator --(int);
+            iterator operator++();
+            iterator operator++(int);
 
             const unsigned&       operator*() const;
 
@@ -66,7 +114,7 @@ public:
 
             const size_t&         getVisits() const; 
 
-            const unsigned*      getDates() const; 
+            const unsigned*       getDates() const; 
 
             const unsigned&       getGroup() const; 
 
@@ -101,6 +149,9 @@ public:
 
     bool addVisit(unsigned studentID, unsigned day);
 
+    // add groups tree!!!
+    bool addGroupVisit(unsigned groupID, unsigned day);
+
     void printStudentInfo(iterator iterator) const;
 
     void printStudentInfo(unsigned studentID) const;
@@ -115,6 +166,45 @@ public:
         return nullptr;
     }
 
+    inline Student* last() const
+    {
+        return tail;
+    }
+
+
+    // компрораторы
+    class ByVisits
+    {
+    public:
+        // ПОЧЕМУ ВИДИМ STUDENT??
+        bool operator()(Student& a,  Student& b) const
+        {
+            return a.visits < b.visits;
+        }
+    };
+
+    class ByLastname
+    {
+    public:
+        bool operator()(Student& a, Student& b)
+        {
+            static int index = 0; 
+
+            if(  !(a.lastname[index] < b.lastname[index])  &&  !(b.lastname[index] < a.lastname[index])  )
+            {
+                index++;
+                operator()(a, b);
+            }    
+
+            return (a.lastname[index] < b.lastname[index]);
+        }
+    };
+
+    // сортировка
+    template <typename Compare> void sort(Compare cmp)
+    {
+        head = mergeSort(head, cmp);
+    }
 };
 
 
