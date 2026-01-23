@@ -40,50 +40,7 @@ private:
     Student* head = nullptr;
     Student* tail = nullptr;
 
-    // методы для сортировки
-    Student* split(Student* head);
-    template <typename Compare> Student* merge(Student* a, Student* b, Compare cmp)
-        {
-            if(!a) return b;
-            if(!b) return b;
-
-            if(cmp(a, b) || (!cmp(a, b) && !cmp(b, a)))
-            {
-                a->next = merge(a->next, b, cmp);
-                
-                if(a->next)
-                    a->next->prev = a;
-
-                a->prev = nullptr;
-
-                return a;
-            }
-
-            else
-            {
-                b->next = merge(a, b->next, cmp);
-
-                if(b->next)
-                    b->next->prev = b;
-
-                b->prev = nullptr;
-
-                return b;
-            }
-        }
-    template <typename Compare> Student* mergeSort(Student* head, Compare cmp)
-    {
-        if(!head || !head->next)
-            return head;
-
-        Student* right = split(head);
-
-        mergeSort(head, cmp);
-        mergeSort(right, cmp);
-
-        return merge(head, right, cmp);
-    }
-
+   
 public:
     // валидность итераторов. когда??
     class iterator
@@ -91,34 +48,38 @@ public:
         private:
             Student* pointer;
         public:
-            iterator():pointer(nullptr)
-                {   }   
-            iterator(School::Student* ptr):pointer(ptr)
+            iterator(School::Student* ptr = nullptr):pointer(ptr)
                 {   }
+            iterator(iterator& iterator) = default;
             
-            void operator=(Student* nodePtr);
-            bool operator!=(Student* nodePtr);
-            bool operator==(Student* nodePtr);
+            // поменять на ссылки
+            void operator=(iterator iterator);
+            bool operator!=(iterator iterator);
+            bool operator==(iterator iterator);
             bool operator!();
+
+            void operator=(Student* iterator);
+            bool operator!=(Student* iterator);
+            bool operator==(Student* iterator);
             
             iterator operator --();
             iterator operator --(int);
             iterator operator++();
             iterator operator++(int);
 
-            const unsigned&       operator*() const;
+            const Student& operator*() const;
 
-            const char*           getLastname() const; 
+            const char*         getLastname() const; 
 
-            const unsigned&       getID() const; 
+            const unsigned&     getID() const; 
 
-            const size_t&         getVisits() const; 
+            const size_t&       getVisits() const; 
 
-            const unsigned*       getDates() const; 
+            const unsigned*     getDates() const; 
 
-            const unsigned&       getGroup() const; 
+            const unsigned&     getGroup() const; 
 
-            void                  printInfo() const;
+            void                printInfo() const;
 
             friend class School;
         };
@@ -145,7 +106,7 @@ public:
 
     bool pop(unsigned studentID);
 
-    void addVisit(iterator iterator, unsigned day);
+    void addVisit(const iterator& iterator, unsigned day);
 
     bool addVisit(unsigned studentID, unsigned day);
 
@@ -200,11 +161,124 @@ public:
         }
     };
 
-    // сортировка
-    template <typename Compare> void sort(Compare cmp)
+    void replace(iterator destination, iterator element)
     {
-        head = mergeSort(head, cmp);
+        if(!element)
+            return;
+
+        if(destination == element)
+            return;
+
+        if(destination == end())
+        {
+            if(element == tail)
+                return;
+
+            if(element == head)
+            {
+                Student* newHead = element.pointer->next;
+
+                tail->next = element.pointer;
+                element.pointer->prev = tail;
+                tail = element.pointer;
+
+                head = newHead;
+                head->prev = nullptr;
+
+                return;
+            }
+            else
+            {
+                element.pointer->next->prev = element.pointer->prev;
+                element.pointer->prev->next = element.pointer->next;
+
+                tail->next = element.pointer;
+                element.pointer->prev = tail;
+                
+                tail = element.pointer;
+                tail->next = nullptr;
+
+                return;
+            }
+        }
+
+        if(destination == head)
+        {
+            if(element == tail)
+            {
+                Student* newTail = element.pointer->prev;
+
+                head->prev = element.pointer;
+                element.pointer->next = head;
+
+                tail = newTail;
+                tail->next = nullptr;
+
+                head = element.pointer;
+                head->prev = nullptr;
+
+                return;
+            }
+            else
+            {
+                element.pointer->next->prev = element.pointer->prev;
+                element.pointer->prev->next = element.pointer->next;
+
+                head->prev = element.pointer;
+                
+                head = element.pointer;
+                head->prev = nullptr;
+
+                return;
+            }
+        }
+
+        else
+        {  
+            if(element != head)
+                {
+                element.pointer->prev->next = element.pointer->next;
+                }
+            else
+                head = element.pointer->next;
+
+            if(element != tail)
+                element.pointer->next->prev = element.pointer->prev;
+            else
+                tail = element.pointer->prev;
+
+            element.pointer->prev = destination.pointer->prev;
+            destination.pointer->prev->next = element.pointer;
+
+            element.pointer->next = destination.pointer;
+            destination.pointer->prev = element.pointer;
+
+        }
+        
     }
+
+    // сортировка
+    // template <typename Compare> void sort(Compare cmp)
+    // {
+    //     iterator sotrBorder = begin();
+    //     sotrBorder++;
+
+    //     while(sotrBorder)
+    //     {
+    //         iterator sortPart = --sotrBorder;
+
+    //         while( !cmp(*sotrPart, *sortBorder))
+    //         {
+    //             if(sortPart == begin())
+    //             {
+
+    //             }
+    //         }
+
+
+    //         sotrBorder++;
+    //     }
+    // }
 };
 
 

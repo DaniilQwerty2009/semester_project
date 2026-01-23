@@ -1,19 +1,34 @@
 #include "School.h"
 
 
-void School::iterator::operator=(Student* nodePtr)
+void School::iterator::operator=(iterator iterator)
 {
-    pointer = nodePtr;
+    pointer = iterator.pointer;
 }
 
-bool School::iterator::operator!=(Student* nodePtr)
+bool School::iterator::operator!=(iterator iterator)
 {
-    return pointer != nodePtr;
+    return pointer != iterator.pointer;
 }
 
-bool School::iterator::operator==(Student* nodePtr)
+bool School::iterator::operator==(iterator iterator)
 {
-    return pointer == nodePtr;
+    return pointer == iterator.pointer;
+}
+
+void School::iterator::operator=(Student* ptr)
+{
+    pointer = ptr;
+}
+
+bool School::iterator::operator!=(Student* ptr)
+{
+    return pointer != ptr;
+}
+
+bool School::iterator::operator==(Student* ptr)
+{
+    return pointer == ptr;
 }
 
 bool School::iterator::operator!()
@@ -58,9 +73,9 @@ School::iterator School::iterator::operator--(int)
 }
 
 
-const unsigned& School::iterator::operator*() const
+const School::Student& School::iterator::operator*() const
 {
-    return pointer->ID;
+    return *pointer;
 }
 
 const char* School::iterator::getLastname() const

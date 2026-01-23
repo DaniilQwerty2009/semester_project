@@ -126,7 +126,7 @@ bool School::pop(unsigned studentID)
     
 }
 
-void School::addVisit(School::iterator iterator, unsigned day)
+void School::addVisit(const School::iterator& iterator, unsigned day)
 {
     if(iterator.pointer)
     {    
@@ -197,28 +197,7 @@ void School::printStudentInfo(unsigned studentID) const
     }    
 }
 
-// Сортировка
 
-School::Student* School::split(Student* head)
-{
-    Student* tortle = head;
-    Student* rabbit = head;
-
-    while(rabbit->next && rabbit->next->next)
-    {
-        tortle = tortle->next;
-        rabbit = rabbit->next->next;
-    }
-
-    Student* right = tortle->next;
-    tortle->next = nullptr;
-
-    if(right)
-        right->prev = nullptr;
-
-    return right;
-
-}
 
 
 

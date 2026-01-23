@@ -28,7 +28,7 @@ int main()
 
 
     School::ByLastname comparator;
-    ourSchool->sort(comparator);
+    // ourSchool->sort(comparator);
 
     while(iterator != ourSchool->end())
     {
@@ -48,13 +48,37 @@ int main()
         iterator++;
     }
     
-    
-    
-    
 
     std::cout << "=================================" << std::endl;
 
-    
+    School::iterator first = ourSchool->begin();
+    while(first.getID() != 4)
+        first++;
+
+    School::iterator destinationMidle = ourSchool->begin();
+    destinationMidle++;
+    destinationMidle++;
+
+    ourSchool->replace(first, destinationMidle);
+
+    iterator = ourSchool->begin();
+    while(iterator != ourSchool->end())
+    {
+        iterator.printInfo();
+
+
+        visits = iterator.getVisits();
+        dates = iterator.getDates();
+        for(size_t i = 0; i < visits; ++i)
+            std::cout << dates[i] << ((i < visits -1 )? "; ": "\n");
+
+        if(iterator != ourSchool->end())
+        std::cout << "------------------" << std::endl;
+
+
+
+        iterator++;
+    }
 
     
     
