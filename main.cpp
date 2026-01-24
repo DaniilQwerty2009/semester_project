@@ -9,81 +9,79 @@ int main()
 {
     School* ourSchool = new School;
 
+    School::iterator iter = ourSchool->begin();
     
-    ourSchool->push_back(1, "Иетров", 0);
-    ourSchool->push_back(2, "Аванов", 1);
-    ourSchool->push_back(3, "Гуськов", 3);
-    ourSchool->push_back(4, "Абдоров", 1);
+    ourSchool->push_back(1, "Иванов", 0);
+    ourSchool->push_back(2, "Петров", 1);
+    ourSchool->push_back(3, "Гуськов", 1);
+    ourSchool->push_back(4, "Задорнов", 2);
     ourSchool->push_back(5, "Васечкин", 2);
-    ourSchool->push_back(6, "Бечорин", 5);
+    ourSchool->push_back(6, "Печорин", 5);
 
-    for(int i = 1; i < 6; ++i)
-    {  
-        ourSchool->addVisit(i, 1);
-    }
+    School::ByLastname comporator;
+    ourSchool->sort(comporator);
+    ourSchool->push_sorted(comporator, 7, "Абасов", 2);
 
-    ourSchool->addGroupVisit(1, 4);
-    ourSchool->addGroupVisit(1, 2);
-    ourSchool->addGroupVisit(2, 3);
 
-    
-    
-    School::iterator iterator = ourSchool->begin();
+    ourSchool->addVisit(1, 1);
+    ourSchool->addVisit(1, 2);
+    ourSchool->addVisit(1, 3);
 
-    // добавим Петрову посещений
-    for(int i = 0; i < 10; ++i)
-        ourSchool->addVisit(1, 99);
 
-    for(int i = 0; i < 5; ++i)
-        ourSchool->addVisit(4, 99);
+    ourSchool->addVisit(1, 32);
+    ourSchool->addVisit(1, 33);
 
-    size_t visits;
-    const unsigned* dates;
-    iterator = ourSchool->begin();    
+    ourSchool->addVisit(1, 34);
 
-    while(iterator != ourSchool->end())
-    {
-        dates = (*iterator).dates.datesArray;
-        visits = (*iterator).dates.elementsQty;
+    ourSchool->addVisit(2, 32);
+    ourSchool->addVisit(2, 33);
+    ourSchool->addVisit(2, 34);
 
-        ourSchool->printStudentInfo((*iterator).ID);
-        cout << endl;
-        
-        for(size_t i = 0; i < visits; ++i)
-            std::cout << dates[i] << ((i < visits -1 )? "; ": "\n");
 
-        if(iterator != ourSchool->end())
-        std::cout << "------------------" << std::endl;
+    ourSchool->addGroupVisit(1, 10);
+    ourSchool->addGroupVisit(1, 100);
+    ourSchool->addGroupVisit(1, 300);
 
-        iterator++;
-    }
-    
+    ourSchool->addGroupVisit(2, 20);
+    ourSchool->addGroupVisit(2, 120);
+    ourSchool->addGroupVisit(2, 320);
 
-    std::cout << "=================================" << std::endl;
+    cout << "'1/01'" << endl;
+    ourSchool->printVisitsInDate(1, 1);
+    cout << "'2/01'" << endl;
+    ourSchool->printVisitsInDate(2, 1);
+    cout << "'3/01'" << endl;
+    ourSchool->printVisitsInDate(3, 1);
 
-    School::ByLastname comparator;
-    ourSchool->sort(comparator);
+    std::cout << "======================================" << std::endl;
 
-    iterator = ourSchool->begin();
-    while(iterator != ourSchool->end())
-    {
-        dates = (*iterator).dates.datesArray;
-        visits = (*iterator).dates.elementsQty;
-        
-        ourSchool->printStudentInfo((*iterator).ID);
-        cout << endl;
+    cout << "'32'" << endl;
+    ourSchool->printVisitsInDate(32);
+    cout << "'33'" << endl;
+    ourSchool->printVisitsInDate(33);
+    cout << "'34'" << endl;
+    ourSchool->printVisitsInDate(34);
 
-        for(size_t i = 0; i < visits; ++i)
-            std::cout << dates[i] << ((i < visits -1 )? "; ": "\n");
+    std::cout << "======================================" << std::endl;
 
-        if(iterator != ourSchool->end())
-        std::cout << "------------------" << std::endl;
-
-        iterator++;
-    }
+    cout << "'10'" << endl;
+    ourSchool->printVisitsInDate(10);
+    cout << "'100'" << endl;
+    ourSchool->printVisitsInDate(100);
+    cout << "'300'" << endl;
+    ourSchool->printVisitsInDate(300);
     
 
+    std::cout << "======================================" << std::endl;
     
+    cout << "'20'" << endl;
+    ourSchool->printVisitsInDate(20);
+    cout << "'120'" << endl;
+    ourSchool->printVisitsInDate(120);
+    cout << "'320'" << endl;
+    ourSchool->printVisitsInDate(320);
+
+
     
     
     return 0;

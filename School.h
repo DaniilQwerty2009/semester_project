@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "VisitDays.h"
+#include "DateConverter.h"
 
 class School
 {
@@ -33,15 +34,32 @@ private:
             delete[] lastname;
         }
 
-        friend class ByLastname;
     };
 
 
+    size_t capacity = 0;
     Student* head = nullptr;
     Student* tail = nullptr;
 
+    DateConverter converter;
+
    
 public:
+    School()
+        {   }
+
+    ~School()
+    {
+        Student* ptr;
+
+        while(ptr)
+        {
+            Student* temp = ptr;
+            ptr = ptr->next;
+            delete temp;
+        }
+    }
+
     // валидность итераторов. когда??
     class iterator
         {
@@ -69,39 +87,38 @@ public:
 
             const Student& operator*() const;
 
-        //     // убрать
-        //     const char*         getLastname() const; 
-
-        //     const unsigned&     getID() const; 
-
-        //     const size_t&       getVisits() const; 
-
-        //     const unsigned*     getDates() const; 
-
-        //     const unsigned&     getGroup() const; 
-
-        //     void                printInfo() const;
-
-        //     friend class School;
         };
 
-    School()
-        {   }
-
-    ~School()
-    {
-        Student* ptr;
-
-        while(ptr)
-        {
-            Student* temp = ptr;
-            ptr = ptr->next;
-            delete temp;
-        }
-    }
  
+    inline size_t getCapacity() const
+        { return capacity; }
 
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
+
+    template <typename Compare> void push_sorted(Compare comporator, unsigned studentID, const char* lastname, unsigned groupID = 0)
+    {
+        push_back(studentID, lastname, groupID);
+
+        if(tail->prev)
+        {
+            if(comporator(tail->prev, tail))
+                return;
+        }
+
+        Student* element = tail;
+        Student* ptr = head;
+
+        while(ptr != element)
+        {
+            if(comporator(element, ptr))
+            {
+                replace(ptr, element);
+                return;
+            }
+
+            ptr = ptr->next;
+        }
+    }
 
     void pop(Student* studentPtr);
 
@@ -114,9 +131,19 @@ public:
     // add groups tree!!!
     void addGroupVisit(unsigned groupID, unsigned day);
 
+    void excludeFromGroup(const unsigned& studentID);
+
+    void dibandGroup(const unsigned& groupID);
+
+    void disbandAndPop(const unsigned& groupID);
+
     void printStudentInfo(Student* ptr) const;
 
-    void printStudentInfo(unsigned studentID) const;
+    void printStudentInfo(const unsigned& studentID) const;
+
+    void printVisitsInDate(const unsigned& day, const unsigned& mounth) const;
+
+    void printVisitsInDate(const unsigned& day) const;
 
     inline Student* begin() const
     {
