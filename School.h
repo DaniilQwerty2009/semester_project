@@ -51,17 +51,17 @@ public:
             iterator(School::Student* ptr = nullptr):pointer(ptr)
                 {   }
             iterator(iterator& iterator) = default;
-            
+
             // поменять на ссылки
             void operator=(iterator iterator);
             bool operator!=(iterator iterator);
             bool operator==(iterator iterator);
-            bool operator!();
+            explicit operator bool() const;
 
             void operator=(Student* iterator);
             bool operator!=(Student* iterator);
             bool operator==(Student* iterator);
-            
+          
             iterator operator --();
             iterator operator --(int);
             iterator operator++();
@@ -69,19 +69,20 @@ public:
 
             const Student& operator*() const;
 
-            const char*         getLastname() const; 
+        //     // убрать
+        //     const char*         getLastname() const; 
 
-            const unsigned&     getID() const; 
+        //     const unsigned&     getID() const; 
 
-            const size_t&       getVisits() const; 
+        //     const size_t&       getVisits() const; 
 
-            const unsigned*     getDates() const; 
+        //     const unsigned*     getDates() const; 
 
-            const unsigned&     getGroup() const; 
+        //     const unsigned&     getGroup() const; 
 
-            void                printInfo() const;
+        //     void                printInfo() const;
 
-            friend class School;
+        //     friend class School;
         };
 
     School()
@@ -89,31 +90,31 @@ public:
 
     ~School()
     {
-        iterator iter(begin());
+        Student* ptr;
 
-        while(iter != end())
+        while(ptr)
         {
-            iterator temp = iter;
-            ++iter;
-            delete temp.pointer;
+            Student* temp = ptr;
+            ptr = ptr->next;
+            delete temp;
         }
     }
  
 
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
 
-    void pop(iterator iterator);
+    void pop(Student* studentPtr);
 
     bool pop(unsigned studentID);
 
-    void addVisit(const iterator& iterator, unsigned day);
+    void addVisit(const Student* ptr, unsigned day);
 
     bool addVisit(unsigned studentID, unsigned day);
 
     // add groups tree!!!
-    bool addGroupVisit(unsigned groupID, unsigned day);
+    void addGroupVisit(unsigned groupID, unsigned day);
 
-    void printStudentInfo(iterator iterator) const;
+    void printStudentInfo(Student* ptr) const;
 
     void printStudentInfo(unsigned studentID) const;
 
@@ -138,147 +139,59 @@ public:
     {
     public:
         // ПОЧЕМУ ВИДИМ STUDENT??
-        bool operator()(Student& a,  Student& b) const
+        bool operator()(Student* a,  Student* b) const
         {
-            return a.visits < b.visits;
+            return a->visits < b->visits;
         }
     };
 
     class ByLastname
     {
     public:
-        bool operator()(Student& a, Student& b)
+        bool operator()(Student* a, Student* b)
         {
-            static int index = 0; 
-
-            if(  !(a.lastname[index] < b.lastname[index])  &&  !(b.lastname[index] < a.lastname[index])  )
-            {
-                index++;
-                operator()(a, b);
-            }    
-
-            return (a.lastname[index] < b.lastname[index]);
-        }
+            return std::strcmp(a->lastname, b->lastname) < 0;
+        };
     };
 
-    void replace(iterator destination, iterator element)
-    {
-        if(!element)
-            return;
+    void replace(Student* destination, Student* element);
 
-        if(destination == element)
-            return;
-
-        if(destination == end())
-        {
-            if(element == tail)
-                return;
-
-            if(element == head)
-            {
-                Student* newHead = element.pointer->next;
-
-                tail->next = element.pointer;
-                element.pointer->prev = tail;
-                tail = element.pointer;
-
-                head = newHead;
-                head->prev = nullptr;
-
-                return;
-            }
-            else
-            {
-                element.pointer->next->prev = element.pointer->prev;
-                element.pointer->prev->next = element.pointer->next;
-
-                tail->next = element.pointer;
-                element.pointer->prev = tail;
-                
-                tail = element.pointer;
-                tail->next = nullptr;
-
-                return;
-            }
-        }
-
-        if(destination == head)
-        {
-            if(element == tail)
-            {
-                Student* newTail = element.pointer->prev;
-
-                head->prev = element.pointer;
-                element.pointer->next = head;
-
-                tail = newTail;
-                tail->next = nullptr;
-
-                head = element.pointer;
-                head->prev = nullptr;
-
-                return;
-            }
-            else
-            {
-                element.pointer->next->prev = element.pointer->prev;
-                element.pointer->prev->next = element.pointer->next;
-
-                head->prev = element.pointer;
-                
-                head = element.pointer;
-                head->prev = nullptr;
-
-                return;
-            }
-        }
-
-        else
-        {  
-            if(element != head)
-                {
-                element.pointer->prev->next = element.pointer->next;
-                }
-            else
-                head = element.pointer->next;
-
-            if(element != tail)
-                element.pointer->next->prev = element.pointer->prev;
-            else
-                tail = element.pointer->prev;
-
-            element.pointer->prev = destination.pointer->prev;
-            destination.pointer->prev->next = element.pointer;
-
-            element.pointer->next = destination.pointer;
-            destination.pointer->prev = element.pointer;
-
-        }
-        
-    }
 
     // сортировка
-    // template <typename Compare> void sort(Compare cmp)
-    // {
-    //     iterator sotrBorder = begin();
-    //     sotrBorder++;
+    template <typename Compare> void sort(Compare cmp)
+    {
+        if(!head || !head->next)
+            return;
 
-    //     while(sotrBorder)
-    //     {
-    //         iterator sortPart = --sotrBorder;
+        Student* sotrBorder = head;
+        Student* iter = sotrBorder->next;
+        Student* inSortedPart;
 
-    //         while( !cmp(*sotrPart, *sortBorder))
-    //         {
-    //             if(sortPart == begin())
-    //             {
+        while(iter)
+        {
+            if(cmp(sotrBorder, iter))   
+            {
+                sotrBorder = sotrBorder->next;
+                iter = iter->next;
+                continue;
+            }
 
-    //             }
-    //         }
+
+            else
+            {
+                inSortedPart = sotrBorder;
+
+                while( inSortedPart->prev != nullptr && cmp(iter, inSortedPart->prev))
+                    inSortedPart = inSortedPart->prev;
+                
+                replace(inSortedPart, iter);
+
+                iter = sotrBorder->next;
+            }
+        }
+    }
 
 
-    //         sotrBorder++;
-    //     }
-    // }
 };
 
 

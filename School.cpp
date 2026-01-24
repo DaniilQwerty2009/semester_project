@@ -6,10 +6,6 @@ void School::push_back(unsigned studentID, const char* lastname, unsigned groupI
         {
             head = new Student(studentID, lastname, groupID);
             tail = head;
-
-            
-        
-
         }
         else
         {
@@ -18,186 +14,210 @@ void School::push_back(unsigned studentID, const char* lastname, unsigned groupI
             tail = tail->next;
             tail->prev = oldTail;
         }
-
     }
 
-void School::pop(iterator iterator)
+void School::pop(Student* student)
 {
-    if(iterator.pointer)
-    {
-        if(iterator.pointer == head && head->next == nullptr)
-        {
-            delete iterator.pointer;
-            iterator.pointer = nullptr;
-
-            head = nullptr;
-
-            return;
-        }
-
-        if(iterator.pointer == head)
-        {
-            head = head->next;
-            head->prev = nullptr;
-
-            delete iterator.pointer;
-            iterator.pointer = nullptr;
-
-            return;
-        }
-        if(iterator.pointer == tail)
-        {
-            tail = tail->prev;
-            tail->next = nullptr;
-
-            delete iterator.pointer;
-            iterator.pointer = nullptr;
-
-            return;
-        }
-        else
-        {
-        iterator.pointer->prev->next = iterator.pointer->next;
-        iterator.pointer->next->prev = iterator.pointer->prev;
-
-        delete iterator.pointer;
-        iterator.pointer = nullptr;
-
-        return;
-        }
-    }
+    pop(student->ID);
 
 }
 
 bool School::pop(unsigned studentID)
 {  
-    School::iterator iterator(begin());   
-    
-    while(iterator != end())
-    {
-        if(iterator.getID() == studentID)
-            break;
-        ++iterator;
-    }
-    if(iterator == end())
-        return false;
+    Student* ptr = head;
 
-
-    if(iterator.pointer == head && head->next == nullptr)
-    {
-        delete iterator.pointer;
-        iterator.pointer = nullptr;
-
-        head = nullptr;
-
-        return true;
-    }
-
-    if(iterator.pointer == head)
+    if(ptr->ID == head->ID)
     {
         head = head->next;
         head->prev = nullptr;
-
-        delete iterator.pointer;
-        iterator.pointer = nullptr;
-
+        delete ptr;
         return true;
-    }
-    if(iterator.pointer == tail)
+    } 
+
+
+
+    while(ptr->ID != studentID && ptr)
+        ptr = ptr->next;
+
+    if(!ptr)
+        return false;
+
+    if(ptr == tail)
     {
         tail = tail->prev;
         tail->next = nullptr;
-
-        delete iterator.pointer;
-        iterator.pointer = nullptr;
-
+        delete ptr;
         return true;
     }
     else
     {
-    iterator.pointer->prev->next = iterator.pointer->next;
-    iterator.pointer->next->prev = iterator.pointer->prev;
-
-    delete iterator.pointer;
-    iterator.pointer = nullptr;
-
-    return true;
-    }
-    
+        ptr->prev->next = ptr->next;
+        ptr->next->prev = ptr->prev;
+        delete ptr;
+        return true;
+    }  
 }
 
-void School::addVisit(const School::iterator& iterator, unsigned day)
+void School::addVisit(const Student* ptr, unsigned day)
 {
-    if(iterator.pointer)
-    {    
-        iterator.pointer->dates.push(day);
-        ++iterator.pointer->visits;
-    }
+    School::addVisit(ptr->ID, day);
 }
 
 bool School::addVisit(unsigned studentID, unsigned day)
 {
-    School::iterator iterator(begin());
+    Student* ptr = head;
 
-    if(!iterator)
+    if(!ptr)
         return false;
 
-    while(iterator != end())
+    while(ptr)
     {
-        if(iterator.pointer->ID == studentID)
+        if(ptr->ID == studentID)
         {
-            School::addVisit(iterator, day);
-            ++iterator.pointer->visits;
+            ptr->dates.push(day);
+            ptr->visits++;
             return true;
         }
 
-        iterator++;
+        ptr = ptr->next;
     }
 
     return false;
 }
 
-bool School::addGroupVisit(unsigned groupID, unsigned day)
+void School::addGroupVisit(unsigned groupID, unsigned day)
 {
-    School::iterator iterator = School::begin();
+    Student* ptr = head;
 
-    for(; iterator != School::end(); ++iterator)
+    while(ptr)
     {
-        if(iterator.getGroup() == groupID)
-            School::addVisit(iterator, day);
-    }
+        if(ptr->groupID == groupID)
+            School::addVisit(ptr, day);
 
-    return true; // !!!!
+        ptr = ptr->next;
+    }
 }
 
-void School::printStudentInfo(iterator iterator) const
+void School::printStudentInfo(Student* ptr) const
 {
-    std::cout << iterator.getID()       << '/';
-    std::cout << iterator.getLastname() << '/';
-    std::cout << iterator.getGroup()    << '/';
-    std::cout << iterator.getVisits()   << '/';
+    printStudentInfo(ptr->ID);
 }
 
 void School::printStudentInfo(unsigned studentID) const
 {
-    School::iterator iterator(begin());
+    Student* ptr = head;
 
-    while(iterator != end())
+    while(ptr)
     {
-        if(iterator.getID() == studentID)
+        if(ptr->ID == studentID)
         {
-            std::cout << iterator.getID()       << '/';
-            std::cout << iterator.getLastname() << '/';
-            std::cout << iterator.getGroup()    << '/';
-            std::cout << iterator.getVisits()   << '/';
+            std::cout << ptr->ID       << '/';
+            std::cout << ptr->lastname << '/';
+            std::cout << ptr->groupID  << '/';
+            std::cout << ptr->visits   << '/';
             return;
         }
         
-        ++iterator;
+        ptr = ptr->next;
     }    
 }
 
+void School::replace(Student* destination, Student* element)
+    {
+        if(!element)
+            return;
 
+        if(destination == element)
+            return;
+
+        if(destination == end())
+        {
+            if(element == tail)
+                return;
+
+            if(element == head)
+            {
+                Student* newHead = element->next;
+
+                tail->next = element;
+                element->prev = tail;
+                tail = element;
+
+                head = newHead;
+                head->prev = nullptr;
+
+                return;
+            }
+            else
+            {
+                element->next->prev = element->prev;
+                element->prev->next = element->next;
+
+                tail->next = element;
+                element->prev = tail;
+                
+                tail = element;
+                tail->next = nullptr;
+
+                return;
+            }
+        }
+
+        if(destination == head)
+        {
+            if(element == tail)
+            {
+                Student* newTail = element->prev;
+
+                head->prev = element;
+                element->next = head;
+
+                tail = newTail;
+                tail->next = nullptr;
+
+                head = element;
+                head->prev = nullptr;
+
+                return;
+            }
+            else
+            {
+                element->next->prev = element->prev;
+                element->prev->next = element->next;
+
+                head->prev = element;
+                element->next = head;
+
+                head = element;
+                head->prev = nullptr;
+
+                return;
+            }
+        }
+
+        else
+        {  
+            if(element != head)
+            {
+                element->prev->next = element->next;
+            }
+            else
+                head = element->next;
+
+            if(element != tail)
+                element->next->prev = element->prev;
+            else
+                tail = element->prev;
+
+            element->prev = destination->prev;
+            destination->prev->next = element;
+
+            element->next = destination;
+            destination->prev = element;
+
+        }
+        
+    }
 
 
 

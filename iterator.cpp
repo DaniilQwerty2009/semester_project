@@ -31,10 +31,6 @@ bool School::iterator::operator==(Student* ptr)
     return pointer == ptr;
 }
 
-bool School::iterator::operator!()
-{
-    return pointer == nullptr;
-}
 
 School::iterator School::iterator::operator++()
 {
@@ -78,33 +74,38 @@ const School::Student& School::iterator::operator*() const
     return *pointer;
 }
 
-const char* School::iterator::getLastname() const
+School::iterator::operator bool() const
 {
-    return pointer->lastname;
+    return pointer;
 }
 
-const unsigned& School::iterator::getID() const
-{
-    return pointer->ID;
-} 
+// const char* School::iterator::getLastname() const
+// {
+//     return pointer->lastname;
+// }
 
-const size_t& School::iterator::getVisits() const
-{
-    return pointer->visits;
-}
+// const unsigned& School::iterator::getID() const
+// {
+//     return pointer->ID;
+// } 
 
-const unsigned* School::iterator::getDates() const
-{
-    return pointer->dates.dates;
-}
+// const size_t& School::iterator::getVisits() const
+// {
+//     return pointer->visits;
+// }
 
-const unsigned& School::iterator::getGroup() const
-{
-    return pointer->groupID;
-}
+// const unsigned* School::iterator::getDates() const
+// {
+//     return pointer->dates.datesArray;
+// }
 
-void School::iterator::printInfo() const
-    {
-        std::cout << pointer->ID << '/' << pointer->lastname << '/';
-        std::cout << pointer->groupID << '/' << pointer->visits << std::endl;
-    }
+// const unsigned& School::iterator::getGroup() const
+// {
+//     return pointer->groupID;
+// }
+
+// void School::iterator::printInfo() const
+//     {
+//         std::cout << pointer->ID << '/' << pointer->lastname << '/';
+//         std::cout << pointer->groupID << '/' << pointer->visits << std::endl;
+//     }

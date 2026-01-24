@@ -10,17 +10,17 @@
         enum averageStudyDays {studyDays = 165};
 
         size_t elementsQty = 0;
-        unsigned* dates = nullptr;
+        unsigned* datesArray = nullptr;
 
         VisitDays(size_t length = studyDays): len(length)
         {
 
-            dates = new unsigned[len];
+            datesArray = new unsigned[len];
         }
 
         ~VisitDays()
         {
-            delete[] dates;
+            delete[] datesArray;
         }
 
         // exeption!!
@@ -29,7 +29,7 @@
             // if(index >= elementsQty)
             //     return 0;
 
-            return dates[index];
+            return datesArray[index];
         }
 
     
@@ -38,7 +38,7 @@
             if(elementsQty == len)
                 expand();
 
-            dates[elementsQty++] = day;
+            datesArray[elementsQty++] = day;
         }
 
 
@@ -61,11 +61,11 @@
             }
             
             for(size_t i = 0; i < elementsQty; ++i)
-                newVisitsDates[i] = dates[i];
+                newVisitsDates[i] = datesArray[i];
 
-            delete[] dates;
+            delete[] datesArray;
 
-            dates = newVisitsDates;
+            datesArray = newVisitsDates;
         }
     };
 
