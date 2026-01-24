@@ -21,73 +21,73 @@ void School::push_back(unsigned studentID, const char* lastname, unsigned groupI
 
 void School::pop(Student* student)
 {
-    if(student->ID == head->ID)
+    if(!student)
+        return;
+
+    if(student == head)
     {
         head = head->next;
         head->prev = nullptr;
         delete student;
         capacity--;
-        return true;
+        return;
     } 
 
-
-
-    while(ptr->ID != studentID && ptr)
-        ptr = ptr->next;
-
-    if(!ptr)
-        return false;
-
-    if(ptr == tail)
+    if(student == tail)
     {
         tail = tail->prev;
         tail->next = nullptr;
-        delete ptr;
+        delete student;
         capacity--;
-        return true;
+        return;
     }
     else
     {
-        ptr->prev->next = ptr->next;
-        ptr->next->prev = ptr->prev;
-        delete ptr;
+        student->prev->next = student->next;
+        student->next->prev = student->prev;
+        delete student;
         capacity--;
-        return true;
+        return;
     }  
 
 }
 
-bool School::pop(unsigned studentID)
+bool School::pop(const unsigned studentID)
 {  
     Student* ptr = head;
 
-    
+    while(ptr)
+    {
+        if(ptr->ID == studentID)
+        {
+            pop(ptr);
+            return true;
+        }
+
+        ptr = ptr->next;
+    }  
+    return false;
 }
 
-void School::addVisit(const Student* ptr, unsigned day)
+void School::addVisit(Student* ptr, unsigned day)
 {
-    School::addVisit(ptr->ID, day);
+    if(!ptr)
+        return;
+
+    ptr->dates.push(day);
+
+    ptr->visits++;
 }
 
 bool School::addVisit(unsigned studentID, unsigned day)
 {
     Student* ptr = head;
 
-    if(!ptr)
-        return false;
-
     while(ptr)
     {
         if(ptr->ID == studentID)
         {
-            for(size_t i = 0; i < ptr->dates.elementsQty; ++i)
-            {
-                if(ptr->dates.datesArray[i] == day)
-                    return false;
-            }
-
-            ptr->dates.push(day);
-            ptr->visits++;
+            addVisit(ptr, day);
             return true;
         }
 
@@ -231,7 +231,7 @@ void School::replace(Student* destination, Student* element)
         
     }
 
-void School::excludeFromGroup(const unsigned& studentID)
+void School::excludeFromGroup(unsigned studentID)
 {
     Student* ptr = head;
 
@@ -247,7 +247,7 @@ void School::excludeFromGroup(const unsigned& studentID)
     }
 }
 
-void School::dibandGroup(const unsigned& groupID)
+void School::disbandGroup(unsigned groupID)
 {
     Student* ptr = head;
 
@@ -260,13 +260,13 @@ void School::dibandGroup(const unsigned& groupID)
     }
 }
 
-void School::disbandAndPop(const unsigned& groupID)
+void School::disbandAndPop(unsigned groupID)
 {
     Student* ptr = head;
 
     while(ptr)
     {
-        if(ptr->groupID = groupID)
+        if(ptr->groupID == groupID)
         {
             pop(ptr);
         }
@@ -292,3 +292,27 @@ void School::printVisitsInDate(const unsigned& day) const
         }
     }
 }
+
+void School::writeToBin(const char* filename) const
+{
+    std::ofstream fout(filename, std::ios::binary);
+    Student* ptr = head;
+
+    fout.write((char*)&capacity, sizeof(capacity));
+
+    for(size_t i = 0; i < capacity; ++i)
+    {
+        fout.write((char*)&ptr->ID, sizeof(ptr->ID));
+        fout.write((char*)&ptr->lastname, sizeof(char) * (strlen(ptr->lastname) + 1));
+        fout.write((char*)&ptr->groupID, sizeof(ptr->groupID));
+        fout.write((char*)&ptr->visits, sizeof(ptr->visits));
+
+        fout.write((char*)&ptr->dates.elementsQty, sizeof(ptr->dates.elementsQty));
+        
+        fout.write((char*)ptr->dates.datesArray, sizeof(*ptr->dates.datesArray) * ptr->dates.elementsQty);
+
+        fout.close();
+    }
+
+}
+

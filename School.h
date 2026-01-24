@@ -2,6 +2,7 @@
 #define SCHOOL_H
 
 #include <iostream>
+#include <fstream>
 #include <cstring>
 
 #include "VisitDays.h"
@@ -122,20 +123,20 @@ public:
 
     void pop(Student* studentPtr);
 
-    bool pop(unsigned studentID);
+    bool pop(const unsigned studentID);
 
-    void addVisit(const Student* ptr, unsigned day);
+    void addVisit(Student* ptr, unsigned day);
 
     bool addVisit(unsigned studentID, unsigned day);
 
     // add groups tree!!!
     void addGroupVisit(unsigned groupID, unsigned day);
 
-    void excludeFromGroup(const unsigned& studentID);
+    void excludeFromGroup(unsigned studentID);
 
-    void dibandGroup(const unsigned& groupID);
+    void disbandGroup(unsigned groupID);
 
-    void disbandAndPop(const unsigned& groupID);
+    void disbandAndPop(unsigned groupID);
 
     void printStudentInfo(Student* ptr) const;
 
@@ -144,6 +145,8 @@ public:
     void printVisitsInDate(const unsigned& day, const unsigned& mounth) const;
 
     void printVisitsInDate(const unsigned& day) const;
+
+    void writeToBin(const char* filename) const;
 
     inline Student* begin() const
     {
