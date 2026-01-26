@@ -247,7 +247,7 @@ void School::excludeFromGroup(unsigned studentID)
     }
 }
 
-void School::disbandGroup(unsigned groupID)
+void School::disband(unsigned groupID)
 {
     Student* ptr = head;
 
@@ -304,11 +304,11 @@ bool School::writeToBin(const char* filename) const
     {
         
         // fout.write((char*)&ptr->ID, sizeof(ptr->ID));
-        fout.write((char*)&ptr->lastname, (strlen(ptr->lastname) + 1));
-        fout.write((char*)&ptr->groupID, sizeof(ptr->groupID));
-        fout.write((char*)&ptr->visits, sizeof(ptr->visits));
+        fout.write((char*)&ptr->lastname, MAX_NAME_LEN);
+        fout.write((char*)&ptr->groupID, sizeof(uint16_t));
+        fout.write((char*)&ptr->visits, sizeof(uint16_t));
         
-        fout.write((char*)ptr->dates.datesArray, sizeof(*ptr->dates.datesArray) * ptr->dates.elementsQty);
+        fout.write((char*)ptr->dates.datesArray, sizeof(uint16_t) * ptr->dates.elementsQty);
 
         ptr = ptr->next;
     }

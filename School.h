@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cstdint>
 
 #include "VisitDays.h"
 #include "DateConverter.h"
@@ -151,7 +152,7 @@ public:
 
     void excludeFromGroup(unsigned studentID);
 
-    void disbandGroup(unsigned groupID);
+    void disband(unsigned groupID);
 
     void disbandAndPop(unsigned groupID);
 
@@ -173,20 +174,20 @@ public:
 
 
         unsigned groupid, visits, date;
-        char* name;
+        char name[MAX_NAME_LEN];
         while(! fin.eof())
         {
             // fin.read((char*)id, sizeof(Student::ID));
-            fin.getline(name, MAX_NAME_LEN,'\0');
+            fin.read(name, MAX_NAME_LEN);
 
-            fin.read((char*)groupid, sizeof(Student::groupID));
-            fin.read((char*)visits, sizeof(Student::visits));
+            fin.read((char*)&groupid, sizeof(uint16_t));
+            fin.read((char*)&visits, sizeof(uint16_t));
 
             push_back(getID(), name, groupid);
 
             for(size_t i = 0; i < visits; ++i)
             {
-                fin.read((char*)date, sizeof(Student::dates.datesArray));
+                fin.read((char*)&date, sizeof(uint16_t));
                 tail->dates.push(date);
             }
 

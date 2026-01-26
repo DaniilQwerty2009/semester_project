@@ -1,5 +1,5 @@
 #ifndef ID_GENERATOR_H
-#define ID_GENERETOR_H
+#define ID_GENERATOR_H
 
 class IDGenerator
 {
