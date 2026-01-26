@@ -8,6 +8,8 @@
 #include "VisitDays.h"
 #include "DateConverter.h"
 
+#define MAX_NAME_LEN 20
+
 class School
 {
 private:
@@ -23,11 +25,26 @@ private:
         Student* prev = nullptr;
         Student* next = nullptr;
 
+        Student(unsigned studentID)
+        :ID(studentID), groupID(0)
+        {   }
+
         Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
         :ID(studentID), groupID(groupID)
         {
-            this->lastname = new char[std::strlen(lastname) + 1];
-            std::strcpy(this->lastname, lastname);
+            if(strlen(lastname) < MAX_NAME_LEN)
+            {
+                this->lastname = new char[std::strlen(lastname) + 1];
+                std::strcpy(this->lastname, lastname);
+                std::strcat(this->lastname, "\0");
+            }
+            else
+            {
+                this->lastname = new char[MAX_NAME_LEN];
+                std::strncpy(this->lastname, lastname, MAX_NAME_LEN - 1);
+                std::strcat(this->lastname, "\0");
+            }
+            
         }
 
         ~Student()
@@ -72,20 +89,20 @@ public:
             iterator(iterator& iterator) = default;
 
             // поменять на ссылки
-            void operator=(iterator iterator);
-            bool operator!=(iterator iterator);
-            bool operator==(iterator iterator);
-            explicit operator bool() const;
+            void     operator=(iterator iterator);
+            bool     operator!=(iterator iterator);
+            bool     operator==(iterator iterator);
 
-            void operator=(Student* iterator);
-            bool operator!=(Student* iterator);
-            bool operator==(Student* iterator);
+            void     operator=(Student* iterator);
+            bool     operator!=(Student* iterator);
+            bool     operator==(Student* iterator);
           
             iterator operator --();
             iterator operator --(int);
             iterator operator++();
             iterator operator++(int);
 
+            explicit       operator bool() const;
             const Student& operator*() const;
 
         };
@@ -146,7 +163,39 @@ public:
 
     void printVisitsInDate(const unsigned& day) const;
 
-    void writeToBin(const char* filename) const;
+    bool writeToBin(const char* filename) const;
+
+    template <typename IDGenerator>void readFromBIn(const char* filename, IDGenerator getID)
+    {
+        std::ifstream fin(filename, std::ios::binary);
+    
+        // fout.read((char*)capacity, sizeof(capacity));
+
+
+        unsigned groupid, visits, date;
+        char* name;
+        while(! fin.eof())
+        {
+            // fin.read((char*)id, sizeof(Student::ID));
+            fin.getline(name, MAX_NAME_LEN,'\0');
+
+            fin.read((char*)groupid, sizeof(Student::groupID));
+            fin.read((char*)visits, sizeof(Student::visits));
+
+            push_back(getID(), name, groupid);
+
+            for(size_t i = 0; i < visits; ++i)
+            {
+                fin.read((char*)date, sizeof(Student::dates.datesArray));
+                tail->dates.push(date);
+            }
+
+            
+            
+        }
+
+}
+
 
     inline Student* begin() const
     {
@@ -168,7 +217,6 @@ public:
     class ByVisits
     {
     public:
-        // ПОЧЕМУ ВИДИМ STUDENT??
         bool operator()(Student* a,  Student* b) const
         {
             return a->visits < b->visits;

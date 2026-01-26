@@ -293,26 +293,59 @@ void School::printVisitsInDate(const unsigned& day) const
     }
 }
 
-void School::writeToBin(const char* filename) const
+bool School::writeToBin(const char* filename) const
 {
     std::ofstream fout(filename, std::ios::binary);
+
     Student* ptr = head;
+    // fout.write((char*)&capacity, sizeof(capacity));
 
-    fout.write((char*)&capacity, sizeof(capacity));
-
-    for(size_t i = 0; i < capacity; ++i)
+    while(ptr)
     {
-        fout.write((char*)&ptr->ID, sizeof(ptr->ID));
-        fout.write((char*)&ptr->lastname, sizeof(char) * (strlen(ptr->lastname) + 1));
+        
+        // fout.write((char*)&ptr->ID, sizeof(ptr->ID));
+        fout.write((char*)&ptr->lastname, (strlen(ptr->lastname) + 1));
         fout.write((char*)&ptr->groupID, sizeof(ptr->groupID));
         fout.write((char*)&ptr->visits, sizeof(ptr->visits));
-
-        fout.write((char*)&ptr->dates.elementsQty, sizeof(ptr->dates.elementsQty));
         
         fout.write((char*)ptr->dates.datesArray, sizeof(*ptr->dates.datesArray) * ptr->dates.elementsQty);
 
-        fout.close();
+        ptr = ptr->next;
     }
 
+    fout.close();
+    return true;
 }
+
+// void School::readFromBIn(const char* filename)
+// {
+//     std::ifstream fin(filename, std::ios::binary);
+ 
+//     // fout.read((char*)capacity, sizeof(capacity));
+
+
+//     unsigned groupid, visits, date;
+//     char* name;
+//     while(! fin.eof())
+//     {
+//         // fin.read((char*)id, sizeof(Student::ID));
+
+//         fin.getline(name, MAX_NAME_LEN, '\0');
+
+//         fin.read((char*)groupid, sizeof(Student::groupID));
+//         fin.read((char*)visits, sizeof(Student::visits));
+
+//         push_back(id, name, groupid);
+
+//         for(size_t i = 0; i < visits; ++i)
+//         {
+//             fin.read((char*)date, sizeof(Student::dates.datesArray));
+//             tail->dates.push(date);
+//         }
+
+        
+        
+//     }
+
+// }
 
