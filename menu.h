@@ -7,19 +7,20 @@
 
 using std::cout;
 using std::endl;
+using std::cin;
 
 class menu
 {
 private:
     unsigned inputValue;
 
-    School school;
+    School* school;
 public:
     menu(): school()
         {   }
 
     // Главное окно
-    void init();
+    void init(School* school);
 
     // вкладки
     void inStudents();
@@ -33,7 +34,6 @@ public:
     void StudentsFormatShow();
 
 };
-
 
 
 

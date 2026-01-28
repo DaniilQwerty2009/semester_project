@@ -16,6 +16,19 @@ bool School::iterator::operator==(iterator iterator)
     return pointer == iterator.pointer;
 }
 
+void School::iterator::operator= (Student* node)
+{
+    pointer = node;
+}
+
+bool School::iterator::operator!=(Student* node)
+{
+    return pointer!=node;
+}
+bool School::iterator::operator==(Student* node)
+{
+    return pointer==node;
+}
 
 School::iterator School::iterator::operator++()
 {

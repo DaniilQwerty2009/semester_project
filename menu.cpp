@@ -2,15 +2,17 @@
 
 
 // Пункты отдельно в enum?
-void menu::init()
+void menu::init(School* school)
 {
+    this->school = school;
+
     enum point {exit, students};
 
     while(inputValue != 0)
     {
         cout << "Учет посещаемости индивидуальных и коллективных занятий" << endl;
 
-        cout << "Общее колличество студентов: " << school.getCapacity() << endl;
+        cout << "Общее колличество студентов: " << school->getCapacity() << endl;
 
         cout << "1. Cтуденты" << endl;
 
@@ -57,7 +59,7 @@ void menu::inStudents()
 
 void menu::StudentsFormatShow()
 {
-    School::iterator iter(school.begin());
+    School::iterator iter(school->begin());
 
     cout << "ID - lastname - groupID - visits" << endl;
 
@@ -76,7 +78,9 @@ void menu::StudentsAdd()
     char lastname[Student::MAX_NAME_LEN];
 
     cout << "Введите ID: " << endl;
+    
+    
 
     // pushSorted???
-    school.push_back(studentID, lastname, groupID);
+    school->push_back(studentID, lastname, groupID);
 }

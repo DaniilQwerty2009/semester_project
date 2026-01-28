@@ -40,15 +40,21 @@ public:
         {
         private:
             Student* pointer;
-        public:
+        
             explicit iterator(Student* ptr = nullptr):pointer(ptr)
                 {   }
-            iterator(iterator& iterator) = default;
+
+            friend class School;
+        public:
 
             // поменять на ссылки?
             void     operator= (iterator iterator);
             bool     operator!=(iterator iterator);
             bool     operator==(iterator iterator);
+
+            void     operator= (Student* node);
+            bool     operator!=(Student* node);
+            bool     operator==(Student* node);
 
             iterator operator--();
             iterator operator--(int);
@@ -152,19 +158,19 @@ public:
 
     void readFromBin(const char* filename);
 
-    inline Student* begin() const
+    inline iterator begin() const
     {
-        return head;
+        return iterator(head);
     }
 
-    inline Student* end() const
+    inline iterator end() const
     {
-        return nullptr;
+        return iterator(nullptr);
     }
 
-    inline Student* last() const
+    inline iterator last() const
     {
-        return tail;
+        return iterator(tail);
     }
 
 
