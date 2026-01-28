@@ -16,21 +16,6 @@ bool School::iterator::operator==(iterator iterator)
     return pointer == iterator.pointer;
 }
 
-void School::iterator::operator=(Student* ptr)
-{
-    pointer = ptr;
-}
-
-bool School::iterator::operator!=(Student* ptr)
-{
-    return pointer != ptr;
-}
-
-bool School::iterator::operator==(Student* ptr)
-{
-    return pointer == ptr;
-}
-
 
 School::iterator School::iterator::operator++()
 {
@@ -69,7 +54,7 @@ School::iterator School::iterator::operator--(int)
 }
 
 
-const School::Student& School::iterator::operator*() const
+const Student& School::iterator::operator*() const
 {
     return *pointer;
 }

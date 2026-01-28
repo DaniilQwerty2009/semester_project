@@ -3,58 +3,59 @@
 
 #include <cstring>
 
+#include "VisitDays.h"
+
+#define MAX_NAME_LEN 20
+
 struct Student
 {
-// private:
-    
-    const unsigned ID;
 
+    const unsigned ID;
     char* lastname = nullptr;
     unsigned groupID;
+    size_t visits = 0;
 
-    unsigned visits = 0;
-    unsigned short* dates = nullptr;
+    VisitDays dates;
 
-    // // ?? addVisit - dates
-    // inline void increaseVisits()
-    //     { ++visits; }
-    // // ??
-    // inline void changeVisits(int unsigned visits)
-    //     { this->visits = visits; }
+    Student* prev = nullptr;
+    Student* next = nullptr;
 
+    // Student(unsigned studentID)
+    // :ID(studentID), groupID(0)
+    // {   }
 
     Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
-        :ID(studentID),
-        groupID(groupID)
-        { 
-            size_t len = std::strlen(lastname) + 1;
-            this->lastname = new char[len]; 
-            std::strcpy(this->lastname, lastname); 
+    :ID(studentID), groupID(groupID)
+    {
+        if(strlen(lastname) < MAX_NAME_LEN)
+        {
+            this->lastname = new char[std::strlen(lastname) + 1];
+            std::strcpy(this->lastname, lastname);
+            std::strcat(this->lastname, "\0");
         }
+        else
+        {
+            this->lastname = new char[MAX_NAME_LEN];
+            std::strncpy(this->lastname, lastname, MAX_NAME_LEN - 1);
+            std::strcat(this->lastname, "\0");
+        }
+        
+    }
 
     ~Student()
     {
         delete[] lastname;
-        delete[] dates;
     }
 
-    // const unsigned& getID()
-    //     { return ID; }
+    bool operator!=(Student* ptr)
+    {
+        return this->ID != ptr->ID;
+    }
 
-    // const char* getLastname()
-    //     { return lastname; }
-
-    // const unsigned& getGroup()
-    //     { return groupID; }
-
-    // const unsigned& getVisits()
-    //     { return visits; }
-
-    // const unsigned short* getVisitsDates()
-    //     { return dates; }
-    
-
-    
+    bool operator==(Student* ptr)
+    {
+        return this->ID == ptr->ID;
+    }
 
 };
 

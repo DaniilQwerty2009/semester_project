@@ -3,58 +3,14 @@
 
 #include <iostream>
 #include <fstream>
-#include <cstring>
 #include <cstdint>
 
-#include "VisitDays.h"
+#include "Student.h"
 #include "DateConverter.h"
-
-#define MAX_NAME_LEN 20
 
 class School
 {
 private:
-    struct Student
-    {
-        const unsigned ID;
-        char* lastname = nullptr;
-        unsigned groupID;
-        size_t visits = 0;
-
-        VisitDays dates;
-
-        Student* prev = nullptr;
-        Student* next = nullptr;
-
-        Student(unsigned studentID)
-        :ID(studentID), groupID(0)
-        {   }
-
-        Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
-        :ID(studentID), groupID(groupID)
-        {
-            if(strlen(lastname) < MAX_NAME_LEN)
-            {
-                this->lastname = new char[std::strlen(lastname) + 1];
-                std::strcpy(this->lastname, lastname);
-                std::strcat(this->lastname, "\0");
-            }
-            else
-            {
-                this->lastname = new char[MAX_NAME_LEN];
-                std::strncpy(this->lastname, lastname, MAX_NAME_LEN - 1);
-                std::strcat(this->lastname, "\0");
-            }
-            
-        }
-
-        ~Student()
-        {
-            delete[] lastname;
-        }
-
-    };
-
 
     size_t capacity = 0;
     Student* head = nullptr;
@@ -85,25 +41,22 @@ public:
         private:
             Student* pointer;
         public:
-            iterator(School::Student* ptr = nullptr):pointer(ptr)
+            iterator(Student* ptr = nullptr):pointer(ptr)
                 {   }
             iterator(iterator& iterator) = default;
 
-            // поменять на ссылки
-            void     operator=(iterator iterator);
+            // поменять на ссылки?
+            void     operator= (iterator iterator);
             bool     operator!=(iterator iterator);
             bool     operator==(iterator iterator);
 
-            void     operator=(Student* iterator);
-            bool     operator!=(Student* iterator);
-            bool     operator==(Student* iterator);
-          
-            iterator operator --();
-            iterator operator --(int);
+            iterator operator--();
+            iterator operator--(int);
             iterator operator++();
             iterator operator++(int);
 
-            explicit       operator bool() const;
+            
+            operator bool() const;
             const Student& operator*() const;
 
         };
@@ -170,33 +123,34 @@ public:
     {
         std::ifstream fin(filename, std::ios::binary);
     
-        // fout.read((char*)capacity, sizeof(capacity));
-
-
+        
         unsigned groupid, visits, date;
         char name[MAX_NAME_LEN];
         while(! fin.eof())
         {
-            // fin.read((char*)id, sizeof(Student::ID));
+            fin.ignore(sizeof(uint32_t));
             fin.read(name, MAX_NAME_LEN);
 
-            fin.read((char*)&groupid, sizeof(uint16_t));
-            fin.read((char*)&visits, sizeof(uint16_t));
+            fin.read((char*)&groupid, sizeof(uint32_t));
+
+            fin.read((char*)&visits, sizeof(uint32_t));
 
             push_back(getID(), name, groupid);
 
             for(size_t i = 0; i < visits; ++i)
             {
-                fin.read((char*)&date, sizeof(uint16_t));
+                fin.read((char*)&date, sizeof(uint32_t));
                 tail->dates.push(date);
             }
 
-            
+            if(! fin.eof())
+                break;
             
         }
 
 }
 
+    void readFromBin(const char* filename);
 
     inline Student* begin() const
     {
@@ -233,11 +187,29 @@ public:
         };
     };
 
+    class EqualByID
+    {
+        bool opeartor(iterator iter, const unsigned& studentID)
+        {
+            return (*iter).ID == studentID;
+        }
+    };
+
+    class EqualByName
+    {
+        bool opeartor(iterator iter, const char* name)
+        {
+            return std::strcmp((*iter).lastname, name);
+        }
+    };
+
+
     void replace(Student* destination, Student* element);
 
 
     // сортировка
-    template <typename Compare> void sort(Compare cmp)
+    template <typename Compare> 
+        void sort(Compare cmp = School::ByLastname())
     {
         if(!head || !head->next)
             return;

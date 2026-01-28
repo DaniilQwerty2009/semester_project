@@ -303,12 +303,12 @@ bool School::writeToBin(const char* filename) const
     while(ptr)
     {
         
-        // fout.write((char*)&ptr->ID, sizeof(ptr->ID));
-        fout.write((char*)&ptr->lastname, MAX_NAME_LEN);
-        fout.write((char*)&ptr->groupID, sizeof(uint16_t));
-        fout.write((char*)&ptr->visits, sizeof(uint16_t));
+        fout.write((char*)&ptr->ID, sizeof(uint32_t));
+        fout.write(ptr->lastname, MAX_NAME_LEN);
+        fout.write((char*)&ptr->groupID, sizeof(uint32_t));
+        fout.write((char*)&ptr->visits, sizeof(uint32_t));
         
-        fout.write((char*)ptr->dates.datesArray, sizeof(uint16_t) * ptr->dates.elementsQty);
+        fout.write((char*)ptr->dates.datesArray, sizeof(uint32_t) * ptr->dates.elementsQty);
 
         ptr = ptr->next;
     }
@@ -317,35 +317,33 @@ bool School::writeToBin(const char* filename) const
     return true;
 }
 
-// void School::readFromBIn(const char* filename)
-// {
-//     std::ifstream fin(filename, std::ios::binary);
- 
-//     // fout.read((char*)capacity, sizeof(capacity));
-
-
-//     unsigned groupid, visits, date;
-//     char* name;
-//     while(! fin.eof())
-//     {
-//         // fin.read((char*)id, sizeof(Student::ID));
-
-//         fin.getline(name, MAX_NAME_LEN, '\0');
-
-//         fin.read((char*)groupid, sizeof(Student::groupID));
-//         fin.read((char*)visits, sizeof(Student::visits));
-
-//         push_back(id, name, groupid);
-
-//         for(size_t i = 0; i < visits; ++i)
-//         {
-//             fin.read((char*)date, sizeof(Student::dates.datesArray));
-//             tail->dates.push(date);
-//         }
-
+void School::readFromBin(const char* filename)
+{
+    std::ifstream fin(filename, std::ios::binary);
+    
         
-        
-//     }
+    unsigned id, groupid, visits, date;
+    char name[MAX_NAME_LEN];
+    while(! fin.eof())
+    {
+        fin.read((char*)&id, sizeof(uint32_t));
+        fin.read(name, MAX_NAME_LEN);
 
-// }
+        fin.read((char*)&groupid, sizeof(uint32_t));
+
+        fin.read((char*)&visits, sizeof(uint32_t));
+
+        push_back(id, name, groupid);
+
+        for(size_t i = 0; i < visits; ++i)
+        {
+            fin.read((char*)&date, sizeof(uint32_t));
+            tail->dates.push(date);
+        }
+
+        if( !fin.peek())
+            break;
+        
+    }
+}
 
