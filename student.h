@@ -5,10 +5,11 @@
 
 #include "VisitDays.h"
 
-#define MAX_NAME_LEN 20
+// #define MAX_NAME_LEN 20
 
 struct Student
 {
+    enum {MAX_NAME_LEN = 20};
 
     const unsigned ID;
     char* lastname = nullptr;
@@ -24,7 +25,7 @@ struct Student
     // :ID(studentID), groupID(0)
     // {   }
 
-    Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
+    explicit Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
     :ID(studentID), groupID(groupID)
     {
         if(strlen(lastname) < MAX_NAME_LEN)

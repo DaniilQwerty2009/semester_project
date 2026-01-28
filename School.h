@@ -20,7 +20,7 @@ private:
 
    
 public:
-    School()
+    explicit School()
         {   }
 
     ~School()
@@ -41,7 +41,7 @@ public:
         private:
             Student* pointer;
         public:
-            iterator(Student* ptr = nullptr):pointer(ptr)
+            explicit iterator(Student* ptr = nullptr):pointer(ptr)
                 {   }
             iterator(iterator& iterator) = default;
 

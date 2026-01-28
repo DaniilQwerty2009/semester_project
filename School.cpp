@@ -304,7 +304,7 @@ bool School::writeToBin(const char* filename) const
     {
         
         fout.write((char*)&ptr->ID, sizeof(uint32_t));
-        fout.write(ptr->lastname, MAX_NAME_LEN);
+        fout.write(ptr->lastname, Student::MAX_NAME_LEN);
         fout.write((char*)&ptr->groupID, sizeof(uint32_t));
         fout.write((char*)&ptr->visits, sizeof(uint32_t));
         
@@ -323,11 +323,11 @@ void School::readFromBin(const char* filename)
     
         
     unsigned id, groupid, visits, date;
-    char name[MAX_NAME_LEN];
+    char name[Student::MAX_NAME_LEN];
     while(! fin.eof())
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(name, MAX_NAME_LEN);
+        fin.read(name, Student::MAX_NAME_LEN);
 
         fin.read((char*)&groupid, sizeof(uint32_t));
 
