@@ -1,5 +1,5 @@
 {
-    "code-runner.runInTerminal": false,
+    "code-runner.runInTerminal": true,
     "code-runner.executorMap": {
 
         "files.encoding": "utf8",

@@ -6,7 +6,7 @@ class IDGenerator
 private:
     unsigned IDcounter = 100;
 public:
-    IDGenerator()
+    explicit IDGenerator(unsigned startValue): IDcounter(startValue)
         {   }
 
 

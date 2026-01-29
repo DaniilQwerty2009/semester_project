@@ -7,21 +7,27 @@
 
 #include "Student.h"
 #include "DateConverter.h"
+#include "IDGenerator.h"
 
 class School
 {
 private:
 
-    size_t capacity = 0;
+    size_t   capacity = 0;
     Student* head = nullptr;
     Student* tail = nullptr;
 
-    DateConverter converter;
+    DateConverter dateConverter;
+    IDGenerator   getStudentID;
+    IDGenerator   getGroupID;
 
-   
+    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
+
 public:
-    explicit School()
-        {   }
+    explicit School(unsigned startIDStudent = 100, unsigned startIDgroup = 10)
+    :getStudentID(startIDStudent),
+     getGroupID(startIDgroup)
+        {    }
 
     ~School()
     {
@@ -47,14 +53,16 @@ public:
             friend class School;
         public:
 
+            iterator(iterator&) = default;
+
             // поменять на ссылки?
             void     operator= (iterator iterator);
             bool     operator!=(iterator iterator);
             bool     operator==(iterator iterator);
 
-            void     operator= (Student* node);
-            bool     operator!=(Student* node);
-            bool     operator==(Student* node);
+            // void     operator= (Student* node);
+            // bool     operator!=(Student* node);
+            // bool     operator==(Student* node);
 
             iterator operator--();
             iterator operator--(int);
@@ -67,15 +75,30 @@ public:
 
         };
 
+        inline iterator begin() const
+        {
+            return iterator(head);
+        }
+
+        inline iterator end() const
+        {
+            return iterator(nullptr);
+        }
+
+        inline iterator last() const
+        {
+            return iterator(tail);
+        }
+
  
     inline size_t getCapacity() const
         { return capacity; }
 
-    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
+    void push_back(const char* lastname, unsigned groupID = 0);
 
-    template <typename Compare> void push_sorted(Compare comporator, unsigned studentID, const char* lastname, unsigned groupID = 0)
+    template <typename Compare> void push_sorted(Compare comporator, const char* lastname, unsigned groupID = 0)
     {
-        push_back(studentID, lastname, groupID);
+        push_back(getStudentID(), lastname, groupID);
 
         if(tail->prev)
         {
@@ -125,23 +148,23 @@ public:
 
     bool writeToBin(const char* filename) const;
 
-    template <typename IDGenerator>void readFromBIn(const char* filename, IDGenerator getID)
+    template <typename IDGenerator>void readFromBIn(const char* filename)
     {
         std::ifstream fin(filename, std::ios::binary);
     
         
         unsigned groupid, visits, date;
-        char name[MAX_NAME_LEN];
+        char name[Student::MAX_NAME_LEN];
         while(! fin.eof())
         {
             fin.ignore(sizeof(uint32_t));
-            fin.read(name, MAX_NAME_LEN);
+            fin.read(name, Student::MAX_NAME_LEN);
 
             fin.read((char*)&groupid, sizeof(uint32_t));
 
             fin.read((char*)&visits, sizeof(uint32_t));
 
-            push_back(getID(), name, groupid);
+            push_back(getStudentID(), name, groupid);
 
             for(size_t i = 0; i < visits; ++i)
             {
@@ -156,22 +179,7 @@ public:
 
 }
 
-    void readFromBin(const char* filename);
-
-    inline iterator begin() const
-    {
-        return iterator(head);
-    }
-
-    inline iterator end() const
-    {
-        return iterator(nullptr);
-    }
-
-    inline iterator last() const
-    {
-        return iterator(tail);
-    }
+    void copySchoolFromBin(const char* filename);
 
 
     // компрораторы

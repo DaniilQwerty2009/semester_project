@@ -1,6 +1,25 @@
 #include "School.h"
 
-void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
+void School::push_back(const char* lastname, unsigned groupID)
+    {
+        if(!head)
+        {
+            head = new Student(getStudentID(), lastname, groupID);
+            capacity++;
+            tail = head;
+        }
+        else
+        {
+            tail->next = new Student(getStudentID(), lastname, groupID);
+            capacity++;
+            Student* oldTail = tail;
+            tail = tail->next;
+            tail->prev = oldTail;
+            
+        }
+    }
+
+    void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
     {
         if(!head)
         {
@@ -142,7 +161,7 @@ void School::replace(Student* destination, Student* element)
         if(destination == element)
             return;
 
-        if(destination == end())
+        if(destination == nullptr)
         {
             if(element == tail)
                 return;
@@ -276,7 +295,7 @@ void School::disbandAndPop(unsigned groupID)
 
 void School::printVisitsInDate(const unsigned& day, const unsigned& mounth) const
 {
-    unsigned convertedDay = converter.DateToDay(day, mounth);
+    unsigned convertedDay = dateConverter.DateToDay(day, mounth);
 
     School::printVisitsInDate(convertedDay);
 }
@@ -317,7 +336,7 @@ bool School::writeToBin(const char* filename) const
     return true;
 }
 
-void School::readFromBin(const char* filename)
+void School::copySchoolFromBin(const char* filename)
 {
     std::ifstream fin(filename, std::ios::binary);
     
@@ -345,5 +364,7 @@ void School::readFromBin(const char* filename)
             break;
         
     }
+
+    // проверка на уникальность ID, иначе ручное слияние
 }
 

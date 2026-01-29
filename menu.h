@@ -4,6 +4,8 @@
 #include "iostream"
 
 #include "School.h"
+#include "Algorithm.h"
+
 
 using std::cout;
 using std::endl;
@@ -12,7 +14,7 @@ using std::cin;
 class menu
 {
 private:
-    unsigned inputValue;
+    // unsigned inputValue;
 
     School* school;
 public:

@@ -1,34 +1,34 @@
 #include "School.h"
 
 
-void School::iterator::operator=(iterator iterator)
+void School::iterator::         operator=(iterator iterator)
 {
     pointer = iterator.pointer;
 }
 
-bool School::iterator::operator!=(iterator iterator)
+bool School::iterator::         operator!=(iterator iterator)
 {
     return pointer != iterator.pointer;
 }
 
-bool School::iterator::operator==(iterator iterator)
+bool School::iterator::         operator==(iterator iterator)
 {
     return pointer == iterator.pointer;
 }
 
-void School::iterator::operator= (Student* node)
-{
-    pointer = node;
-}
+// void School::iterator::         operator= (Student* node)
+// {
+//     pointer = node;
+// }
 
-bool School::iterator::operator!=(Student* node)
-{
-    return pointer!=node;
-}
-bool School::iterator::operator==(Student* node)
-{
-    return pointer==node;
-}
+// bool School::iterator::         operator!=(Student* node)
+// {
+//     return pointer!=node;
+// }
+// bool School::iterator::         operator==(Student* node)
+// {
+//     return pointer==node;
+// }
 
 School::iterator School::iterator::operator++()
 {
@@ -50,6 +50,9 @@ School::iterator School::iterator::operator++(int)
 
 School::iterator School::iterator::operator--()
 {
+    // ошибка при nullptr!!
+    
+    
     if(pointer)
         pointer = pointer->prev;
     return *this;
@@ -57,6 +60,8 @@ School::iterator School::iterator::operator--()
 
 School::iterator School::iterator::operator--(int)
 {
+    // ошибка при nullptr!!
+
     School::iterator temp = *this;
 
     if(pointer)
