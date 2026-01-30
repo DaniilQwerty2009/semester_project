@@ -195,7 +195,7 @@ public:
     class ByLastname
     {
     public:
-        bool operator()(Student* a, Student* b)
+        bool operator()(Student* a, Student* b) const
         {
             return std::strcmp(a->lastname, b->lastname) < 0;
         };
@@ -203,7 +203,8 @@ public:
 
     class EqualByID
     {
-        bool opeartor(iterator iter, const unsigned& studentID)
+    public:
+        bool operator()(iterator iter, const unsigned& studentID) const
         {
             return (*iter).ID == studentID;
         }
@@ -211,7 +212,8 @@ public:
 
     class EqualByName
     {
-        bool opeartor(iterator iter, const char* name)
+    public:
+        bool operator()(iterator iter, const char* name) const
         {
             return std::strcmp((*iter).lastname, name);
         }

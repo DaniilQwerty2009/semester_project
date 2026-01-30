@@ -38,7 +38,7 @@ struct Student
         {
             this->lastname = new char[MAX_NAME_LEN];
             std::strncpy(this->lastname, lastname, MAX_NAME_LEN - 1);
-            std::strcat(this->lastname, "\0");
+            std::strcat(this->lastname, '\0');
         }
         
     }

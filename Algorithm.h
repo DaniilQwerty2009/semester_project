@@ -3,7 +3,7 @@
 namespace SchoolAlg
 {
     template<typename Iterator, typename EqualBy>
-        void search(Iterator iterator, EqualBy compare, const unsigned& attribute)
+        void search(Iterator& iterator, EqualBy compare, const unsigned& attribute)
     {
         while(*iterator != nullptr)
         {
@@ -16,7 +16,7 @@ namespace SchoolAlg
     }
 
     template<typename Iterator, typename EqualBy>
-        void search(Iterator iterator, EqualBy compare, const char* attribute)
+        void search(Iterator& iterator, EqualBy compare, const char* attribute)
     {
         while(*iterator != nullptr)
         {

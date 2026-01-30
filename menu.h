@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "iostream"
+#include <iostream>
 
 #include "School.h"
 #include "Algorithm.h"
@@ -29,6 +29,7 @@ public:
 
     void StudentsEdit();
     void StudentsEditLastname();
+    void StudentsEditGroup();
 
     void StudentsAdd();
     
