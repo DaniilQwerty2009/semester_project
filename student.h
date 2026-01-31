@@ -9,7 +9,14 @@
 
 struct Student
 {
-    enum {MAX_NAME_LEN = 20};
+private:
+    Student* prev = nullptr;
+    Student* next = nullptr;
+
+    friend class School;
+
+public:
+    enum {MAX_NAME_LEN = 40};
 
     const unsigned ID;
     char* lastname = nullptr;
@@ -18,30 +25,18 @@ struct Student
 
     VisitDays dates;
 
-    Student* prev = nullptr;
-    Student* next = nullptr;
-
-    // Student(unsigned studentID)
-    // :ID(studentID), groupID(0)
-    // {   }
-
+    
     explicit Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
     :ID(studentID), groupID(groupID)
     {
-        if(strlen(lastname) < MAX_NAME_LEN)
-        {
-            this->lastname = new char[std::strlen(lastname) + 1];
-            std::strcpy(this->lastname, lastname);
-            std::strcat(this->lastname, "\0");
-        }
-        else
-        {
-            this->lastname = new char[MAX_NAME_LEN];
-            std::strncpy(this->lastname, lastname, MAX_NAME_LEN - 1);
-            std::strcat(this->lastname, '\0');
-        }
+        this->lastname = new char[MAX_NAME_LEN];
+        strncpy(this->lastname, lastname, MAX_NAME_LEN);
+
+        if(strlen(this->lastname) == MAX_NAME_LEN - 1)
+            this->lastname[MAX_NAME_LEN - 1] = '.';
         
     }
+
 
     ~Student()
     {

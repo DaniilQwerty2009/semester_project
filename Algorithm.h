@@ -2,29 +2,31 @@
 
 namespace SchoolAlg
 {
-    template<typename Iterator, typename EqualBy>
-        void search(Iterator& iterator, EqualBy compare, const unsigned& attribute)
+    template<typename Iterator, typename Compare>
+        bool search(Iterator& iterator, Compare compare, const unsigned& attribute)
     {
-        while(*iterator != nullptr)
+        while(iterator)
         {
-            if(compare(iterator, attribute))
-                return;
+            if( !compare(&(*iterator), attribute) && !compare(attribute, &(*iterator)))
+                return iterator;
 
             iterator++;
         }
 
+        return iterator;
     }
 
-    template<typename Iterator, typename EqualBy>
-        void search(Iterator& iterator, EqualBy compare, const char* attribute)
+    template<typename Iterator, typename Compare>
+        bool search(Iterator& iterator, Compare compare, const char* attribute)
     {
-        while(*iterator != nullptr)
+        while(iterator)
         {
-            if(compare(iterator, attribute))
-                return;
+            if( !compare(&(*iterator), attribute) && !compare(attribute, &(*iterator)))
+                return iterator;
 
             iterator++;
         }
 
+        return iterator;
     }
 }

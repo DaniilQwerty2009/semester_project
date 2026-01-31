@@ -17,6 +17,10 @@ private:
     // unsigned inputValue;
 
     School* school;
+
+    School::ByStudentID IDCompare;
+    School::ByLastname  lastnameCompare;
+    School::ByVisits    visitsCompare;
 public:
     menu(): school()
         {   }
@@ -27,11 +31,13 @@ public:
     // вкладки
     void inStudents();
 
-    void StudentsEdit();
-    void StudentsEditLastname();
-    void StudentsEditGroup();
-
+    bool StudentsSearch(School::iterator& iter);
+    void StudentsEdit(School::iterator& iter);
+    void StudentsEditLastname(School::iterator& iter);
+    void StudentsEditGroup(School::iterator& iter);
+    void inStudentsList();
     void StudentsAdd();
+    void StudentsExclude(School::iterator& iter);
     
     // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
     void StudentsFormatShow();

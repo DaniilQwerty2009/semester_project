@@ -47,22 +47,23 @@ public:
         private:
             Student* pointer;
         
-            explicit iterator(Student* ptr = nullptr):pointer(ptr)
+            explicit iterator(Student* ptr):pointer(ptr)
                 {   }
 
             friend class School;
         public:
 
+            explicit iterator():pointer(nullptr)
+                {   }
+
+            iterator(const iterator&) = default;
             iterator(iterator&) = default;
 
-            // поменять на ссылки?
+            
+            // void     operator= (iterator& iterator);
             void     operator= (iterator iterator);
-            bool     operator!=(iterator iterator);
-            bool     operator==(iterator iterator);
-
-            // void     operator= (Student* node);
-            // bool     operator!=(Student* node);
-            // bool     operator==(Student* node);
+            bool     operator!=(iterator& iterator);
+            bool     operator==(iterator& iterator);
 
             iterator operator--();
             iterator operator--(int);
@@ -71,7 +72,7 @@ public:
 
             
             operator bool() const;
-            const Student& operator*() const;
+            Student& operator*() const;
 
         };
 
@@ -123,6 +124,8 @@ public:
 
     void pop(Student* studentPtr);
 
+    void pop(Student& studentRef);
+
     bool pop(const unsigned studentID);
 
     void addVisit(Student* ptr, unsigned day);
@@ -130,13 +133,13 @@ public:
     bool addVisit(unsigned studentID, unsigned day);
 
     // add groups tree!!!
-    void addGroupVisit(unsigned groupID, unsigned day);
+    void addGroupVisit(const unsigned& groupID, unsigned day);
 
-    void excludeFromGroup(unsigned studentID);
+    void excludeFromGroup(const unsigned& studentID);
 
-    void disband(unsigned groupID);
+    void disband(const unsigned& groupID);
 
-    void disbandAndPop(unsigned groupID);
+    void disbandAndPop(const unsigned& groupID);
 
     void printStudentInfo(Student* ptr) const;
 
@@ -186,36 +189,51 @@ public:
     class ByVisits
     {
     public:
-        bool operator()(Student* a,  Student* b) const
+        bool operator()(const Student* a, const Student* b) const
         {
             return a->visits < b->visits;
+        }
+        bool operator()(const Student* a, const unsigned& b) const
+        {
+            return a->visits < b;
+        }
+        bool operator()(const unsigned& a, const Student* b) const
+        {
+            return a < b->visits;
         }
     };
 
     class ByLastname
     {
     public:
-        bool operator()(Student* a, Student* b) const
+        bool operator()(const Student* a, const Student* b) const
         {
             return std::strcmp(a->lastname, b->lastname) < 0;
-        };
-    };
-
-    class EqualByID
-    {
-    public:
-        bool operator()(iterator iter, const unsigned& studentID) const
+        }
+        bool operator()(const Student* a, const char* b)
         {
-            return (*iter).ID == studentID;
+            return std::strcmp(a->lastname, b) < 0;
+        }
+        bool operator()(const char* a, const Student* b)
+        {
+            return std::strcmp(a, b->lastname) < 0;
         }
     };
 
-    class EqualByName
+    class ByStudentID
     {
     public:
-        bool operator()(iterator iter, const char* name) const
+        bool operator()(const Student* a, const Student* b) const
         {
-            return std::strcmp((*iter).lastname, name);
+            return a->ID < b->ID;
+        }
+        bool operator()(const Student* a, const unsigned& b)
+        {
+            return a->ID < b;
+        }
+        bool operator()(const unsigned& a, const Student* b)
+        {
+            return a < b->ID;
         }
     };
 
@@ -225,7 +243,7 @@ public:
 
     // сортировка
     template <typename Compare> 
-        void sort(Compare cmp = School::ByLastname())
+        void sort(Compare cmp = School::ByLastname()) //????
     {
         if(!head || !head->next)
             return;
@@ -260,9 +278,6 @@ public:
 
 
 };
-
-
-
 
 
 

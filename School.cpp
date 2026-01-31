@@ -71,6 +71,11 @@ void School::pop(Student* student)
 
 }
 
+void School::pop(Student& student)
+{
+    pop(&student);
+}
+
 bool School::pop(const unsigned studentID)
 {  
     Student* ptr = head;
@@ -116,7 +121,7 @@ bool School::addVisit(unsigned studentID, unsigned day)
     return false;
 }
 
-void School::addGroupVisit(unsigned groupID, unsigned day)
+void School::addGroupVisit(const unsigned& groupID, unsigned day)
 {
     Student* ptr = head;
 
@@ -250,7 +255,7 @@ void School::replace(Student* destination, Student* element)
         
     }
 
-void School::excludeFromGroup(unsigned studentID)
+void School::excludeFromGroup(const unsigned& studentID)
 {
     Student* ptr = head;
 
@@ -266,7 +271,7 @@ void School::excludeFromGroup(unsigned studentID)
     }
 }
 
-void School::disband(unsigned groupID)
+void School::disband(const unsigned& groupID)
 {
     Student* ptr = head;
 
@@ -279,7 +284,7 @@ void School::disband(unsigned groupID)
     }
 }
 
-void School::disbandAndPop(unsigned groupID)
+void School::disbandAndPop(const unsigned& groupID)
 {
     Student* ptr = head;
 
