@@ -1,4 +1,5 @@
 #include <iostream>
+#include <windows.h>
 
 #include "School.h"
 #include "menu.h"
@@ -8,6 +9,8 @@ using std::endl;
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
    
     School* ourSchool = new School;
 

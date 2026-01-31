@@ -7,7 +7,7 @@ void menu::init(School* school)
 {
     this->school = school;
 
-    enum point {exit, students};
+    enum point {exit, students, visits};
     unsigned inputValue = -1;
 
     while(inputValue != 0)
@@ -17,6 +17,8 @@ void menu::init(School* school)
         cout << "Общее колличество студентов: " << school->getCapacity() << endl;
 
         cout << "1. Cтуденты" << endl;
+
+        cout << "2. Посещения" << endl;
 
         cout << "0. Выход" << endl;
 
@@ -31,6 +33,9 @@ void menu::init(School* school)
         case(point::students):
             inStudents();
             break;
+
+        case(point::visits):
+            
             
         }
 
@@ -38,6 +43,8 @@ void menu::init(School* school)
     }
 }
 
+// ================================================================================= //
+        // IN_STUDENTS
 // ================================================================================= //
 
 void menu::inStudents()
@@ -130,6 +137,7 @@ bool menu::StudentsSearch(School::iterator& iter)
 
     cout << "Введите фамилию или ID студента: ";
 
+    cin.ignore(1000, '\n');
     cin.getline(identificator, Student::MAX_NAME_LEN);
     if(cin.fail())
     {
@@ -174,7 +182,9 @@ bool menu::StudentsSearch(School::iterator& iter)
                 counter++;
                 iter++;
             }
+            
         }
+        iter = finded;
 
         if(counter == 1)
         {
@@ -187,8 +197,7 @@ bool menu::StudentsSearch(School::iterator& iter)
             cout << "Введите ID: ";
             cin >> studentID;
 
-            SchoolAlg::search(finded, IDCompare, studentID);
-            iter = finded;
+            SchoolAlg::search(iter, IDCompare, studentID);
             
             return true;
         }
@@ -218,16 +227,18 @@ void menu::StudentsEdit(School::iterator& iter)
         switch(inputValue)
         {
         case(back):
-            return;
+            break;
         case(changeGroup):
             StudentsEditGroup(iter);
             break;
         case(changeLastname):
             StudentsEditLastname(iter);
-            break;;
+            break;
         }
     }
 }
+
+// ================================================================================= //
 
 void menu::StudentsEditLastname(School::iterator& iter)
 {
@@ -248,12 +259,15 @@ void menu::StudentsEditLastname(School::iterator& iter)
     strncpy((*iter).lastname, newLastname, Student::MAX_NAME_LEN);
 }
 
+// ================================================================================= //
+
 void menu::StudentsEditGroup(School::iterator& iter)
 {
     cout << "Новая группа: ";
     cin >> (*iter).groupID;
-    cout << endl;
 }
+
+// ================================================================================= //
 
 // редактиррование, сортировка, добавление
 void menu::inStudentsList()
@@ -270,13 +284,12 @@ void menu::inStudentsList()
         cout << "4. Исключить студента " << endl;
         cout << "0. Назад " << endl;
 
-        cin.ignore(1000, '\n');
         cin >> inputValue;
 
         switch(inputValue)
         {
         case(back):
-            return;
+            break;
         case(sortLastname):
             school->sort(School::ByLastname()); // не работает со значением по умолчанию??
             StudentsFormatShow();
@@ -289,16 +302,29 @@ void menu::inStudentsList()
             StudentsAdd();
             break;
         case(pop):
+            iter = school->begin();
             if(StudentsSearch(iter))
                 StudentsExclude(iter);
+            else
+                cout << "Студент не найден" << endl;
         
 
         }
     }
 }
 
+// ================================================================================= //
 
 void menu::StudentsExclude(School::iterator& iter)
 {
     school->pop(*iter);
+}
+
+// ================================================================================= //
+        // IN_VISITS
+// ================================================================================= //
+
+void menu::inVisits()
+{
+    enum point {back, add, addToGroup, showDay, showPeriod};
 }

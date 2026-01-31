@@ -43,13 +43,26 @@ void School::pop(Student* student)
     if(!student)
         return;
 
+    
+
     if(student == head)
     {
-        head = head->next;
-        head->prev = nullptr;
-        delete student;
-        capacity--;
-        return;
+        if(!student->next)
+        {
+            head = nullptr;
+            delete student;
+            capacity--;
+            return;
+        }
+        else
+        {
+            head = head->next;
+            head->prev = nullptr;
+            delete student;
+            capacity--;
+            return;
+        }
+        
     } 
 
     if(student == tail)

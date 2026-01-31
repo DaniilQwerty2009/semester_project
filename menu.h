@@ -38,6 +38,11 @@ public:
     void inStudentsList();
     void StudentsAdd();
     void StudentsExclude(School::iterator& iter);
+
+// ======================================================================= //
+
+    void inVisits();
+
     
     // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
     void StudentsFormatShow();
