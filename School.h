@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "Student.h"
+#include "Group.h"
 #include "DateConverter.h"
 #include "IDGenerator.h"
 
@@ -17,11 +18,18 @@ private:
     Student* head = nullptr;
     Student* tail = nullptr;
 
+    
+    Group* groupsMap = nullptr; // Словарь с названиями групп
     DateConverter dateConverter;
     IDGenerator   getStudentID;
     IDGenerator   getGroupID;
 
+
+    // нельзя вручную установить id и группу. Исп. при копировании из файла
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
+    // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
+
+
 
 public:
     explicit School(unsigned startIDStudent = 100, unsigned startIDgroup = 10)
@@ -42,6 +50,7 @@ public:
     }
 
     // валидность итераторов. когда??
+    // итератор имеет доступ к указателю на datesArray!!! (*iter).dates.datesArray = nullptr!!!!!
     class iterator
         {
         private:
@@ -124,9 +133,13 @@ public:
 
     void pop(Student* studentPtr);
 
-    void pop(Student& studentRef);
+    // void pop(Student& studentRef);
 
     bool pop(const unsigned studentID);
+
+    unsigned createGroup(const char* name);
+
+    bool deleteGroup(Group* group); // ошибка на непустую группу
 
     void addVisit(Student* ptr, unsigned day);
 
@@ -172,7 +185,7 @@ public:
             for(size_t i = 0; i < visits; ++i)
             {
                 fin.read((char*)&date, sizeof(uint32_t));
-                tail->dates.push(date);
+                tail->days.push(date);
             }
 
             if(! fin.eof())

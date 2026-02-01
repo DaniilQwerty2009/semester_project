@@ -1,4 +1,5 @@
-
+#ifndef DATE_CONVERTER_H
+#define DATE_CONVERTER_H
 
 
 class DateConverter
@@ -30,3 +31,6 @@ public:
         return result;        
     }
 };
+
+
+#endif

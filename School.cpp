@@ -1,7 +1,26 @@
 #include "School.h"
 
+// Убрать нехарактеные контейнеру методы: printVisits, printStudentInfo и тд
+
 void School::push_back(const char* lastname, unsigned groupID)
     {
+        // исключение - нет такой группы
+        // обработка - присваивание группе 0
+        Group* ptr = groupsMap;
+        while(ptr)
+        {
+            if(ptr->key == groupID)
+                break;
+
+            ptr = ptr->next;
+        }
+
+        if(!ptr)
+        {    
+            std::cout << "Исключение push_back /group/" << std::endl;
+            groupID = 0;
+        }
+
         if(!head)
         {
             head = new Student(getStudentID(), lastname, groupID);
@@ -19,7 +38,7 @@ void School::push_back(const char* lastname, unsigned groupID)
         }
     }
 
-    void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
+void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
     {
         if(!head)
         {
@@ -84,10 +103,10 @@ void School::pop(Student* student)
 
 }
 
-void School::pop(Student& student)
-{
-    pop(&student);
-}
+// void School::pop(Student& student)
+// {
+//     pop(&student);
+// }
 
 bool School::pop(const unsigned studentID)
 {  
@@ -106,18 +125,88 @@ bool School::pop(const unsigned studentID)
     return false;
 }
 
+unsigned School::createGroup(const char* name)
+{
+    if(!groupsMap)
+        {
+            groupsMap = new Group(getGroupID(), name);
+            return groupsMap->key;
+        }
+        else
+        {
+            Group* ptr = groupsMap;
+
+            while(ptr->next != nullptr)
+                ptr = ptr->next;
+            
+            ptr->next = new Group(getGroupID(), name);
+            ptr->next->prev = ptr;
+
+            return ptr->next->key;
+        }
+}
+
+bool School::deleteGroup(Group* group) // ошибка на непустую группу
+{
+    Student* ptr = head;
+    while(ptr)
+    {
+        if(ptr->groupID == group->key)
+            return false;                   // исключение - не пустая группа
+    }
+
+    if(group == groupsMap)
+    {
+        if(!groupsMap->next)
+        {
+            delete group;
+            groupsMap = nullptr;
+            return true;
+        }
+        else
+        {
+            groupsMap = groupsMap->next;
+            groupsMap->prev = nullptr;
+            delete group;
+            return true;
+        }
+    }
+    else
+    {
+        if(group->next)
+        {
+            group->prev->next = group->next;
+            group->next->prev = group->prev;
+            delete group;
+            return true;
+        }
+        else
+        {
+            group->prev->next = nullptr;
+            delete group;
+            return true;
+        }
+
+    }
+
+
+}
+
 void School::addVisit(Student* ptr, unsigned day)
 {
+    // Проверка на одинаковую дату!
     if(!ptr)
         return;
 
-    ptr->dates.push(day);
+    ptr->days.push(day);
 
     ptr->visits++;
 }
 
 bool School::addVisit(unsigned studentID, unsigned day)
 {
+
+    // Проверка на одинаковую дату!
     Student* ptr = head;
 
     while(ptr)
@@ -322,9 +411,9 @@ void School::printVisitsInDate(const unsigned& day) const
 {
     for(Student* ptr = head; ptr != nullptr; ptr = ptr->next)
     {
-        for(size_t i = 0; i < ptr->dates.elementsQty; ++i)
+        for(size_t i = 0; i < ptr->days.elementsQty; ++i)
         {
-            if(ptr->dates.datesArray[i] == day)
+            if(ptr->days.datesArray[i] == day)
                 std::cout << ptr->lastname << std::endl;
         }
     }
@@ -345,7 +434,7 @@ bool School::writeToBin(const char* filename) const
         fout.write((char*)&ptr->groupID, sizeof(uint32_t));
         fout.write((char*)&ptr->visits, sizeof(uint32_t));
         
-        fout.write((char*)ptr->dates.datesArray, sizeof(uint32_t) * ptr->dates.elementsQty);
+        fout.write((char*)ptr->days.datesArray, sizeof(uint32_t) * ptr->days.elementsQty);
 
         ptr = ptr->next;
     }
@@ -375,7 +464,7 @@ void School::copySchoolFromBin(const char* filename)
         for(size_t i = 0; i < visits; ++i)
         {
             fin.read((char*)&date, sizeof(uint32_t));
-            tail->dates.push(date);
+            tail->days.push(date);
         }
 
         if( !fin.peek())

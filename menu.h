@@ -21,6 +21,7 @@ private:
     School::ByStudentID IDCompare;
     School::ByLastname  lastnameCompare;
     School::ByVisits    visitsCompare;
+    DateConverter       dateConventer;
 public:
     menu(): school()
         {   }
@@ -38,14 +39,23 @@ public:
     void inStudentsList();
     void StudentsAdd();
     void StudentsExclude(School::iterator& iter);
+    // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
+    void StudentsFormatShow() const;
 
 // ======================================================================= //
 
     void inVisits();
 
-    
-    // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
-    void StudentsFormatShow();
+    bool VisitsInputDate(unsigned& day, unsigned& mounth);
+    void InPersonalVisitAdd();
+    void VisitsFormatShow(const unsigned& day) const;
+
+
+
+
+
+    void GroupFormatShow();
+
 
 };
 

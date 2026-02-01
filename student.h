@@ -13,6 +13,8 @@ private:
     Student* prev = nullptr;
     Student* next = nullptr;
 
+    VisitDays days;
+
     friend class School;
 
 public:
@@ -23,18 +25,25 @@ public:
     unsigned groupID;
     size_t visits = 0;
 
-    VisitDays dates;
+   
 
     
     explicit Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
     :ID(studentID), groupID(groupID)
     {
-        this->lastname = new char[MAX_NAME_LEN];
-        strncpy(this->lastname, lastname, MAX_NAME_LEN);
+        size_t strLen = sizeof(lastname) + 1;
 
-        if(strlen(this->lastname) == MAX_NAME_LEN - 1)
-            this->lastname[MAX_NAME_LEN - 1] = '.';
-        
+        if(strLen <= MAX_NAME_LEN)
+        {
+            this->lastname = new char[strLen];
+            strcpy(this->lastname, lastname);
+        }
+        else
+        {
+            this->lastname = new char[MAX_NAME_LEN];
+            strncpy(this->lastname, lastname, MAX_NAME_LEN);
+            this->lastname[MAX_NAME_LEN - 1] = '\0'; 
+        }        
     }
 
 
@@ -51,6 +60,19 @@ public:
     bool operator==(Student* ptr)
     {
         return this->ID == ptr->ID;
+    }
+
+    bool hasDay(const unsigned& day)
+    {
+        unsigned* ptr = days.datesArray;
+
+        for(size_t i = 0; i < days.elementsQty; ++i)
+        {
+            if(ptr[i] == day)
+                return true;
+        }
+
+        return false;
     }
 
 };

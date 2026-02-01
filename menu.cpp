@@ -7,7 +7,7 @@ void menu::init(School* school)
 {
     this->school = school;
 
-    enum point {exit, students, visits};
+    enum point {exit, students, groups, visits};
     unsigned inputValue = -1;
 
     while(inputValue != 0)
@@ -18,7 +18,9 @@ void menu::init(School* school)
 
         cout << "1. Cтуденты" << endl;
 
-        cout << "2. Посещения" << endl;
+        cout << "2. Группы " << endl;
+
+        cout << "3. Посещения" << endl;
 
         cout << "0. Выход" << endl;
 
@@ -29,12 +31,16 @@ void menu::init(School* school)
         case(point::exit):
             cout << "Завершение работы" << endl;
             break;
-        
+
+        case(groups):
+            break;
         case(point::students):
             inStudents();
             break;
 
         case(point::visits):
+            inVisits();
+            break;
             
             
         }
@@ -49,7 +55,7 @@ void menu::init(School* school)
 
 void menu::inStudents()
 {
-    enum point {back, show, search};
+    enum point {back, list, search};
     unsigned inputValue = -1;
     School::iterator iter;
 
@@ -65,7 +71,7 @@ void menu::inStudents()
         {
             case(back):
                 break;
-            case(show):
+            case(list):
                 StudentsFormatShow();
                 inStudentsList();
                 break;
@@ -84,7 +90,7 @@ void menu::inStudents()
 
 // ================================================================================= //
 
-void menu::StudentsFormatShow()
+void menu::StudentsFormatShow() const
 {
     School::iterator iter(school->begin());
 
@@ -317,7 +323,7 @@ void menu::inStudentsList()
 
 void menu::StudentsExclude(School::iterator& iter)
 {
-    school->pop(*iter);
+    school->pop(&(*iter));
 }
 
 // ================================================================================= //
@@ -326,5 +332,126 @@ void menu::StudentsExclude(School::iterator& iter)
 
 void menu::inVisits()
 {
-    enum point {back, add, addToGroup, showDay, showPeriod};
+    enum point {back, add, addToGroup, showByDay};
+    short inputValue = -1;
+    // School::iterator iter = school->begin(); 
+
+    while(inputValue)
+    {
+        cout << "1. Отметить студента" << endl;
+        cout << "2. Отметить группу" << endl;
+        cout << "3. Посещения по дате" << endl;
+        cout << "0. Назад" << endl;
+
+
+        cin >> inputValue;
+
+        switch(inputValue)
+        {
+        case(back):
+            break;
+        case(add):
+            InPersonalVisitAdd();
+            break;
+        case(addToGroup):
+            break;
+        case(showByDay):
+            break;
+        }
+    }
+}
+
+bool menu::VisitsInputDate(unsigned& day, unsigned& mounth)
+{
+    enum point {back};
+    short inputValue = -1;
+
+
+
+
+    cout << "Введите день и месяц в числовом формате" << endl;
+    cout << "Для выхода введите 0" << endl;
+
+
+    cout << "День: ";
+    cin >> inputValue;
+    // проверка на влдиность - dateConverter генерирует exeption
+
+    if(inputValue == 0)
+        return false;
+
+    day = inputValue;
+
+    cout << "Месяц: ";
+    cin >> inputValue;
+    // проверка на влдиность - dateConverter генерирует exeption
+
+    if(inputValue == 0)
+        return false;
+
+    mounth = inputValue;
+
+    return true;
+
+    
+}
+
+void menu::InPersonalVisitAdd()
+{
+    enum point {back, list, add};
+    short inputValue = -1;
+    unsigned day, mounth, visitDay;
+    School::iterator iter = school->begin();
+
+
+    while(inputValue)
+    {
+        cout << "1. Список студентов" << endl;
+        cout << "2. Отметить студента" << endl;
+        cout << "0. Назад" << endl;
+
+        cin >> inputValue;
+
+        switch(inputValue)
+        {
+        case(back):
+            break;
+        case(list):
+            StudentsFormatShow();
+            break;
+        case(add):
+            if(StudentsSearch(iter))
+            {
+
+                // цикл пока не true, в InputVisits обработка исключения - валидация ввода
+                VisitsInputDate(day, mounth);
+                visitDay = dateConventer.DateToDay(day, mounth);
+                school->addVisit(&(*iter), visitDay);
+                break;
+            }
+            else
+            {
+                cout << "Совпадений не найдено" << endl;
+                break;
+            }
+        }
+    }
+}
+
+void menu::VisitsFormatShow(const unsigned& day) const
+{
+    School::iterator iter = school->begin();
+    while(iter)
+    {
+        for(unsigned i = 0; i < (*iter).visits; ++i)
+        {
+            if((*iter).hasDay(day))
+            {
+                cout << (*iter).ID << ". " << (*iter).lastname << endl;
+                return;
+            }
+        }
+
+        ++iter;
+    }
 }
