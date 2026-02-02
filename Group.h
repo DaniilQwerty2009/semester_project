@@ -16,6 +16,7 @@ public:
 
     unsigned key;
     char* value = nullptr; // mutable?
+    unsigned capacity = 0;
 
     Group(unsigned key, const char* value)
     {
@@ -49,6 +50,44 @@ public:
     bool operator!=(Group* other)
     {
         return key != other->key;
+    }
+
+    char& operator[](const unsigned& key)
+    {
+        Group* ptr = this;
+
+        while(ptr)
+        {
+            if(this->key == key)
+                return *value;
+        }
+    }
+
+    char& operator=(const char* val)
+    {
+        if(strlen(val) >= MAX_NAME_LEN)
+        {
+            delete[] value;
+            char* value = new char[MAX_NAME_LEN];
+            strncpy(value, val, MAX_NAME_LEN);
+            this->value[MAX_NAME_LEN - 1] = '\0';
+
+            return *value;
+        }
+        else if(strlen(val) > strlen(value))
+        {
+            delete[] value;
+            value = new char[strlen(val) + 1];
+            strcpy(value, val);
+
+            return *value;
+        }
+        else
+        {
+            strcpy(value, val);
+
+            return *value;
+        }
     }
 
 };

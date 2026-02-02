@@ -44,6 +44,13 @@ public:
 
 // ======================================================================= //
 
+void inGroup();
+
+void createGroup();
+void deleteGroup();
+
+// ======================================================================= //
+
     void inVisits();
 
     bool VisitsInputDate(unsigned& day, unsigned& mounth);

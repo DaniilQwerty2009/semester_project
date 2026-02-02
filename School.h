@@ -18,9 +18,10 @@ private:
     Student* head = nullptr;
     Student* tail = nullptr;
 
-    
-    Group* groupsMap = nullptr; // Словарь с названиями групп
+
     DateConverter dateConverter;
+
+    // передавать как парматеры в шаблон??
     IDGenerator   getStudentID;
     IDGenerator   getGroupID;
 
@@ -28,7 +29,8 @@ private:
     // нельзя вручную установить id и группу. Исп. при копировании из файла
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
     // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
-
+public: 
+    Group* groupsMap = nullptr; // Словарь с названиями групп
 
 
 public:

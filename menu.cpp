@@ -219,7 +219,7 @@ bool menu::StudentsSearch(School::iterator& iter)
 
 void menu::StudentsEdit(School::iterator& iter)
 {  
-    enum point {back, changeGroup, changeLastname};
+    enum point {back, changeGroup, changeLastname, exclude};
     short inputValue = -1;
 
     while(inputValue)
@@ -239,6 +239,9 @@ void menu::StudentsEdit(School::iterator& iter)
             break;
         case(changeLastname):
             StudentsEditLastname(iter);
+            break;
+        case(exclude):
+            StudentsExclude(iter);
             break;
         }
     }
@@ -266,7 +269,7 @@ void menu::StudentsEditLastname(School::iterator& iter)
 }
 
 // ================================================================================= //
-
+// Добавить проверку на группу
 void menu::StudentsEditGroup(School::iterator& iter)
 {
     cout << "Новая группа: ";
@@ -324,6 +327,35 @@ void menu::inStudentsList()
 void menu::StudentsExclude(School::iterator& iter)
 {
     school->pop(&(*iter));
+}
+
+// ================================================================================= //
+        // IN_GROUPS
+// ================================================================================= //
+
+void menu::inGroup()
+{
+    enum point {back, list, create, pop};
+    unsigned inputValue = -1;
+    School::iterator iter = school->begin();
+
+
+    while(inputValue)
+    {
+        cout << "1. Список груп" << endl;
+        cout << "2. Создать группу" << endl;
+        cout << "3. Удалить группу" << endl;
+        cout << "4. Назад" << endl;
+
+        cin >> inputValue;
+
+        switch(inputValue)
+        {
+            case(list):
+            school->groupsMap
+                
+        }
+    }
 }
 
 // ================================================================================= //

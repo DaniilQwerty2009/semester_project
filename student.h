@@ -35,7 +35,7 @@ public:
 
         if(strLen <= MAX_NAME_LEN)
         {
-            this->lastname = new char[strLen];
+            this->lastname = new char[strLen + 1];
             strcpy(this->lastname, lastname);
         }
         else
@@ -61,6 +61,7 @@ public:
     {
         return this->ID == ptr->ID;
     }
+    
 
     bool hasDay(const unsigned& day)
     {
