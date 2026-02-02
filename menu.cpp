@@ -32,7 +32,8 @@ void menu::init(School* school)
             cout << "Завершение работы" << endl;
             break;
 
-        case(groups):
+        case(point::groups):
+            inGroup();
             break;
         case(point::students):
             inStudents();
@@ -337,7 +338,6 @@ void menu::inGroup()
 {
     enum point {back, list, create, pop};
     unsigned inputValue = -1;
-    School::iterator iter = school->begin();
 
 
     while(inputValue)
@@ -345,16 +345,93 @@ void menu::inGroup()
         cout << "1. Список груп" << endl;
         cout << "2. Создать группу" << endl;
         cout << "3. Удалить группу" << endl;
-        cout << "4. Назад" << endl;
+        cout << "0. Назад" << endl;
 
         cin >> inputValue;
 
         switch(inputValue)
         {
-            case(list):
-            school->groupsMap
-                
+        case(list):
+            GroupFormatShow();
+            break;
+        case(create):
+            createGroup();
+            break;
+        case(pop):
+            deleteGroup();
+            break;
+        case(back):
+            break;                
         }
+    }
+}
+
+// ================================================================================= //
+
+unsigned menu::createGroup()
+{
+    char name[Student::MAX_NAME_LEN];
+
+    
+    cout << "Название группы: ";
+    cin.ignore(1000, '\n');
+    cin.getline(name, Student::MAX_NAME_LEN);
+    // Отчистка буфера!
+    if(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+
+    // pushSorted???
+    unsigned ID = school->createGroup(name);
+
+    return ID;
+}
+
+bool menu::deleteGroup()
+{
+    char name[Student::MAX_NAME_LEN];
+
+    
+    cout << "Название группы: ";
+    cin.ignore(1000, '\n');
+    cin.getline(name, Student::MAX_NAME_LEN);
+    // Отчистка буфера!
+    if(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+
+    Group* ptr = school->groupsMap;
+
+    while(ptr)
+    {
+        if( !strcmp(ptr->value, name))
+            break;
+
+        ptr = ptr->next;
+    }
+
+    if(ptr)
+    {
+        school->deleteGroup(ptr);
+        return true;
+    }
+    else
+        return false;
+
+}
+
+void menu::GroupFormatShow() const
+{
+    Group* ptr = school->groupsMap;
+    cout << "ID - name" << endl;
+    while(ptr)
+    {
+        cout << ptr->key << " - " << ptr->value << endl;
+        ptr = ptr->next;
     }
 }
 

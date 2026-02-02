@@ -5,18 +5,14 @@
 
 struct Group
 {
-private:
     Group* next = nullptr;
     Group* prev = nullptr;
 
-    friend class School;
-
-public:
     enum {MAX_NAME_LEN = 40}; 
 
     unsigned key;
     char* value = nullptr; // mutable?
-    unsigned capacity = 0;
+    // unsigned capacity = 0;
 
     Group(unsigned key, const char* value)
     {
@@ -27,7 +23,7 @@ public:
         if(strLen <= MAX_NAME_LEN)
         {
             this->value = new char[strLen];
-            strncpy(this->value, value, strLen);
+            strcpy(this->value, value);
         }
         else
         {
@@ -39,7 +35,7 @@ public:
 
     ~Group()
     {
-        delete value;
+        delete[] value;
     }
 
     bool operator==(Group* other)

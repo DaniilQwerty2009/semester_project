@@ -30,8 +30,8 @@ private:
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
     // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
 public: 
-    Group* groupsMap = nullptr; // Словарь с названиями групп
-
+    // полностью public! но ок в рамках задания
+    Group* groupsMap = nullptr;
 
 public:
     explicit School(unsigned startIDStudent = 100, unsigned startIDgroup = 10)
@@ -52,7 +52,6 @@ public:
     }
 
     // валидность итераторов. когда??
-    // итератор имеет доступ к указателю на datesArray!!! (*iter).dates.datesArray = nullptr!!!!!
     class iterator
         {
         private:
@@ -106,16 +105,16 @@ public:
     inline size_t getCapacity() const
         { return capacity; }
 
-    void push_back(const char* lastname, unsigned groupID = 0);
+    unsigned push_back(const char* lastname, unsigned groupID = 0);
 
-    template <typename Compare> void push_sorted(Compare comporator, const char* lastname, unsigned groupID = 0)
+    template <typename Compare> unsigned push_sorted(Compare comporator, const char* lastname, unsigned groupID = 0)
     {
-        push_back(getStudentID(), lastname, groupID);
+        unsigned ID = push_back(getStudentID(), lastname, groupID);
 
         if(tail->prev)
         {
             if(comporator(tail->prev, tail))
-                return;
+                return ID;
         }
 
         Student* element = tail;
@@ -126,11 +125,13 @@ public:
             if(comporator(element, ptr))
             {
                 replace(ptr, element);
-                return;
+                return ID;
             }
 
             ptr = ptr->next;
         }
+
+        return ID;
     }
 
     void pop(Student* studentPtr);
@@ -293,7 +294,6 @@ public:
 
 
 };
-
 
 
 

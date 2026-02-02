@@ -18,6 +18,7 @@ private:
 
     School* school;
 
+
     School::ByStudentID IDCompare;
     School::ByLastname  lastnameCompare;
     School::ByVisits    visitsCompare;
@@ -46,8 +47,10 @@ public:
 
 void inGroup();
 
-void createGroup();
-void deleteGroup();
+unsigned createGroup();
+bool deleteGroup();
+
+void GroupFormatShow() const;
 
 // ======================================================================= //
 
@@ -61,7 +64,7 @@ void deleteGroup();
 
 
 
-    void GroupFormatShow();
+    
 
 
 };

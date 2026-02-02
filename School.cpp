@@ -2,7 +2,7 @@
 
 // Убрать нехарактеные контейнеру методы: printVisits, printStudentInfo и тд
 
-void School::push_back(const char* lastname, unsigned groupID)
+unsigned School::push_back(const char* lastname, unsigned groupID)
     {
         // исключение - нет такой группы
         // обработка - присваивание группе 0
@@ -36,6 +36,8 @@ void School::push_back(const char* lastname, unsigned groupID)
             tail->prev = oldTail;
             
         }
+
+        return tail->ID;
     }
 
 void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
