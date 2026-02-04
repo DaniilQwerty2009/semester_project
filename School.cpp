@@ -105,28 +105,6 @@ void School::pop(Student* student)
 
 }
 
-// void School::pop(Student& student)
-// {
-//     pop(&student);
-// }
-
-bool School::pop(const unsigned studentID)
-{  
-    Student* ptr = head;
-
-    while(ptr)
-    {
-        if(ptr->ID == studentID)
-        {
-            pop(ptr);
-            return true;
-        }
-
-        ptr = ptr->next;
-    }  
-    return false;
-}
-
 unsigned School::createGroup(const char* name)
 {
     if(!groupsMap)
@@ -194,7 +172,7 @@ bool School::deleteGroup(Group* group) // ошибка на непустую г�
 
 }
 
-void School::addVisit(Student* ptr, unsigned day)
+void School::addVisit(Student* ptr, const unsigned& day)
 {
     // Проверка на одинаковую дату!
     if(!ptr)
@@ -205,61 +183,17 @@ void School::addVisit(Student* ptr, unsigned day)
     ptr->visits++;
 }
 
-bool School::addVisit(unsigned studentID, unsigned day)
-{
-
-    // Проверка на одинаковую дату!
-    Student* ptr = head;
-
-    while(ptr)
-    {
-        if(ptr->ID == studentID)
-        {
-            addVisit(ptr, day);
-            return true;
-        }
-
-        ptr = ptr->next;
-    }
-
-    return false;
-}
-
-void School::addGroupVisit(const unsigned& groupID, unsigned day)
+void School::addGroupVisit(const Group* Gptr, const unsigned& day)
 {
     Student* ptr = head;
 
     while(ptr)
     {
-        if(ptr->groupID == groupID)
+        if(ptr->groupID == Gptr->key)
             School::addVisit(ptr, day);
 
         ptr = ptr->next;
     }
-}
-
-void School::printStudentInfo(Student* ptr) const
-{
-    printStudentInfo(ptr->ID);
-}
-
-void School::printStudentInfo(const unsigned& studentID) const
-{
-    Student* ptr = head;
-
-    while(ptr)
-    {
-        if(ptr->ID == studentID)
-        {
-            std::cout << ptr->ID       << '/';
-            std::cout << ptr->lastname << '/';
-            std::cout << ptr->groupID  << '/';
-            std::cout << ptr->visits   << '/';
-            return;
-        }
-        
-        ptr = ptr->next;
-    }    
 }
 
 void School::replace(Student* destination, Student* element)
@@ -359,65 +293,24 @@ void School::replace(Student* destination, Student* element)
         
     }
 
-void School::excludeFromGroup(const unsigned& studentID)
+void School::transferToGroup(Student* Sptr, Group* Gptr = nullptr)
 {
-    Student* ptr = head;
-
-    while(ptr)
-    {
-        if(ptr->ID == studentID)
-        {
-            ptr->groupID = 0;
-            return;
-        }
-
-        ptr = ptr->next;
-    }
+    if(Gptr)
+        Sptr->groupID = Gptr->key;
+    else
+        Sptr->groupID = 0;
 }
 
-void School::disband(const unsigned& groupID)
+void School::disband(Group* ptr)
 {
-    Student* ptr = head;
+    Student* STptr = head;
 
-    while(ptr)
+    while(STptr)
     {
-        if(ptr->groupID == groupID)
-            ptr->groupID = 0;
+        if(ptr->key == STptr->groupID)
+            STptr->groupID = 0;
 
-        ptr = ptr->next;
-    }
-}
-
-void School::disbandAndPop(const unsigned& groupID)
-{
-    Student* ptr = head;
-
-    while(ptr)
-    {
-        if(ptr->groupID == groupID)
-        {
-            pop(ptr);
-        }
-    }
-}
-
-
-void School::printVisitsInDate(const unsigned& day, const unsigned& mounth) const
-{
-    unsigned convertedDay = dateConverter.DateToDay(day, mounth);
-
-    School::printVisitsInDate(convertedDay);
-}
-
-void School::printVisitsInDate(const unsigned& day) const
-{
-    for(Student* ptr = head; ptr != nullptr; ptr = ptr->next)
-    {
-        for(size_t i = 0; i < ptr->days.elementsQty; ++i)
-        {
-            if(ptr->days.datesArray[i] == day)
-                std::cout << ptr->lastname << std::endl;
-        }
+        STptr = STptr->next;
     }
 }
 

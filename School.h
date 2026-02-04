@@ -136,34 +136,18 @@ public:
 
     void pop(Student* studentPtr);
 
-    // void pop(Student& studentRef);
-
-    bool pop(const unsigned studentID);
-
     unsigned createGroup(const char* name);
 
     bool deleteGroup(Group* group); // ошибка на непустую группу
 
-    void addVisit(Student* ptr, unsigned day);
-
-    bool addVisit(unsigned studentID, unsigned day);
+    void addVisit(Student* ptr, const unsigned& day);
 
     // add groups tree!!!
-    void addGroupVisit(const unsigned& groupID, unsigned day);
+    void addGroupVisit(const Group* ptr, const unsigned& day);
 
-    void excludeFromGroup(const unsigned& studentID);
+    void transferToGroup(Student* Sptr, Group* Gptr = nullptr);
 
-    void disband(const unsigned& groupID);
-
-    void disbandAndPop(const unsigned& groupID);
-
-    void printStudentInfo(Student* ptr) const;
-
-    void printStudentInfo(const unsigned& studentID) const;
-
-    void printVisitsInDate(const unsigned& day, const unsigned& mounth) const;
-
-    void printVisitsInDate(const unsigned& day) const;
+    void disband(Group* ptr);
 
     bool writeToBin(const char* filename) const;
 
@@ -200,7 +184,6 @@ public:
 
     void copySchoolFromBin(const char* filename);
 
-
     // компрораторы
     class ByVisits
     {
@@ -209,10 +192,12 @@ public:
         {
             return a->visits < b->visits;
         }
+
         bool operator()(const Student* a, const unsigned& b) const
         {
             return a->visits < b;
         }
+
         bool operator()(const unsigned& a, const Student* b) const
         {
             return a < b->visits;
@@ -226,11 +211,13 @@ public:
         {
             return std::strcmp(a->lastname, b->lastname) < 0;
         }
-        bool operator()(const Student* a, const char* b)
+
+        bool operator()(const Student* a, const char* b) const
         {
             return std::strcmp(a->lastname, b) < 0;
         }
-        bool operator()(const char* a, const Student* b)
+
+        bool operator()(const char* a, const Student* b) const
         {
             return std::strcmp(a, b->lastname) < 0;
         }
@@ -243,11 +230,13 @@ public:
         {
             return a->ID < b->ID;
         }
-        bool operator()(const Student* a, const unsigned& b)
+
+        bool operator()(const Student* a, const unsigned& b) const
         {
             return a->ID < b;
         }
-        bool operator()(const unsigned& a, const Student* b)
+
+        bool operator()(const unsigned& a, const Student* b) const
         {
             return a < b->ID;
         }

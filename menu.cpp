@@ -95,13 +95,14 @@ void menu::StudentsFormatShow() const
 {
     School::iterator iter(school->begin());
 
-    cout << "ID - lastname - groupID - visits" << endl;
+    cout << "ID - lastname - group - visits" << endl;
 
     while(iter)
     {
         cout << (*iter).ID << " - ";
         cout << (*iter).lastname << " - ";
-        cout << (*iter).groupID << " - ";
+        unsigned groupID = (*iter).groupID;
+        cout << school->groupsMap[groupID] << " - ";
         cout << (*iter).visits << endl;
 
         ++iter;
@@ -227,6 +228,7 @@ void menu::StudentsEdit(School::iterator& iter)
     {    
         cout << "1. Изменить группу" << endl;
         cout << "2. Изменить фамилию" << endl;
+        cout << "3. Исключить" << endl;
         cout << "0. Назад" << endl;
 
         cin >> inputValue;
@@ -271,6 +273,7 @@ void menu::StudentsEditLastname(School::iterator& iter)
 
 // ================================================================================= //
 // Добавить проверку на группу
+// Добавить итератор для Group - тогда SearchStudents -> Search для menu
 void menu::StudentsEditGroup(School::iterator& iter)
 {
     cout << "Новая группа: ";

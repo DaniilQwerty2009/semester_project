@@ -48,7 +48,8 @@ struct Group
         return key != other->key;
     }
 
-    char& operator[](const unsigned& key)
+    // добавить проверку на выход за передлы
+    const char operator[](const unsigned& key)
     {
         Group* ptr = this;
 
