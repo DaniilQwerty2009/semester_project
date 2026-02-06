@@ -1,25 +1,21 @@
 #include "School.h"
 
-// Убрать нехарактеные контейнеру методы: printVisits, printStudentInfo и тд
 
 unsigned School::push_back(const char* lastname, unsigned groupID)
     {
         // исключение - нет такой группы
         // обработка - присваивание группе 0
-        Group* ptr = groupsMap;
+        Group* ptr = groups;
         while(ptr)
         {
-            if(ptr->key == groupID)
+            if(ptr->ID == groupID)
                 break;
 
             ptr = ptr->next;
         }
 
         if(!ptr)
-        {    
-            std::cout << "Исключение push_back /group/" << std::endl;
             groupID = 0;
-        }
 
         if(!head)
         {
@@ -105,76 +101,130 @@ void School::pop(Student* student)
 
 }
 
+//exeption
 unsigned School::createGroup(const char* name)
 {
-    if(!groupsMap)
+    if(!groups)
         {
-            groupsMap = new Group(getGroupID(), name);
-            return groupsMap->key;
+            groups = new Group(getGroupID(), name);
+            return groups->ID;
         }
         else
         {
-            Group* ptr = groupsMap;
+            Group* ptr = groups;
 
             while(ptr->next != nullptr)
+            {
+                if(strcmp(ptr->name, name) == 0)
+                    return 0;                    //exeption
+
                 ptr = ptr->next;
+            }
             
             ptr->next = new Group(getGroupID(), name);
             ptr->next->prev = ptr;
 
-            return ptr->next->key;
+            return ptr->next->ID;
         }
 }
 
-bool School::deleteGroup(Group* group) // ошибка на непустую группу
+bool School::deleteGroup(const unsigned& ID) // ошибка на непустую группу
 {
-    Student* ptr = head;
-    while(ptr)
+    Student* Sptr = head;
+    while(Sptr)
     {
-        if(ptr->groupID == group->key)
+        if(Sptr->groupID == ID)
             return false;                   // исключение - не пустая группа
+        Sptr = Sptr->next;
     }
 
-    if(group == groupsMap)
+    Group* Gptr = groups;
+    while(Gptr)
     {
-        if(!groupsMap->next)
+        if(Gptr->ID == ID)
+            break;
+
+        Gptr = Gptr->next;
+    }
+
+    if(Gptr == groups)
+    {
+        if(!groups->next)
         {
-            delete group;
-            groupsMap = nullptr;
+            delete Gptr;
+            groups = nullptr;
             return true;
         }
         else
         {
-            groupsMap = groupsMap->next;
-            groupsMap->prev = nullptr;
-            delete group;
+            groups = groups->next;
+            groups->prev = nullptr;
+            delete Gptr;
             return true;
         }
     }
     else
     {
-        if(group->next)
+        if(Gptr->next)
         {
-            group->prev->next = group->next;
-            group->next->prev = group->prev;
-            delete group;
+            Gptr->prev->next = Gptr->next;
+            Gptr->next->prev = Gptr->prev;
+            delete Gptr;
             return true;
         }
         else
         {
-            group->prev->next = nullptr;
-            delete group;
+            Gptr->prev->next = nullptr;
+            delete Gptr;
             return true;
         }
 
     }
 
+    return false;
+}
 
+const char* School::getGroupName(const unsigned& ID) const
+{
+    Group* ptr = groups;
+    while(ptr)
+    {
+        if(ptr->ID == ID)
+            return ptr->name;
+
+        ptr = ptr->next;
+    }
+
+    return nullptr;
+}
+
+const Group* School::hasGroup(const unsigned& ID) const
+{
+    const Group* Gptr = groups;
+
+    while(Gptr)
+    {
+        if(Gptr->ID == ID)
+            return Gptr;
+
+        Gptr = Gptr->next;
+    }
+
+    return nullptr;
+}
+
+// exeption
+const Group* School::getGroup() const
+{
+    return groups;
 }
 
 void School::addVisit(Student* ptr, const unsigned& day)
 {
     // Проверка на одинаковую дату!
+    if(ptr->hasDay(day))
+        return;
+
     if(!ptr)
         return;
 
@@ -183,18 +233,18 @@ void School::addVisit(Student* ptr, const unsigned& day)
     ptr->visits++;
 }
 
-void School::addGroupVisit(const Group* Gptr, const unsigned& day)
-{
-    Student* ptr = head;
+// void School::addGroupVisit(const Group* Gptr, const unsigned& day)
+// {
+//     Student* ptr = head;
 
-    while(ptr)
-    {
-        if(ptr->groupID == Gptr->key)
-            School::addVisit(ptr, day);
+//     while(ptr)
+//     {
+//         if(ptr->groupID == Gptr->ID)
+//             School::addVisit(ptr, day);
 
-        ptr = ptr->next;
-    }
-}
+//         ptr = ptr->next;
+//     }
+// }
 
 void School::replace(Student* destination, Student* element)
     {
@@ -293,10 +343,10 @@ void School::replace(Student* destination, Student* element)
         
     }
 
-void School::transferToGroup(Student* Sptr, Group* Gptr = nullptr)
+void School::moveToGroup(Student* Sptr, Group* Gptr)
 {
     if(Gptr)
-        Sptr->groupID = Gptr->key;
+        Sptr->groupID = Gptr->ID;
     else
         Sptr->groupID = 0;
 }
@@ -307,7 +357,7 @@ void School::disband(Group* ptr)
 
     while(STptr)
     {
-        if(ptr->key == STptr->groupID)
+        if(ptr->ID == STptr->groupID)
             STptr->groupID = 0;
 
         STptr = STptr->next;

@@ -13,7 +13,7 @@ int main()
     SetConsoleCP(CP_UTF8);
    
     School* ourSchool = new School;
-
+    
     menu ourMenu;
     ourMenu.init(ourSchool);
 

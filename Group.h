@@ -10,80 +10,79 @@ struct Group
 
     enum {MAX_NAME_LEN = 40}; 
 
-    unsigned key;
-    char* value = nullptr; // mutable?
+    unsigned ID;
+    char* name = nullptr; // mutable?
     // unsigned capacity = 0;
 
-    Group(unsigned key, const char* value)
+    Group(unsigned ID, const char* name)
     {
-        this->key = key;
+        this->ID = ID;
 
-        size_t strLen = sizeof(value) + 1;
+        size_t strLen = sizeof(name) + 1;
 
         if(strLen <= MAX_NAME_LEN)
         {
-            this->value = new char[strLen];
-            strcpy(this->value, value);
+            this->name = new char[strLen];
+            strcpy(this->name, name);
         }
         else
         {
-            this->value = new char[MAX_NAME_LEN];
-            strncpy(this->value, value, MAX_NAME_LEN);
-            this->value[MAX_NAME_LEN - 1] = '\0'; 
+            this->name = new char[MAX_NAME_LEN];
+            strncpy(this->name, name, MAX_NAME_LEN);
+            this->name[MAX_NAME_LEN - 1] = '\0'; 
         }     
     }
 
     ~Group()
     {
-        delete[] value;
+        delete[] name;
     }
 
     bool operator==(Group* other)
     {
-        return key == other->key;
+        return ID == other->ID;
     }
 
     bool operator!=(Group* other)
     {
-        return key != other->key;
+        return ID != other->ID;
     }
 
-    // добавить проверку на выход за передлы
-    const char operator[](const unsigned& key)
-    {
-        Group* ptr = this;
+    // char& operator[](const unsigned& ID)
+    // {
+    //     Group* ptr = this;
 
-        while(ptr)
-        {
-            if(this->key == key)
-                return *value;
-        }
-    }
+    //     while(ptr)
+    //     {
+    //         if(this->ID == ID)
+    //             return *name;
+    //     }
+    // }
 
     char& operator=(const char* val)
     {
         if(strlen(val) >= MAX_NAME_LEN)
         {
-            delete[] value;
-            char* value = new char[MAX_NAME_LEN];
-            strncpy(value, val, MAX_NAME_LEN);
-            this->value[MAX_NAME_LEN - 1] = '\0';
+            delete[] name;
+            char* name = new char[MAX_NAME_LEN];
+            strncpy(name, val, MAX_NAME_LEN);
+            this->name[MAX_NAME_LEN - 1] = '\0';
 
-            return *value;
+            return *name;
         }
-        else if(strlen(val) > strlen(value))
+        else if(strlen(val) > strlen(name))
         {
-            delete[] value;
-            value = new char[strlen(val) + 1];
-            strcpy(value, val);
+            delete[] name;
+            name = new char[strlen(val) + 1];
+            strcpy(name, val);
 
-            return *value;
+            return *name;
         }
         else
         {
-            strcpy(value, val);
+            strcpy(name, val);
 
-            return *value;
+            return *name;
         }
     }
 

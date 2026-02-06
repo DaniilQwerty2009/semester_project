@@ -36,7 +36,7 @@ public:
     bool StudentsSearch(School::iterator& iter);
     void StudentsEdit(School::iterator& iter);
     void StudentsEditLastname(School::iterator& iter);
-    void StudentsEditGroup(School::iterator& iter);
+    bool StudentsEditGroup(School::iterator& iter);
     void inStudentsList();
     void StudentsAdd();
     void StudentsExclude(School::iterator& iter);
@@ -58,6 +58,8 @@ void GroupFormatShow() const;
 
     bool VisitsInputDate(unsigned& day, unsigned& mounth);
     void InPersonalVisitAdd();
+    bool GroupVisitAdd();
+
     void VisitsFormatShow(const unsigned& day) const;
 
 

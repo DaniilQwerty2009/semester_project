@@ -2,7 +2,7 @@
 
 // cin.tie(cout&);????
 
-// Пункты отдельно в enum?
+
 void menu::init(School* school)
 {
     this->school = school;
@@ -56,7 +56,7 @@ void menu::init(School* school)
 
 void menu::inStudents()
 {
-    enum point {back, list, search};
+    enum point {back, list, search, add, pop};
     unsigned inputValue = -1;
     School::iterator iter;
 
@@ -64,6 +64,8 @@ void menu::inStudents()
     {
         cout << "1. Список студентов" << endl;
         cout << "2. Поиск студента" << endl;
+        cout << "3. Новый студент " << endl;
+        cout << "4. Исключить студента " << endl;
         cout << "0. Назад " << endl;
 
         cin >> inputValue;
@@ -84,6 +86,16 @@ void menu::inStudents()
                 else
                     cout << "Совпадений не найдено" << endl;
                 break;
+            case(add):
+                StudentsAdd();
+                break;
+            case(pop):
+                iter = school->begin();
+                if(StudentsSearch(iter))
+                    StudentsExclude(iter);
+                else
+                    cout << "Студент не найден" << endl;
+                break;
         }
 
     }
@@ -94,15 +106,17 @@ void menu::inStudents()
 void menu::StudentsFormatShow() const
 {
     School::iterator iter(school->begin());
+    const char* groupName;
 
     cout << "ID - lastname - group - visits" << endl;
 
     while(iter)
     {
+        groupName = school->getGroupName((*iter).groupID);
+
         cout << (*iter).ID << " - ";
         cout << (*iter).lastname << " - ";
-        unsigned groupID = (*iter).groupID;
-        cout << school->groupsMap[groupID] << " - ";
+        cout << ((groupName)? groupName: "Нет группы") << " - ";
         cout << (*iter).visits << endl;
 
         ++iter;
@@ -128,9 +142,8 @@ void menu::StudentsAdd()
     }
 
     
-
-    cout << endl;
-    cout << "Введите ID группы: ";
+    GroupFormatShow();
+    cout << "Введите номер группы или 0 для пропуска: ";
     cin >> groupID;
 
     // pushSorted???
@@ -142,6 +155,7 @@ void menu::StudentsAdd()
 bool menu::StudentsSearch(School::iterator& iter)
 {
     char identificator[Student::MAX_NAME_LEN];
+    const char* groupName;
 
     cout << "Введите фамилию или ID студента: ";
 
@@ -159,9 +173,11 @@ bool menu::StudentsSearch(School::iterator& iter)
         unsigned studentID = atoi(identificator);
         if(SchoolAlg::search(iter, IDCompare, studentID))
         {
+            groupName = school->getGroupName((*iter).groupID);
+
             cout << (*iter).ID << " - ";
             cout << (*iter).lastname << " - ";
-            cout << (*iter).groupID << " - ";
+            cout << ((groupName)? groupName: "Нет группы") << " - ";
             cout << (*iter).visits << endl; 
 
             return true;        
@@ -183,9 +199,11 @@ bool menu::StudentsSearch(School::iterator& iter)
                 if(counter == 0)
                     finded = iter;
 
+                groupName = school->getGroupName((*iter).groupID);
+
                 cout << (*iter).ID << " - ";
                 cout << (*iter).lastname << " - ";
-                cout << (*iter).groupID << " - ";
+                cout << ((groupName)? groupName: "Нет группы") << " - ";
                 cout << (*iter).visits << endl;
                 counter++;
                 iter++;
@@ -238,6 +256,7 @@ void menu::StudentsEdit(School::iterator& iter)
         case(back):
             break;
         case(changeGroup):
+            GroupFormatShow();
             StudentsEditGroup(iter);
             break;
         case(changeLastname):
@@ -273,11 +292,27 @@ void menu::StudentsEditLastname(School::iterator& iter)
 
 // ================================================================================= //
 // Добавить проверку на группу
-// Добавить итератор для Group - тогда SearchStudents -> Search для menu
-void menu::StudentsEditGroup(School::iterator& iter)
+bool menu::StudentsEditGroup(School::iterator& iter)
 {
-    cout << "Новая группа: ";
-    cin >> (*iter).groupID;
+    unsigned groupID;
+
+    cout << "Введите номер группы или 0 для исключения из группы: ";
+    cin >> groupID;
+
+    if(groupID == 0)
+    {
+        (*iter).groupID = groupID;
+        return true;
+    }
+
+    if(!school->hasGroup(groupID))
+    {
+        cout << "Группа не найдена." << endl;
+        return false;
+    }
+
+    (*iter).groupID = groupID;
+    return true;
 }
 
 // ================================================================================= //
@@ -293,8 +328,6 @@ void menu::inStudentsList()
     {
         cout << "1. Сортировка по имени" << endl;
         cout << "2. Сортировка по посещениям " << endl;
-        cout << "3. Новый студент " << endl;
-        cout << "4. Исключить студента " << endl;
         cout << "0. Назад " << endl;
 
         cin >> inputValue;
@@ -311,17 +344,6 @@ void menu::inStudentsList()
             school->sort(School::ByVisits());
             StudentsFormatShow();
             break;
-        case(add):
-            StudentsAdd();
-            break;
-        case(pop):
-            iter = school->begin();
-            if(StudentsSearch(iter))
-                StudentsExclude(iter);
-            else
-                cout << "Студент не найден" << endl;
-        
-
         }
     }
 }
@@ -361,13 +383,14 @@ void menu::inGroup()
             createGroup();
             break;
         case(pop):
+            GroupFormatShow();
             deleteGroup();
             break;
         case(back):
             break;                
         }
     }
-}
+} 
 
 // ================================================================================= //
 
@@ -394,49 +417,28 @@ unsigned menu::createGroup()
 
 bool menu::deleteGroup()
 {
-    char name[Student::MAX_NAME_LEN];
+    unsigned ID;
 
+    cout << "Введите номер группы: ";
+    cin >> ID;
     
-    cout << "Название группы: ";
-    cin.ignore(1000, '\n');
-    cin.getline(name, Student::MAX_NAME_LEN);
-    // Отчистка буфера!
-    if(cin.fail())
-    {
-        cin.clear();
-        cin.ignore(1000, '\n');
-    }
-
-    Group* ptr = school->groupsMap;
-
-    while(ptr)
-    {
-        if( !strcmp(ptr->value, name))
-            break;
-
-        ptr = ptr->next;
-    }
-
-    if(ptr)
-    {
-        school->deleteGroup(ptr);
+    if(school->deleteGroup(ID))
         return true;
-    }
-    else
-        return false;
-
+    
+    return false;
 }
 
 void menu::GroupFormatShow() const
 {
-    Group* ptr = school->groupsMap;
+    const Group* ptr = school->getGroup();
     cout << "ID - name" << endl;
     while(ptr)
     {
-        cout << ptr->key << " - " << ptr->value << endl;
+        cout << ptr->ID << " - " << ptr->name << endl;
         ptr = ptr->next;
     }
 }
+
 
 // ================================================================================= //
         // IN_VISITS
@@ -446,7 +448,8 @@ void menu::inVisits()
 {
     enum point {back, add, addToGroup, showByDay};
     short inputValue = -1;
-    // School::iterator iter = school->begin(); 
+    School::iterator iter; 
+    unsigned day, mounth, visitDay;
 
     while(inputValue)
     {
@@ -466,8 +469,26 @@ void menu::inVisits()
             InPersonalVisitAdd();
             break;
         case(addToGroup):
+            GroupVisitAdd();
             break;
         case(showByDay):
+            VisitsInputDate(day, mounth);
+            visitDay = dateConventer.DateToDay(day, mounth);
+            iter = school->begin();
+
+            while(iter)
+            {
+                if((*iter).hasDay(visitDay))
+                {
+                    cout << (*iter).ID << " - ";
+                    cout << (*iter).lastname << " - ";
+                    cout << (*iter).groupID << endl;
+                    cout << (*iter).visits << endl;
+                }
+
+                ++iter;
+            }
+
             break;
         }
     }
@@ -477,8 +498,6 @@ bool menu::VisitsInputDate(unsigned& day, unsigned& mounth)
 {
     enum point {back};
     short inputValue = -1;
-
-
 
 
     cout << "Введите день и месяц в числовом формате" << endl;
@@ -513,8 +532,7 @@ void menu::InPersonalVisitAdd()
     enum point {back, list, add};
     short inputValue = -1;
     unsigned day, mounth, visitDay;
-    School::iterator iter = school->begin();
-
+    School::iterator iter;
 
     while(inputValue)
     {
@@ -532,6 +550,8 @@ void menu::InPersonalVisitAdd()
             StudentsFormatShow();
             break;
         case(add):
+            iter = school->begin();
+
             if(StudentsSearch(iter))
             {
 
@@ -548,6 +568,36 @@ void menu::InPersonalVisitAdd()
             }
         }
     }
+}
+
+bool menu::GroupVisitAdd()
+{
+    unsigned groupID, day, mounth, visitDay;
+    School::iterator iter = school->begin();
+
+    GroupFormatShow();
+
+    cout << "Ведите номер группы: ";
+    cin >> groupID;
+
+    if(!school->hasGroup(groupID))
+    {
+        cout << "Группа не найдена." << endl;
+        return false;
+    }
+
+    VisitsInputDate(day, mounth);
+    visitDay = dateConventer.DateToDay(day, mounth);
+
+    while(iter)
+    {
+        if((*iter).groupID == groupID)
+            school->addVisit(&(*iter), visitDay);
+
+        ++iter;
+    }
+
+    return true;
 }
 
 void menu::VisitsFormatShow(const unsigned& day) const

@@ -52,6 +52,9 @@ public:
         delete[] lastname;
     }
 
+    Student(Student& other)             = delete;
+    Student& operator =(Student& other) = delete;
+
     bool operator!=(Student* ptr)
     {
         return this->ID != ptr->ID;

@@ -21,17 +21,14 @@ private:
 
     DateConverter dateConverter;
 
-    // передавать как парматеры в шаблон??
     IDGenerator   getStudentID;
     IDGenerator   getGroupID;
 
+    Group* groups = nullptr;
 
     // нельзя вручную установить id и группу. Исп. при копировании из файла
     void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
     // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
-public: 
-    // полностью public! но ок в рамках задания
-    Group* groupsMap = nullptr;
 
 public:
     explicit School(unsigned startIDStudent = 100, unsigned startIDgroup = 10)
@@ -138,14 +135,19 @@ public:
 
     unsigned createGroup(const char* name);
 
-    bool deleteGroup(Group* group); // ошибка на непустую группу
+    bool deleteGroup(const unsigned& ID); // ошибка на непустую группу
+
+    const char* getGroupName(const unsigned& ID) const;
+
+    const Group* hasGroup(const unsigned& ID) const;
+
+    const Group* getGroup() const;
 
     void addVisit(Student* ptr, const unsigned& day);
 
-    // add groups tree!!!
-    void addGroupVisit(const Group* ptr, const unsigned& day);
+    // void addGroupVisit(const Group* ptr, const unsigned& day);
 
-    void transferToGroup(Student* Sptr, Group* Gptr = nullptr);
+    void moveToGroup(Student* Sptr, Group* Gptr = nullptr);
 
     void disband(Group* ptr);
 
@@ -188,57 +190,57 @@ public:
     class ByVisits
     {
     public:
-        bool operator()(const Student* a, const Student* b) const
+        bool operator()(const Student& a, const Student& b) const
         {
-            return a->visits < b->visits;
+            return a.visits < b.visits;
         }
 
-        bool operator()(const Student* a, const unsigned& b) const
+        bool operator()(const Student& a, const unsigned& b) const
         {
-            return a->visits < b;
+            return a.visits < b;
         }
 
-        bool operator()(const unsigned& a, const Student* b) const
+        bool operator()(const unsigned& a, const Student& b) const
         {
-            return a < b->visits;
+            return a < b.visits;
         }
     };
 
     class ByLastname
     {
     public:
-        bool operator()(const Student* a, const Student* b) const
+        bool operator()(const Student& a, const Student& b) const
         {
-            return std::strcmp(a->lastname, b->lastname) < 0;
+            return std::strcmp(a.lastname, b.lastname) < 0;
         }
 
-        bool operator()(const Student* a, const char* b) const
+        bool operator()(const Student& a, const char* b) const
         {
-            return std::strcmp(a->lastname, b) < 0;
+            return std::strcmp(a.lastname, b) < 0;
         }
 
-        bool operator()(const char* a, const Student* b) const
+        bool operator()(const char* a, const Student& b) const
         {
-            return std::strcmp(a, b->lastname) < 0;
+            return std::strcmp(a, b.lastname) < 0;
         }
     };
 
     class ByStudentID
     {
     public:
-        bool operator()(const Student* a, const Student* b) const
+        bool operator()(const Student& a, const Student& b) const
         {
-            return a->ID < b->ID;
+            return a.ID < b.ID;
         }
 
-        bool operator()(const Student* a, const unsigned& b) const
+        bool operator()(const Student& a, const unsigned& b) const
         {
-            return a->ID < b;
+            return a.ID < b;
         }
 
-        bool operator()(const unsigned& a, const Student* b) const
+        bool operator()(const unsigned& a, const Student& b) const
         {
-            return a < b->ID;
+            return a < b.ID;
         }
     };
 
@@ -259,7 +261,7 @@ public:
 
         while(iter)
         {
-            if(cmp(sotrBorder, iter))   
+            if(cmp(*sotrBorder, *iter) || (!cmp(*sotrBorder, *iter) && !cmp(*iter, *sotrBorder)))   
             {
                 sotrBorder = sotrBorder->next;
                 iter = iter->next;
@@ -271,7 +273,7 @@ public:
             {
                 inSortedPart = sotrBorder;
 
-                while( inSortedPart->prev != nullptr && cmp(iter, inSortedPart->prev))
+                while( inSortedPart->prev != nullptr && cmp(*iter, *inSortedPart->prev))
                     inSortedPart = inSortedPart->prev;
                 
                 replace(inSortedPart, iter);
