@@ -6,7 +6,7 @@ class DateConverter
 {
 private:
     const unsigned mounthLen[12] = {31, 28 ,31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    // const char* monthName[12] = { "Сент", "Окт", "Нояб", "Дек", "Янв", "Фев", "Март", "Апр", "Май", "Июнь", "Июль", "Авг"};
+    // const char* monthName[12] = {"Янв", "Фев", "Март", "Апр", "Май", "Июнь", "Июль", "Авг", "Сент", "Окт", "Нояб", "Дек"};
 public:
     explicit DateConverter()
         {   }

@@ -13,9 +13,11 @@ int main()
     SetConsoleCP(CP_UTF8);
    
     School* ourSchool = new School;
+    ourSchool->saveLoad();
     
     menu ourMenu;
     ourMenu.init(ourSchool);
 
+    ourSchool->save();
     return 0;
 }

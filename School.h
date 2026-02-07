@@ -24,10 +24,13 @@ private:
     IDGenerator   getStudentID;
     IDGenerator   getGroupID;
 
-    Group* groups = nullptr;
+    size_t groupsCapacity = 0;
+    Group* groups = nullptr;    
 
-    // нельзя вручную установить id и группу. Исп. при копировании из файла
-    void push_back(unsigned studentID, const char* lastname, unsigned groupID = 0);
+    // нельзя вручную установить id. Исп. при копировании из файла
+    void push_back(const unsigned& studentID, const char* lastname, unsigned groupID = 0);
+    // для загрузки сейва - нет проверки на уникальность имени группы
+    void createGroup(const unsigned& ID, const char* name);
     // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
 
 public:
@@ -151,7 +154,7 @@ public:
 
     void disband(Group* ptr);
 
-    bool writeToBin(const char* filename) const;
+    bool save(const char* filename = "Save.bin") const;
 
     template <typename IDGenerator>void readFromBIn(const char* filename)
     {
@@ -184,7 +187,7 @@ public:
 
 }
 
-    void copySchoolFromBin(const char* filename);
+    void saveLoad(const char* filename = "Save.bin");
 
     // компрораторы
     class ByVisits

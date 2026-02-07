@@ -4,8 +4,9 @@
 #include <cstring>
 
 #include "VisitDays.h"
+#include "Algorithm.h"
 
-// #define MAX_NAME_LEN 20
+
 
 struct Student
 {
@@ -28,21 +29,23 @@ public:
    
 
     
-    explicit Student(unsigned studentID, const char* lastname, unsigned groupID = 0)
+    explicit Student(unsigned studentID, const char* lastname, const unsigned& groupID = 0)
     :ID(studentID), groupID(groupID)
     {
-        size_t strLen = sizeof(lastname) + 1;
+        size_t sLen = strlen(lastname) + 1;
 
-        if(strLen <= MAX_NAME_LEN)
+        if(sLen <= MAX_NAME_LEN)
         {
-            this->lastname = new char[strLen + 1];
+            this->lastname = new char[sLen];
             strcpy(this->lastname, lastname);
         }
         else
         {
             this->lastname = new char[MAX_NAME_LEN];
             strncpy(this->lastname, lastname, MAX_NAME_LEN);
-            this->lastname[MAX_NAME_LEN - 1] = '\0'; 
+            
+            size_t safePrefix = SchoolAlg::safeStrPrefix(this->lastname, MAX_NAME_LEN);
+            this->lastname[safePrefix] = '\0';
         }        
     }
 

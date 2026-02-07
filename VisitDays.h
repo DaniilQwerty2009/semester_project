@@ -4,7 +4,7 @@
 #include <iostream>
 #include <exception>
 
- struct VisitDays
+struct VisitDays
     {
     public:
         enum averageStudyDays {studyDays = 165};

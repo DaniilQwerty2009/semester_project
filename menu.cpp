@@ -421,6 +421,8 @@ bool menu::deleteGroup()
 
     cout << "Введите номер группы: ";
     cin >> ID;
+
+    // deleteGroup generate exeption to wrong ID
     
     if(school->deleteGroup(ID))
         return true;

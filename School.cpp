@@ -36,7 +36,7 @@ unsigned School::push_back(const char* lastname, unsigned groupID)
         return tail->ID;
     }
 
-void School::push_back(unsigned studentID, const char* lastname, unsigned groupID)
+void School::push_back(const unsigned& studentID, const char* lastname, unsigned groupID)
     {
         if(!head)
         {
@@ -107,24 +107,48 @@ unsigned School::createGroup(const char* name)
     if(!groups)
         {
             groups = new Group(getGroupID(), name);
+            groupsCapacity++;
             return groups->ID;
         }
-        else
+    else
+    {
+        Group* ptr = groups;
+
+        while(ptr->next != nullptr)
+        {
+            if(strcmp(ptr->name, name) == 0)
+                return 0;                    //exeption
+
+            ptr = ptr->next;
+        }
+        if(strcmp(ptr->name, name) == 0)
+                return 0;
+        
+        ptr->next = new Group(getGroupID(), name);
+        ptr->next->prev = ptr;
+        groupsCapacity++;
+        return ptr->next->ID;
+    }
+}
+
+void School::createGroup(const unsigned& ID, const char* name)
+{
+    if(!groups)
+        {
+            groups = new Group(ID, name);
+            groupsCapacity++;
+            return;
+        }
+    else
         {
             Group* ptr = groups;
 
             while(ptr->next != nullptr)
-            {
-                if(strcmp(ptr->name, name) == 0)
-                    return 0;                    //exeption
-
                 ptr = ptr->next;
-            }
             
-            ptr->next = new Group(getGroupID(), name);
+            ptr->next = new Group(ID, name);
             ptr->next->prev = ptr;
-
-            return ptr->next->ID;
+            groupsCapacity++;
         }
 }
 
@@ -146,6 +170,9 @@ bool School::deleteGroup(const unsigned& ID) // ошибка на непусту
 
         Gptr = Gptr->next;
     }
+    if(!Gptr)
+        return false; //exeption has not group
+
 
     if(Gptr == groups)
     {
@@ -153,6 +180,7 @@ bool School::deleteGroup(const unsigned& ID) // ошибка на непусту
         {
             delete Gptr;
             groups = nullptr;
+            groupsCapacity--;
             return true;
         }
         else
@@ -160,6 +188,7 @@ bool School::deleteGroup(const unsigned& ID) // ошибка на непусту
             groups = groups->next;
             groups->prev = nullptr;
             delete Gptr;
+            groupsCapacity--;
             return true;
         }
     }
@@ -170,12 +199,14 @@ bool School::deleteGroup(const unsigned& ID) // ошибка на непусту
             Gptr->prev->next = Gptr->next;
             Gptr->next->prev = Gptr->prev;
             delete Gptr;
+            groupsCapacity--;
             return true;
         }
         else
         {
             Gptr->prev->next = nullptr;
             delete Gptr;
+            groupsCapacity--;
             return true;
         }
 
@@ -364,38 +395,56 @@ void School::disband(Group* ptr)
     }
 }
 
-bool School::writeToBin(const char* filename) const
+bool School::save(const char* filename) const
 {
     std::ofstream fout(filename, std::ios::binary);
 
-    Student* ptr = head;
-    // fout.write((char*)&capacity, sizeof(capacity));
+    Student* Sptr = head;
+    
+    fout.write((char*)&capacity, sizeof(uint64_t));
 
-    while(ptr)
+    while(Sptr)
     {
         
-        fout.write((char*)&ptr->ID, sizeof(uint32_t));
-        fout.write(ptr->lastname, Student::MAX_NAME_LEN);
-        fout.write((char*)&ptr->groupID, sizeof(uint32_t));
-        fout.write((char*)&ptr->visits, sizeof(uint32_t));
+        fout.write((char*)&Sptr->ID, sizeof(uint32_t));
+        fout.write(Sptr->lastname, Student::MAX_NAME_LEN);
+        fout.write((char*)&Sptr->groupID, sizeof(uint32_t));
+        fout.write((char*)&Sptr->visits, sizeof(uint32_t));
         
-        fout.write((char*)ptr->days.datesArray, sizeof(uint32_t) * ptr->days.elementsQty);
+        fout.write((char*)Sptr->days.datesArray, sizeof(uint32_t) * Sptr->days.elementsQty);
 
-        ptr = ptr->next;
+        Sptr = Sptr->next;
+    }
+
+    Group* Gptr = groups;
+
+    fout.write((char*)&groupsCapacity, sizeof(uint64_t));
+
+    for(size_t i = 0; i < groupsCapacity; ++i)
+    {
+        fout.write((char*)&Gptr->ID, sizeof(uint32_t));
+        fout.write(Gptr->name, Group::MAX_NAME_LEN);
+
+        Gptr = Gptr->next;
     }
 
     fout.close();
     return true;
 }
 
-void School::copySchoolFromBin(const char* filename)
+void School::saveLoad(const char* filename)
 {
     std::ifstream fin(filename, std::ios::binary);
-    
+
+    if( !fin )
+        return; //exeption?
         
-    unsigned id, groupid, visits, date;
+    unsigned id, groupid, visits, visitDay, blockLen;
     char name[Student::MAX_NAME_LEN];
-    while(! fin.eof())
+
+    fin.read((char*)&blockLen, sizeof(uint64_t));
+
+    for(size_t i = 0; i < blockLen; ++i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
         fin.read(name, Student::MAX_NAME_LEN);
@@ -408,15 +457,25 @@ void School::copySchoolFromBin(const char* filename)
 
         for(size_t i = 0; i < visits; ++i)
         {
-            fin.read((char*)&date, sizeof(uint32_t));
-            tail->days.push(date);
+            fin.read((char*)&visitDay, sizeof(uint32_t));
+            addVisit(tail, visitDay);
         }
 
-        if( !fin.peek())
-            break;
-        
+        // if( !fin.peek()) //ошибка чтения? Хотя, если !groups, он сработает 
+        //     break;
     }
 
-    // проверка на уникальность ID, иначе ручное слияние
+
+    char groupName[Group::MAX_NAME_LEN];
+    fin.read((char*)&blockLen, sizeof(uint64_t));
+    
+    for(size_t i = 0; i < blockLen; ++ i)
+    {
+        fin.read((char*)&id, sizeof(uint32_t));
+        fin.read(groupName, Group::MAX_NAME_LEN);
+
+        createGroup(id, groupName);
+    }
+
 }
 
