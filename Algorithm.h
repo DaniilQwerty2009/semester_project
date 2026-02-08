@@ -7,17 +7,35 @@
 namespace SchoolAlg 
 {
     template<typename Iterator, typename Compare, typename Attribute>
-        bool search(Iterator& iterator, Compare compare, Attribute attribute)
+        Iterator search(Iterator& first_iterator, Iterator& last_iterator, Compare compare, Attribute attribute)
         {
-            while(iterator)
-            {
-                if( !compare(*iterator, attribute) && !compare(attribute, *iterator))
-                    return iterator;
+            Iterator iter = first_iterator;
 
-                iterator++;
+            while(iter && first_iterator != last_iterator)
+            {
+                if( !compare(*iter, attribute) && !compare(attribute, *iter))
+                    return iter;
+
+                iter++;
             }
 
-            return iterator;
+            return iter;
+        }
+
+    template<typename Iterator, typename Compare, typename Attribute>
+        Iterator search(Iterator& first_iterator, Compare compare, Attribute attribute)
+        {
+            Iterator iter = first_iterator;
+
+            while(iter)
+            {
+                if( !compare(*iter, attribute) && !compare(attribute, *iter))
+                    return iter;
+
+                iter++;
+            }
+
+            return iter;
         }
 
 

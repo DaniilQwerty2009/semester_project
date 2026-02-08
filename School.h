@@ -8,7 +8,7 @@
 #include "Student.h"
 #include "Group.h"
 #include "DateConverter.h"
-#include "IDGenerator.h"
+// #include "IDGenerator.h"
 
 class School
 {
@@ -18,73 +18,69 @@ private:
     Student* head = nullptr;
     Student* tail = nullptr;
 
+    unsigned gIDcounter = 100;
+    unsigned sIDcounter = 1000;
 
     DateConverter dateConverter;
 
-    IDGenerator   getStudentID;
-    IDGenerator   getGroupID;
-
     size_t groupsCapacity = 0;
-    Group* groups = nullptr;    
-
+    
+    
     // нельзя вручную установить id. Исп. при копировании из файла
-    void push_back(const unsigned& studentID, const char* lastname, unsigned groupID = 0);
+    void push_back(const unsigned& studentID, const char* lastname, const unsigned& groupID = 0);
     // для загрузки сейва - нет проверки на уникальность имени группы
-    void createGroup(const unsigned& ID, const char* name);
-    // Добавить группы в чтение и запись в файл - два режима: резервное копирование и перенос данных студентов???
+    void push_group(const unsigned& ID, const char* name);
 
 public:
-    explicit School(unsigned startIDStudent = 100, unsigned startIDgroup = 10)
-    :getStudentID(startIDStudent),
-     getGroupID(startIDgroup)
+    Groups groups; 
+
+    explicit School()
         {    }
 
     ~School()
     {
-        Student* ptr;
-
-        while(ptr)
+        while(head)
         {
-            Student* temp = ptr;
-            ptr = ptr->next;
+            Student* temp = head;
+            head = head->next;
             delete temp;
         }
     }
 
     // валидность итераторов. когда??
     class iterator
-        {
-        private:
-            Student* pointer;
+    {
+    private:
+        Student* pointer;
+    
+        explicit iterator(Student* ptr):pointer(ptr)
+            {   }
+
+        friend class School;
+    public:
+
+        explicit iterator():pointer(nullptr)
+            {   }
+
+        iterator(const iterator&) = default;
+        iterator(iterator&) = default;
+
         
-            explicit iterator(Student* ptr):pointer(ptr)
-                {   }
+        // void     operator= (iterator& iterator);
+        void     operator= (iterator iterator);
+        bool     operator!=(iterator& iterator);
+        bool     operator==(iterator& iterator);
 
-            friend class School;
-        public:
+        iterator operator--();
+        iterator operator--(int);
+        iterator operator++();
+        iterator operator++(int);
 
-            explicit iterator():pointer(nullptr)
-                {   }
+        
+        operator bool() const;
+        Student& operator*() const;
 
-            iterator(const iterator&) = default;
-            iterator(iterator&) = default;
-
-            
-            // void     operator= (iterator& iterator);
-            void     operator= (iterator iterator);
-            bool     operator!=(iterator& iterator);
-            bool     operator==(iterator& iterator);
-
-            iterator operator--();
-            iterator operator--(int);
-            iterator operator++();
-            iterator operator++(int);
-
-            
-            operator bool() const;
-            Student& operator*() const;
-
-        };
+    };
 
         inline iterator begin() const
         {
@@ -107,13 +103,13 @@ public:
 
     unsigned push_back(const char* lastname, unsigned groupID = 0);
 
-    template <typename Compare> unsigned push_sorted(Compare comporator, const char* lastname, unsigned groupID = 0)
+    template <typename Compare> unsigned push_sorted(Compare comporator, const char* lastname, const unsigned& groupID = 0)
     {
-        unsigned ID = push_back(getStudentID(), lastname, groupID);
+        unsigned ID = push_back(lastname, groupID);
 
         if(tail->prev)
         {
-            if(comporator(tail->prev, tail))
+            if(comporator(*tail->prev, *tail))
                 return ID;
         }
 
@@ -122,7 +118,7 @@ public:
 
         while(ptr != element)
         {
-            if(comporator(element, ptr))
+            if(comporator(*element, *ptr))
             {
                 replace(ptr, element);
                 return ID;
@@ -136,56 +132,26 @@ public:
 
     void pop(Student* studentPtr);
 
-    unsigned createGroup(const char* name);
+    unsigned push_group(const char* name);
 
-    bool deleteGroup(const unsigned& ID); // ошибка на непустую группу
+    bool pop_group(const unsigned& ID); // ошибка на непустую группу
 
-    const char* getGroupName(const unsigned& ID) const;
+    // const char* getGroupName(const unsigned& ID) const;
 
-    const Group* hasGroup(const unsigned& ID) const;
+    // const Group* hasGroup(const unsigned& ID) const;
 
-    const Group* getGroup() const;
+    
 
-    void addVisit(Student* ptr, const unsigned& day);
+    void push_visit(Student* ptr, const unsigned& day);
 
     // void addGroupVisit(const Group* ptr, const unsigned& day);
 
-    void moveToGroup(Student* Sptr, Group* Gptr = nullptr);
+    // void moveToGroup(Student* Sptr, Groups::Group* Gptr = nullptr);
 
-    void disband(Group* ptr);
+
+    // void disband(Group* ptr);
 
     bool save(const char* filename = "Save.bin") const;
-
-    template <typename IDGenerator>void readFromBIn(const char* filename)
-    {
-        std::ifstream fin(filename, std::ios::binary);
-    
-        
-        unsigned groupid, visits, date;
-        char name[Student::MAX_NAME_LEN];
-        while(! fin.eof())
-        {
-            fin.ignore(sizeof(uint32_t));
-            fin.read(name, Student::MAX_NAME_LEN);
-
-            fin.read((char*)&groupid, sizeof(uint32_t));
-
-            fin.read((char*)&visits, sizeof(uint32_t));
-
-            push_back(getStudentID(), name, groupid);
-
-            for(size_t i = 0; i < visits; ++i)
-            {
-                fin.read((char*)&date, sizeof(uint32_t));
-                tail->days.push(date);
-            }
-
-            if(! fin.eof())
-                break;
-            
-        }
-
-}
 
     void saveLoad(const char* filename = "Save.bin");
 

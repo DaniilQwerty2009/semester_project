@@ -23,14 +23,17 @@ struct VisitDays
             delete[] datesArray;
         }
 
-        // exeption!!
-        const unsigned& operator[](unsigned index)
-        {
-            // if(index >= elementsQty)
-            //     return 0;
+        VisitDays(VisitDays& other) = delete;
+        VisitDays& operator=(VisitDays& other) = delete;
 
-            return datesArray[index];
-        }
+        // exeption!!
+        // const unsigned& operator[](unsigned index)
+        // {
+        //     // if(index >= elementsQty)
+        //     //     return 0;
+
+        //     return datesArray[index];
+        // }
         
 
     

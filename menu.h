@@ -39,18 +39,19 @@ public:
     bool StudentsEditGroup(School::iterator& iter);
     void inStudentsList();
     void StudentsAdd();
+    void SudentAddSorted();
     void StudentsExclude(School::iterator& iter);
     // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
-    void StudentsFormatShow() const;
+    void StudentFormatPrint(School::iterator& beginIter)) const;
 
 // ======================================================================= //
 
-void inGroup();
+void     inGroup();
 
 unsigned createGroup();
-bool deleteGroup();
+bool     deleteGroup();
 
-void GroupFormatShow() const;
+void     GroupFormatPrint() const;
 
 // ======================================================================= //
 

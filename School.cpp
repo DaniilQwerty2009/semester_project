@@ -5,27 +5,30 @@ unsigned School::push_back(const char* lastname, unsigned groupID)
     {
         // исключение - нет такой группы
         // обработка - присваивание группе 0
-        Group* ptr = groups;
-        while(ptr)
+        Groups::iterator gIter(groups.begin());
+
+        while(gIter)
         {
-            if(ptr->ID == groupID)
+            if((*gIter).ID == groupID)
                 break;
 
-            ptr = ptr->next;
+            gIter++;
         }
 
-        if(!ptr)
+        if(!gIter)
             groupID = 0;
 
         if(!head)
         {
-            head = new Student(getStudentID(), lastname, groupID);
+            head = new Student(sIDcounter, lastname, groupID);
+            sIDcounter++;
             capacity++;
             tail = head;
         }
         else
         {
-            tail->next = new Student(getStudentID(), lastname, groupID);
+            tail->next = new Student(sIDcounter, lastname, groupID);
+            sIDcounter++;
             capacity++;
             Student* oldTail = tail;
             tail = tail->next;
@@ -36,7 +39,7 @@ unsigned School::push_back(const char* lastname, unsigned groupID)
         return tail->ID;
     }
 
-void School::push_back(const unsigned& studentID, const char* lastname, unsigned groupID)
+void School::push_back(const unsigned& studentID, const char* lastname, const unsigned& groupID)
     {
         if(!head)
         {
@@ -102,155 +105,62 @@ void School::pop(Student* student)
 }
 
 //exeption
-unsigned School::createGroup(const char* name)
+unsigned School::push_group(const char* name)
 {
-    if(!groups)
-        {
-            groups = new Group(getGroupID(), name);
-            groupsCapacity++;
-            return groups->ID;
-        }
-    else
+    groups.push(gIDcounter, name);
+    gIDcounter++;
+    groupsCapacity++;
+    return (gIDcounter - 1);
+}
+
+void School::push_group(const unsigned& ID, const char* name)
+{
+    groups.push(ID, name);
+    groupsCapacity++;
+}
+
+bool School::pop_group(const unsigned& ID) // ошибка на непустую группу
+{
+    Groups::iterator gIter(groups.begin());
+
+    while(gIter)
     {
-        Group* ptr = groups;
-
-        while(ptr->next != nullptr)
-        {
-            if(strcmp(ptr->name, name) == 0)
-                return 0;                    //exeption
-
-            ptr = ptr->next;
-        }
-        if(strcmp(ptr->name, name) == 0)
-                return 0;
-        
-        ptr->next = new Group(getGroupID(), name);
-        ptr->next->prev = ptr;
-        groupsCapacity++;
-        return ptr->next->ID;
+        if((*gIter).)
     }
 }
 
-void School::createGroup(const unsigned& ID, const char* name)
-{
-    if(!groups)
-        {
-            groups = new Group(ID, name);
-            groupsCapacity++;
-            return;
-        }
-    else
-        {
-            Group* ptr = groups;
+// const char* School::getGroupName(const unsigned& ID) const
+// {
+//     Group* ptr = groups;
+//     while(ptr)
+//     {
+//         if(ptr->ID == ID)
+//             return ptr->name;
 
-            while(ptr->next != nullptr)
-                ptr = ptr->next;
-            
-            ptr->next = new Group(ID, name);
-            ptr->next->prev = ptr;
-            groupsCapacity++;
-        }
-}
+//         ptr = ptr->next;
+//     }
 
-bool School::deleteGroup(const unsigned& ID) // ошибка на непустую группу
-{
-    Student* Sptr = head;
-    while(Sptr)
-    {
-        if(Sptr->groupID == ID)
-            return false;                   // исключение - не пустая группа
-        Sptr = Sptr->next;
-    }
+//     return nullptr;
+// }
 
-    Group* Gptr = groups;
-    while(Gptr)
-    {
-        if(Gptr->ID == ID)
-            break;
+// const Group* School::hasGroup(const unsigned& ID) const
+// {
+//     const Group* Gptr = groups;
 
-        Gptr = Gptr->next;
-    }
-    if(!Gptr)
-        return false; //exeption has not group
+//     while(Gptr)
+//     {
+//         if(Gptr->ID == ID)
+//             return Gptr;
 
+//         Gptr = Gptr->next;
+//     }
 
-    if(Gptr == groups)
-    {
-        if(!groups->next)
-        {
-            delete Gptr;
-            groups = nullptr;
-            groupsCapacity--;
-            return true;
-        }
-        else
-        {
-            groups = groups->next;
-            groups->prev = nullptr;
-            delete Gptr;
-            groupsCapacity--;
-            return true;
-        }
-    }
-    else
-    {
-        if(Gptr->next)
-        {
-            Gptr->prev->next = Gptr->next;
-            Gptr->next->prev = Gptr->prev;
-            delete Gptr;
-            groupsCapacity--;
-            return true;
-        }
-        else
-        {
-            Gptr->prev->next = nullptr;
-            delete Gptr;
-            groupsCapacity--;
-            return true;
-        }
-
-    }
-
-    return false;
-}
-
-const char* School::getGroupName(const unsigned& ID) const
-{
-    Group* ptr = groups;
-    while(ptr)
-    {
-        if(ptr->ID == ID)
-            return ptr->name;
-
-        ptr = ptr->next;
-    }
-
-    return nullptr;
-}
-
-const Group* School::hasGroup(const unsigned& ID) const
-{
-    const Group* Gptr = groups;
-
-    while(Gptr)
-    {
-        if(Gptr->ID == ID)
-            return Gptr;
-
-        Gptr = Gptr->next;
-    }
-
-    return nullptr;
-}
+//     return nullptr;
+// }
 
 // exeption
-const Group* School::getGroup() const
-{
-    return groups;
-}
 
-void School::addVisit(Student* ptr, const unsigned& day)
+void School::push_visit(Student* ptr, const unsigned& day)
 {
     // Проверка на одинаковую дату!
     if(ptr->hasDay(day))
@@ -271,7 +181,7 @@ void School::addVisit(Student* ptr, const unsigned& day)
 //     while(ptr)
 //     {
 //         if(ptr->groupID == Gptr->ID)
-//             School::addVisit(ptr, day);
+//             School::push_visit(ptr, day);
 
 //         ptr = ptr->next;
 //     }
@@ -374,26 +284,26 @@ void School::replace(Student* destination, Student* element)
         
     }
 
-void School::moveToGroup(Student* Sptr, Group* Gptr)
-{
-    if(Gptr)
-        Sptr->groupID = Gptr->ID;
-    else
-        Sptr->groupID = 0;
-}
+// void School::moveToGroup(Student* Sptr, Group* Gptr)
+// {
+//     if(Gptr)
+//         Sptr->groupID = Gptr->ID;
+//     else
+//         Sptr->groupID = 0;
+// }
 
-void School::disband(Group* ptr)
-{
-    Student* STptr = head;
+// void School::disband(Group* ptr)
+// {
+//     Student* STptr = head;
 
-    while(STptr)
-    {
-        if(ptr->ID == STptr->groupID)
-            STptr->groupID = 0;
+//     while(STptr)
+//     {
+//         if(ptr->ID == STptr->groupID)
+//             STptr->groupID = 0;
 
-        STptr = STptr->next;
-    }
-}
+//         STptr = STptr->next;
+//     }
+// }
 
 bool School::save(const char* filename) const
 {
@@ -407,7 +317,7 @@ bool School::save(const char* filename) const
     {
         
         fout.write((char*)&Sptr->ID, sizeof(uint32_t));
-        fout.write(Sptr->lastname, Student::MAX_NAME_LEN);
+        fout.write(Sptr->lastname, Student::MAX_NAME_BYTES);
         fout.write((char*)&Sptr->groupID, sizeof(uint32_t));
         fout.write((char*)&Sptr->visits, sizeof(uint32_t));
         
@@ -423,7 +333,7 @@ bool School::save(const char* filename) const
     for(size_t i = 0; i < groupsCapacity; ++i)
     {
         fout.write((char*)&Gptr->ID, sizeof(uint32_t));
-        fout.write(Gptr->name, Group::MAX_NAME_LEN);
+        fout.write(Gptr->name, Group::MAX_NAME_BYTES);
 
         Gptr = Gptr->next;
     }
@@ -440,42 +350,51 @@ void School::saveLoad(const char* filename)
         return; //exeption?
         
     unsigned id, groupid, visits, visitDay, blockLen;
-    char name[Student::MAX_NAME_LEN];
+    char name[Student::MAX_NAME_BYTES];
+
+    unsigned maxID = 0;
 
     fin.read((char*)&blockLen, sizeof(uint64_t));
 
     for(size_t i = 0; i < blockLen; ++i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(name, Student::MAX_NAME_LEN);
+        fin.read(name, Student::MAX_NAME_BYTES);
 
         fin.read((char*)&groupid, sizeof(uint32_t));
 
         fin.read((char*)&visits, sizeof(uint32_t));
+
+        if(maxID < id)
+            maxID = id;
 
         push_back(id, name, groupid);
 
         for(size_t i = 0; i < visits; ++i)
         {
             fin.read((char*)&visitDay, sizeof(uint32_t));
-            addVisit(tail, visitDay);
+            push_visit(tail, visitDay);
         }
-
-        // if( !fin.peek()) //ошибка чтения? Хотя, если !groups, он сработает 
-        //     break;
     }
 
+    sIDcounter = maxID + 1;
+    maxID = 0;
 
-    char groupName[Group::MAX_NAME_LEN];
+    char groupName[Group::MAX_NAME_BYTES];
     fin.read((char*)&blockLen, sizeof(uint64_t));
     
     for(size_t i = 0; i < blockLen; ++ i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(groupName, Group::MAX_NAME_LEN);
+        fin.read(groupName, Group::MAX_NAME_BYTES);
 
-        createGroup(id, groupName);
+        if(maxID < id)
+            maxID = id;
+
+        push_group(id, groupName);
     }
+
+    gIDcounter = maxID + 1;
 
 }
 

@@ -1,18 +1,24 @@
-#ifndef ID_GENERATOR_H
-#define ID_GENERATOR_H
+// #ifndef ID_GENERATOR_H
+// #define ID_GENERATOR_H
 
-class IDGenerator
-{
-private:
-    unsigned IDcounter = 100;
-public:
-    explicit IDGenerator(unsigned startValue): IDcounter(startValue)
-        {   }
+// class IDGenerator
+// {
+// private:
+//     unsigned IDstart;
+//     unsigned IDlast;
+
+// public:
+//     explicit IDGenerator(const unsigned& startValue, const unsigned& lastValue)
+//     : IDstart(startValue),
+//       IDlast (lastValue)
+//         {   }
+
+//     template <typename Iterator>
+//         unsigned operator()(Iterator& iterator)
+//     { 
+//         (*iterator).ID = 1;
+//     }
+// };
 
 
-    unsigned operator()()
-    { return IDcounter++; }
-};
-
-
-#endif
+// #endif

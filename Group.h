@@ -4,96 +4,165 @@
 #include <cstring>
 #include "Algorithm.h"
 
-struct Group
+class Groups
 {
-    enum {MAX_NAME_LEN = 40};
-
-    unsigned ID;
-    char* name = nullptr;
-
-    Group* next = nullptr;
-    Group* prev = nullptr;
-
-    Group(const unsigned& ID, const char* name)
+private:
+    struct Group
     {
-        this->ID = ID;
+    private:
+        Group* next = nullptr;
 
-        size_t sLen = strlen(name) + 1;
+        friend class Groups;
+    public:
+        unsigned ID;
+        char* name = nullptr;
 
-        if(sLen <= MAX_NAME_LEN)
+        explicit Group(const unsigned& ID, const char* name)
         {
-            this->name = new char[sLen];
-            strcpy(this->name, name);
+            this->ID = ID;
+
+            size_t sLen = strlen(name) + 1;
+
+            if(sLen <= MAX_NAME_BYTES)
+            {
+                this->name = new char[sLen];
+                strcpy(this->name, name);
+
+                size_t safePrefix = SchoolAlg::safeStrPrefix(this->name, MAX_NAME_BYTES);
+                this->name[safePrefix] = '\0';
+            }
+            else
+            {
+                this->name = new char[MAX_NAME_BYTES];
+                strncpy(this->name, name, MAX_NAME_BYTES);
+
+                size_t safePrefix = SchoolAlg::safeStrPrefix(this->name, MAX_NAME_BYTES);
+                this->name[safePrefix] = '\0';
+            }     
+        }
+
+        ~Group()
+        {
+            delete[] name;
+        }
+
+        Group(Group& other)            = delete;
+        Group& operator=(Group& other) = delete;
+
+    };
+
+    Groups::Group* head = nullptr;
+
+    friend class School;
+    
+public:
+    enum {MAX_NAME_BYTES = 40};
+
+    Groups()
+        {   }
+
+    ~Groups()
+    {
+        Group* ptr = head;
+
+        while(ptr)
+        {
+            head = head->next;
+            delete ptr;
+            ptr = head;
+        }
+    }
+
+    Groups(Groups& other) = delete;
+    Groups& operator=(Groups& other) = delete;
+    
+    class iterator
+    {
+    private:
+        Group* pointer = nullptr;
+
+        explicit iterator(Group* ptr): pointer(ptr)
+            {   }
+
+        friend class Groups;
+
+    public:
+
+    explicit iterator():pointer(nullptr)
+            {   }
+
+        iterator(const iterator&) = default;
+        iterator(iterator&) = default;
+
+        
+        void     operator= (iterator iterator);
+        bool     operator!=(iterator& iterator);
+        bool     operator==(iterator& iterator);
+
+        iterator operator++();
+        iterator operator++(int);
+ 
+        operator bool() const;
+        Group& operator*() const;        
+    };
+
+    inline iterator begin()
+    { 
+        return iterator(head); 
+    }
+
+    inline iterator end()
+    { 
+        return iterator(nullptr); 
+    }
+
+
+    void push(const unsigned& ID, const char* name)
+    {
+        if(!head)
+        {
+            head = new Group(ID, name);
+            head->next = nullptr; 
         }
         else
         {
-            this->name = new char[MAX_NAME_LEN];
-            strncpy(this->name, name, MAX_NAME_LEN);
+            Group* ptr = head;
 
-            size_t safePrefix = SchoolAlg::safeStrPrefix(this->name, MAX_NAME_LEN);
-            this->name[safePrefix] = '\0';
-        }     
+            while(ptr->next != nullptr)
+            {
+                if(strcmp(ptr->name, name) == 0)
+                    return;                    //exeption!!!!!
+
+                ptr = ptr->next;
+            }
+            if(strcmp(ptr->name, name) == 0)
+                    return;                      //exeption!!!!!
+            
+            ptr->next = new Group(ID, name);
+            ptr->next->next = nullptr;
+        }
     }
 
-    ~Group()
+    void pop(Group* ptr)
     {
-        delete[] name;
+        if(!ptr || !head)
+            return;
+
+        if(ptr == head)
+        {
+            delete head;
+            head = nullptr;
+        }
+
+        Group* prevPtr = head;
+
+        while(prevPtr->next != ptr)
+            prevPtr = prevPtr->next;
+
+        prevPtr->next = ptr->next;
+        delete ptr;
     }
-
-    Group(Group& other)            = delete;
-    Group& operator=(Group& other) = delete;
-
-    bool operator==(Group* other)
-    {
-        return ID == other->ID;
-    }
-
-    bool operator!=(Group* other)
-    {
-        return ID != other->ID;
-    }
-
-    // char& operator[](const unsigned& ID)
-    // {
-    //     Group* ptr = this;
-
-    //     while(ptr)
-    //     {
-    //         if(this->ID == ID)
-    //             return *name;
-    //     }
-    // }
-
-    // char& operator=(const char* val)
-    // {
-    //     if(strlen(val) >= MAX_NAME_LEN)
-    //     {
-    //         delete[] name;
-    //         char* name = new char[MAX_NAME_LEN];
-    //         strncpy(name, val, MAX_NAME_LEN);
-    //         this->name[MAX_NAME_LEN - 1] = '\0';
-
-    //         return *name;
-    //     }
-    //     else if(strlen(val) > strlen(name))
-    //     {
-    //         delete[] name;
-    //         name = new char[strlen(val) + 1];
-    //         strcpy(name, val);
-
-    //         return *name;
-    //     }
-    //     else
-    //     {
-    //         strcpy(name, val);
-
-    //         return *name;
-    //     }
-    // }
-
 };
-
-
 
 
 #endif

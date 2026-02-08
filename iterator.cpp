@@ -1,27 +1,26 @@
 #include "School.h"
 
 
-// void School::iterator::         operator=(iterator& iterator)
-// {
-//     pointer = iterator.pointer;
-// }
-
-void School::iterator::         operator=(iterator iterator)
+void School::iterator::
+    operator=(School::iterator iterator)
 {
     pointer = iterator.pointer;
 }
 
-bool School::iterator::         operator!=(iterator& iterator)
+bool School::iterator::
+    operator!=(School::iterator& iterator)
 {
     return pointer != iterator.pointer;
 }
 
-bool School::iterator::         operator==(iterator& iterator)
+bool School::iterator::
+    operator==(School::iterator& iterator)
 {
     return pointer == iterator.pointer;
 }
 
-School::iterator School::iterator::operator++()
+School::iterator School::iterator::
+    operator++()
 {
     if(pointer)
         pointer = pointer->next;
@@ -29,7 +28,8 @@ School::iterator School::iterator::operator++()
     return *this;
 }
 
-School::iterator School::iterator::operator++(int)
+School::iterator School::iterator::
+    operator++(int)
 {
     School::iterator temp = *this;
 
@@ -39,7 +39,8 @@ School::iterator School::iterator::operator++(int)
     return temp;
 }
 
-School::iterator School::iterator::operator--()
+School::iterator School::iterator::
+    operator--()
 {
     // ошибка при nullptr!!
     
@@ -49,7 +50,8 @@ School::iterator School::iterator::operator--()
     return *this;
 }
 
-School::iterator School::iterator::operator--(int)
+School::iterator School::iterator::
+    operator--(int)
 {
     // ошибка при nullptr!!
 
@@ -63,7 +65,8 @@ School::iterator School::iterator::operator--(int)
 }
 
 
-Student& School::iterator::operator*() const
+Student& School::iterator::
+    operator*() const
 {
     return *pointer;
 }
@@ -73,3 +76,53 @@ School::iterator::operator bool() const
     return pointer != nullptr;
 }
 
+// ============================================================================
+
+void Groups::iterator::
+    operator= (Groups::iterator iterator)
+{
+    pointer = iterator.pointer;
+}
+
+bool Groups::iterator::
+    operator!=(Groups::iterator& iterator)
+{
+    return pointer != iterator.pointer;
+}
+
+bool Groups::iterator::
+    operator==(Groups::iterator& iterator)
+{
+    return pointer == iterator.pointer;
+}
+
+Groups::iterator Groups::iterator::
+    operator++()
+{
+    if(this->pointer)
+        pointer = pointer->next;
+        
+    return *this;
+}
+
+Groups::iterator Groups::iterator::
+    operator++(int)
+{
+    Groups::iterator temp = *this;
+    
+    if(this->pointer)
+        pointer = pointer->next;
+
+    return temp;
+}
+
+Groups::iterator::operator bool() const
+{
+    return this->pointer;
+}
+
+Groups::Group& Groups::iterator::
+    operator*() const
+{
+    return *pointer;
+}

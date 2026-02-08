@@ -19,32 +19,32 @@ private:
     friend class School;
 
 public:
-    enum {MAX_NAME_LEN = 40};
+    enum {MAX_NAME_BYTES = 40};
 
     const unsigned ID;
     char* lastname = nullptr;
     unsigned groupID;
     size_t visits = 0;
-
-   
-
     
     explicit Student(unsigned studentID, const char* lastname, const unsigned& groupID = 0)
     :ID(studentID), groupID(groupID)
     {
         size_t sLen = strlen(lastname) + 1;
 
-        if(sLen <= MAX_NAME_LEN)
+        if(sLen <= MAX_NAME_BYTES)
         {
             this->lastname = new char[sLen];
             strcpy(this->lastname, lastname);
+
+            size_t safePrefix = SchoolAlg::safeStrPrefix(this->lastname, MAX_NAME_BYTES);
+            this->lastname[safePrefix] = '\0';
         }
         else
         {
-            this->lastname = new char[MAX_NAME_LEN];
-            strncpy(this->lastname, lastname, MAX_NAME_LEN);
+            this->lastname = new char[MAX_NAME_BYTES];
+            strncpy(this->lastname, lastname, MAX_NAME_BYTES);
             
-            size_t safePrefix = SchoolAlg::safeStrPrefix(this->lastname, MAX_NAME_LEN);
+            size_t safePrefix = SchoolAlg::safeStrPrefix(this->lastname, MAX_NAME_BYTES);
             this->lastname[safePrefix] = '\0';
         }        
     }
