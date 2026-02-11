@@ -1,5 +1,5 @@
-#ifndef GROUP_H
-#define GROUP_H
+#ifndef GROUPS_H
+#define GROUPS_H
 
 #include <cstring>
 #include "Algorithm.h"
@@ -14,13 +14,12 @@ private:
 
         friend class Groups;
     public:
-        unsigned ID;
+        const unsigned ID;
         char* name = nullptr;
 
         explicit Group(const unsigned& ID, const char* name)
+        : ID(ID)
         {
-            this->ID = ID;
-
             size_t sLen = strlen(name) + 1;
 
             if(sLen <= MAX_NAME_BYTES)
@@ -116,6 +115,43 @@ public:
         return iterator(nullptr); 
     }
 
+    class nameComparator
+    {
+    public:
+        bool operator()(const Group& a, const Group& b) const
+        {
+            return std::strcmp(a.name, b.name) < 0;
+        }
+
+        bool operator()(const Group& a, const char* b) const
+        {
+            return std::strcmp(a.name, b) < 0;
+        }
+
+        bool operator()(const char* a, const Group& b) const
+        {
+            return std::strcmp(a, b.name) < 0;
+        }
+    };
+
+    class idComparator
+    {
+    public:
+        bool operator()(const Group& a, const Group& b) const
+        {
+            return a.ID < b.ID;
+        }
+
+        bool operator()(const Group& a, const unsigned& b) const
+        {
+            return a.ID < b;
+        }
+
+        bool operator()(const unsigned& a, const Group& b) const
+        {
+            return a < b.ID;
+        }
+    };
 
     void push(const unsigned& ID, const char* name)
     {

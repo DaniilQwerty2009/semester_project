@@ -38,11 +38,11 @@ public:
     void StudentsEditLastname(School::iterator& iter);
     bool StudentsEditGroup(School::iterator& iter);
     void inStudentsList();
-    void StudentsAdd();
-    void SudentAddSorted();
+    unsigned StudentsAdd();
+    unsigned SudentAddSorted();
     void StudentsExclude(School::iterator& iter);
     // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
-    void StudentFormatPrint(School::iterator& beginIter)) const;
+    void StudentFormatPrint(School::iterator& beginIter) const;
 
 // ======================================================================= //
 

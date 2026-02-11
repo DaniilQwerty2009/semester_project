@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include "Student.h"
-#include "Group.h"
+#include "Groups.h"
 #include "DateConverter.h"
 // #include "IDGenerator.h"
 
@@ -24,7 +24,7 @@ private:
     DateConverter dateConverter;
 
     size_t groupsCapacity = 0;
-    
+    Groups groups; 
     
     // нельзя вручную установить id. Исп. при копировании из файла
     void push_back(const unsigned& studentID, const char* lastname, const unsigned& groupID = 0);
@@ -32,8 +32,6 @@ private:
     void push_group(const unsigned& ID, const char* name);
 
 public:
-    Groups groups; 
-
     explicit School()
         {    }
 
@@ -82,22 +80,31 @@ public:
 
     };
 
-        inline iterator begin() const
-        {
-            return iterator(head);
-        }
+    inline iterator begin() const
+    {
+        return iterator(head);
+    }
 
-        inline iterator end() const
-        {
-            return iterator(nullptr);
-        }
+    inline iterator end() const
+    {
+        return iterator(nullptr);
+    }
 
-        inline iterator last() const
-        {
-            return iterator(tail);
-        }
+    inline iterator last() const
+    {
+        return iterator(tail);
+    }
 
- 
+    inline Groups::iterator groups_begin()
+    {
+        return groups.begin();
+    }
+
+    inline Groups::iterator groups_end()
+{
+    return groups.end();
+}
+
     inline size_t getCapacity() const
         { return capacity; }
 
@@ -130,28 +137,15 @@ public:
         return ID;
     }
 
-    void pop(Student* studentPtr);
+    void pop(Student* sPtr);
 
     unsigned push_group(const char* name);
 
-    bool pop_group(const unsigned& ID); // ошибка на непустую группу
+    bool pop_group(Groups::Group& gRef); // ошибка на непустую группу
 
-    // const char* getGroupName(const unsigned& ID) const;
+    void push_visit(Student* sPtr, const unsigned& day);
 
-    // const Group* hasGroup(const unsigned& ID) const;
-
-    
-
-    void push_visit(Student* ptr, const unsigned& day);
-
-    // void addGroupVisit(const Group* ptr, const unsigned& day);
-
-    // void moveToGroup(Student* Sptr, Groups::Group* Gptr = nullptr);
-
-
-    // void disband(Group* ptr);
-
-    bool save(const char* filename = "Save.bin") const;
+    bool save(const char* filename = "Save.bin");
 
     void saveLoad(const char* filename = "Save.bin");
 
