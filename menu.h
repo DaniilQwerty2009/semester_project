@@ -14,14 +14,8 @@ using std::cin;
 class menu
 {
 private:
-    // unsigned inputValue;
-
     School* school;
 
-
-    School::ByStudentID IDCompare;
-    School::ByLastname  lastnameCompare;
-    School::ByVisits    visitsCompare;
     DateConverter       dateConventer;
 public:
     menu(): school()
@@ -33,16 +27,16 @@ public:
     // вкладки
     void inStudents();
 
-    bool StudentsSearch(School::iterator& iter);
-    void StudentsEdit(School::iterator& iter);
-    void StudentsEditLastname(School::iterator& iter);
-    bool StudentsEditGroup(School::iterator& iter);
+    Students::iterator StudentsSearch(const Students::iterator& first, const Students::iterator& last);
+    void StudentsEdit(Students::iterator& sIter);
+    void StudentsEditLastname(Students::iterator& sIter);
+    bool StudentsEditGroup(Students::iterator& sIter);
     void inStudentsList();
     unsigned StudentsAdd();
     unsigned SudentAddSorted();
-    void StudentsExclude(School::iterator& iter);
+    void StudentsExclude(Students::iterator& sIter);
     // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
-    void StudentFormatPrint(School::iterator& beginIter) const;
+    void StudentFormatPrint(Students::iterator& sIter) const;
 
 // ======================================================================= //
 

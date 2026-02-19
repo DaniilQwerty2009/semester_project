@@ -7,9 +7,8 @@
 struct VisitDays
     {
     public:
-        enum averageStudyDays {studyDays = 165};
+        enum averageStudyDays {studyDays = 1}; // не забыть вернуть на 165 дней
 
-        size_t elementsQty = 0;
         unsigned* datesArray = nullptr;
 
         VisitDays(size_t length = studyDays): len(length)
@@ -26,28 +25,21 @@ struct VisitDays
         VisitDays(VisitDays& other) = delete;
         VisitDays& operator=(VisitDays& other) = delete;
 
-        // exeption!!
-        // const unsigned& operator[](unsigned index)
-        // {
-        //     // if(index >= elementsQty)
-        //     //     return 0;
-
-        //     return datesArray[index];
-        // }
-        
-
-    
         void push(unsigned day)
         {
-            if(elementsQty == len)
+            if(capacity == len)
                 expand();
 
-            datesArray[elementsQty++] = day;
+            datesArray[capacity++] = day;
         }
 
-
+        size_t size() const
+        {
+            return capacity;
+        }
 
     private:
+        size_t capacity = 0;
         size_t len;
 
         void expand()
@@ -64,7 +56,7 @@ struct VisitDays
                 std::cerr << e.what() << '\n';
             }
             
-            for(size_t i = 0; i < elementsQty; ++i)
+            for(size_t i = 0; i < capacity; ++i)
                 newVisitsDates[i] = datesArray[i];
 
             delete[] datesArray;

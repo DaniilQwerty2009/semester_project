@@ -1,26 +1,28 @@
-#include "School.h"
+#include "Students.h"
+#include "Groups.h"
 
 
-void School::iterator::
-    operator=(School::iterator iterator)
+
+void Students::iterator::
+    operator=(Students::iterator iterator)
 {
     pointer = iterator.pointer;
 }
 
-bool School::iterator::
-    operator!=(School::iterator& iterator)
+bool Students::iterator::
+    operator!=(Students::iterator& iterator)
 {
     return pointer != iterator.pointer;
 }
 
-bool School::iterator::
-    operator==(School::iterator& iterator)
+bool Students::iterator::
+    operator==(Students::iterator& iterator)
 {
     return pointer == iterator.pointer;
 }
 
-School::iterator School::iterator::
-    operator++()
+Students::iterator 
+    Students::iterator::operator++()
 {
     if(pointer)
         pointer = pointer->next;
@@ -28,10 +30,10 @@ School::iterator School::iterator::
     return *this;
 }
 
-School::iterator School::iterator::
-    operator++(int)
+Students::iterator 
+    Students::iterator::operator++(int)
 {
-    School::iterator temp = *this;
+    Students::iterator temp = *this;
 
     if(pointer)
         pointer = pointer->next;
@@ -39,8 +41,8 @@ School::iterator School::iterator::
     return temp;
 }
 
-School::iterator School::iterator::
-    operator--()
+Students::iterator 
+    Students::iterator::operator--()
 {
     // ошибка при nullptr!!
     
@@ -50,12 +52,12 @@ School::iterator School::iterator::
     return *this;
 }
 
-School::iterator School::iterator::
-    operator--(int)
+Students::iterator 
+    Students::iterator::operator--(int)
 {
     // ошибка при nullptr!!
 
-    School::iterator temp = *this;
+    Students::iterator temp = *this;
 
     if(pointer)
         pointer = pointer->prev;
@@ -65,13 +67,13 @@ School::iterator School::iterator::
 }
 
 
-Student& School::iterator::
-    operator*() const
+Students::Student& 
+    Students::iterator::operator*() const
 {
     return *pointer;
 }
 
-School::iterator::operator bool() const
+Students::iterator::operator bool() const
 {
     return pointer != nullptr;
 }

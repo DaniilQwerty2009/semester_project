@@ -23,7 +23,7 @@ namespace SchoolAlg
         }
   
 
-    size_t safeStrPrefix(const char* str, const size_t& maxBitesWithNull);
+    size_t safe_cyrillic_prefix(const char* str, const size_t& maxBitesWithNull);
     
 
 }

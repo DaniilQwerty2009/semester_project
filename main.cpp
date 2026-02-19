@@ -14,7 +14,7 @@ int main()
    
     School* ourSchool = new School;
     ourSchool->saveLoad();
-    
+
     menu ourMenu;
     ourMenu.init(ourSchool);
 

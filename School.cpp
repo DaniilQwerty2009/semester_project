@@ -1,7 +1,7 @@
 #include "School.h"
 
 
-unsigned School::push_back(const char* lastname, unsigned groupID)
+unsigned School::push_student(const char* lastname, unsigned groupID)
     {
         // исключение - нет такой группы
         // обработка - присваивание группе 0
@@ -18,229 +18,74 @@ unsigned School::push_back(const char* lastname, unsigned groupID)
         if(!gIter)
             groupID = 0;
 
-        if(!head)
-        {
-            head = new Student(sIDcounter, lastname, groupID);
-            sIDcounter++;
-            capacity++;
-            tail = head;
-        }
-        else
-        {
-            tail->next = new Student(sIDcounter, lastname, groupID);
-            sIDcounter++;
-            capacity++;
-            Student* oldTail = tail;
-            tail = tail->next;
-            tail->prev = oldTail;
-            
-        }
-
-        return tail->ID;
+        students.push(sIDcounter, lastname, groupID);
+        sIDcounter++;
+        return (sIDcounter - 1);
     }
 
-void School::push_back(const unsigned& studentID, const char* lastname, const unsigned& groupID)
+void School::push_student(const unsigned& studentID, const char* lastname, const unsigned& groupID)
     {
-        if(!head)
-        {
-            head = new Student(studentID, lastname, groupID);
-            capacity++;
-            tail = head;
-        }
-        else
-        {
-            tail->next = new Student(studentID, lastname, groupID);
-            capacity++;
-            Student* oldTail = tail;
-            tail = tail->next;
-            tail->prev = oldTail;
-            
-        }
+
+
+        students.push(studentID, lastname, groupID);
     }
 
-void School::pop(Student* sPtr)
+void School::pop_student(Students::iterator& sIter)
 {
-    if(!sPtr)
+    if(!sIter)
         return;
 
-    if(sPtr == head)
-    {
-        if(!sPtr->next)
-        {
-            head = nullptr;
-            delete sPtr;
-            capacity--;
-            return;
-        }
-        else
-        {
-            head = head->next;
-            head->prev = nullptr;
-            delete sPtr;
-            capacity--;
-            return;
-        }
-        
-    } 
+    students.pop(&(*sIter));
 
-    if(sPtr == tail)
-    {
-        tail = tail->prev;
-        tail->next = nullptr;
-        delete sPtr;
-        capacity--;
-        return;
-    }
-    else
-    {
-        sPtr->prev->next = sPtr->next;
-        sPtr->next->prev = sPtr->prev;
-        delete sPtr;
-        capacity--;
-        return;
-    }  
-
+    
 }
 
 //exeption
 unsigned School::push_group(const char* name)
 {
-    groups.push(gIDcounter, name);
+    try
+    {
+        groups.push(gIDcounter, name);
+    }
+    catch(CantCreateGroup& err)
+    {
+        throw err;
+    }
+    // исключение на существующую группу
     gIDcounter++;
-    groupsCapacity++;
     return (gIDcounter - 1);
 }
 
+// private, только для save_load()
 void School::push_group(const unsigned& ID, const char* name)
 {
     groups.push(ID, name);
-    groupsCapacity++;
 }
 
-bool School::pop_group(Groups::Group& gRef) // ошибка на непустую группу
+bool School::pop_group(Groups::iterator& gIter) // ошибка на непустую группу
 {
-    School::iterator iter(begin());
+    Students::iterator sIter(students.begin());
 
-    while(iter)
+    while(sIter)
     {
-        if((*iter).groupID == gRef.ID)
+        if((*sIter).groupID == (*gIter).ID)
             return false;                       //Тут будет исключение
     }
 
-    groups.pop(&gRef);
-    groupsCapacity--;
+    groups.pop(&(*gIter));
+    
     return true;
 }
 
 
-void School::push_visit(Student* sPtr, const unsigned& day)
+void School::push_visit(Students::iterator& sIter, const unsigned& day)
 {
     // Проверка на одинаковую дату!
-    if(sPtr->hasDay(day))
+    if((*sIter).has_day(day))
         return;
 
-    sPtr->days.push(day);
-
-    sPtr->visits++;
+    (*sIter).push_day(day);
 }
-
-
-void School::replace(Student* destination, Student* element)
-    {
-        if(!element)
-            return;
-
-        if(destination == element)
-            return;
-
-        if(destination == nullptr)
-        {
-            if(element == tail)
-                return;
-
-            if(element == head)
-            {
-                Student* newHead = element->next;
-
-                tail->next = element;
-                element->prev = tail;
-                tail = element;
-
-                head = newHead;
-                head->prev = nullptr;
-
-                return;
-            }
-            else
-            {
-                element->next->prev = element->prev;
-                element->prev->next = element->next;
-
-                tail->next = element;
-                element->prev = tail;
-                
-                tail = element;
-                tail->next = nullptr;
-
-                return;
-            }
-        }
-
-        if(destination == head)
-        {
-            if(element == tail)
-            {
-                Student* newTail = element->prev;
-
-                head->prev = element;
-                element->next = head;
-
-                tail = newTail;
-                tail->next = nullptr;
-
-                head = element;
-                head->prev = nullptr;
-
-                return;
-            }
-            else
-            {
-                element->next->prev = element->prev;
-                element->prev->next = element->next;
-
-                head->prev = element;
-                element->next = head;
-
-                head = element;
-                head->prev = nullptr;
-
-                return;
-            }
-        }
-
-        else
-        {  
-            if(element != head)
-            {
-                element->prev->next = element->next;
-            }
-            else
-                head = element->next;
-
-            if(element != tail)
-                element->next->prev = element->prev;
-            else
-                tail = element->prev;
-
-            element->prev = destination->prev;
-            destination->prev->next = element;
-
-            element->next = destination;
-            destination->prev = element;
-
-        }
-        
-    }
 
 
 // почему, если добавить const, не дает достуа к методам и полям (кроме head??)
@@ -249,28 +94,33 @@ bool School::save(const char* filename)
     std::ofstream fout(filename, std::ios::binary);
     //проверка на ошибку потока - std::exeption
 
-    Student* Sptr = head;
+    Students::iterator sIter = students.begin();
     
-    fout.write((char*)&capacity, sizeof(uint64_t));
+    unsigned studentsAmmount = students.size();
+    unsigned visitsAmmount;
+    fout.write((char*)&studentsAmmount, sizeof(uint64_t));
 
-    while(Sptr)
+    for(size_t i = 0; i < studentsAmmount; ++i)
     {
         
-        fout.write((char*)&Sptr->ID, sizeof(uint32_t));
-        fout.write(Sptr->lastname, Student::MAX_NAME_BYTES);
-        fout.write((char*)&Sptr->groupID, sizeof(uint32_t));
-        fout.write((char*)&Sptr->visits, sizeof(uint32_t));
-        
-        fout.write((char*)Sptr->days.datesArray, sizeof(uint32_t) * Sptr->days.elementsQty);
+        fout.write((char*)&(*sIter).ID, sizeof(uint32_t));
+        fout.write((*sIter).lastname, Students::MAX_NAME_BYTES);
+        fout.write((char*)&(*sIter).groupID, sizeof(uint32_t));
 
-        Sptr = Sptr->next;
+        visitsAmmount = (*sIter).visits_arr_size();
+        fout.write((char*)&visitsAmmount, sizeof(uint32_t));
+        
+        fout.write((char*)(*sIter).getVisitsArr(), sizeof(uint32_t) * (*sIter).visits_arr_size());
+
+        sIter++;
     }
 
-    fout.write((char*)&groupsCapacity, sizeof(uint64_t));
+    unsigned groupAmmount = groups.size();
+    fout.write((char*)&groupAmmount, sizeof(uint64_t));
 
     Groups::iterator gIter = groups.begin();
 
-    for(size_t i = 0; i < groupsCapacity; ++i)
+    for(size_t i = 0; i < groupAmmount; ++i)
     {
         fout.write((char*)&(*gIter).ID, sizeof(uint32_t));
         fout.write((*gIter).name, Groups::MAX_NAME_BYTES);
@@ -291,7 +141,8 @@ void School::saveLoad(const char* filename)
         return; //exeption?
         
     unsigned id, groupid, visits, visitDay, blockLen;
-    char name[Student::MAX_NAME_BYTES];
+    char name[Students::MAX_NAME_BYTES];
+    Students::iterator sIter;
 
     unsigned maxID = 0;
 
@@ -300,7 +151,7 @@ void School::saveLoad(const char* filename)
     for(size_t i = 0; i < blockLen; ++i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(name, Student::MAX_NAME_BYTES);
+        fin.read(name, Students::MAX_NAME_BYTES);
 
         fin.read((char*)&groupid, sizeof(uint32_t));
 
@@ -309,12 +160,13 @@ void School::saveLoad(const char* filename)
         if(maxID < id)
             maxID = id;
 
-        push_back(id, name, groupid);
+        push_student(id, name, groupid);
+        sIter = students.last();
 
         for(size_t i = 0; i < visits; ++i)
         {
             fin.read((char*)&visitDay, sizeof(uint32_t));
-            push_visit(tail, visitDay);
+            push_visit(sIter, visitDay);
         }
     }
 

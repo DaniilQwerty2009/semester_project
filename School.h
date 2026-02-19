@@ -5,29 +5,26 @@
 #include <fstream>
 #include <cstdint>
 
-#include "Student.h"
+#include "Students.h"
 #include "Groups.h"
+#include "SchoolExeptions.h"
 #include "DateConverter.h"
-// #include "IDGenerator.h"
+
 
 class School
 {
 private:
-
-    size_t   capacity = 0;
-    Student* head = nullptr;
-    Student* tail = nullptr;
+    Students students;
+     
+    Groups groups; 
 
     unsigned gIDcounter = 100;
     unsigned sIDcounter = 1000;
 
     DateConverter dateConverter;
-
-    size_t groupsCapacity = 0;
-    Groups groups; 
     
     // нельзя вручную установить id. Исп. при копировании из файла
-    void push_back(const unsigned& studentID, const char* lastname, const unsigned& groupID = 0);
+    void push_student(const unsigned& studentID, const char* lastname, const unsigned& groupID = 0);
     // для загрузки сейва - нет проверки на уникальность имени группы
     void push_group(const unsigned& ID, const char* name);
 
@@ -36,63 +33,16 @@ public:
         {    }
 
     ~School()
+        {    }
+
+    inline Students::iterator students_begin()
     {
-        while(head)
-        {
-            Student* temp = head;
-            head = head->next;
-            delete temp;
-        }
+        return students.begin();
     }
 
-    // валидность итераторов. когда??
-    class iterator
+    inline Students::iterator students_end()
     {
-    private:
-        Student* pointer;
-    
-        explicit iterator(Student* ptr):pointer(ptr)
-            {   }
-
-        friend class School;
-    public:
-
-        explicit iterator():pointer(nullptr)
-            {   }
-
-        iterator(const iterator&) = default;
-        iterator(iterator&) = default;
-
-        
-        // void     operator= (iterator& iterator);
-        void     operator= (iterator iterator);
-        bool     operator!=(iterator& iterator);
-        bool     operator==(iterator& iterator);
-
-        iterator operator--();
-        iterator operator--(int);
-        iterator operator++();
-        iterator operator++(int);
-
-        
-        operator bool() const;
-        Student& operator*() const;
-
-    };
-
-    inline iterator begin() const
-    {
-        return iterator(head);
-    }
-
-    inline iterator end() const
-    {
-        return iterator(nullptr);
-    }
-
-    inline iterator last() const
-    {
-        return iterator(tail);
+        return students.end();
     }
 
     inline Groups::iterator groups_begin()
@@ -101,150 +51,62 @@ public:
     }
 
     inline Groups::iterator groups_end()
-{
-    return groups.end();
-}
-
-    inline size_t getCapacity() const
-        { return capacity; }
-
-    unsigned push_back(const char* lastname, unsigned groupID = 0);
-
-    template <typename Compare> unsigned push_sorted(Compare comporator, const char* lastname, const unsigned& groupID = 0)
     {
-        unsigned ID = push_back(lastname, groupID);
-
-        if(tail->prev)
-        {
-            if(comporator(*tail->prev, *tail))
-                return ID;
-        }
-
-        Student* element = tail;
-        Student* ptr = head;
-
-        while(ptr != element)
-        {
-            if(comporator(*element, *ptr))
-            {
-                replace(ptr, element);
-                return ID;
-            }
-
-            ptr = ptr->next;
-        }
-
-        return ID;
+        return groups.end();
     }
 
-    void pop(Student* sPtr);
+    inline size_t getStudentsAmmount()
+    {
+        return students.size();
+    }
+
+    unsigned push_student(const char* lastname, unsigned groupID = 0);
+
+    template <typename Comparator>
+        unsigned push_sudent_sorted(Comparator cmp, char* lastname, unsigned groupID = 0)
+        {
+            // исключение - нет такой группы
+            // обработка - присваивание группе 0
+            Groups::iterator gIter(groups.begin());
+
+            while(gIter)
+            {
+                if((*gIter).ID == groupID)
+                    break;
+
+                gIter++;
+            }
+
+            if(!gIter)
+                groupID = 0;
+
+            students.push_sorted(cmp, sIDcounter, lastname, groupID);
+            sIDcounter++;
+            return (sIDcounter - 1);
+        }
+
+    void pop_student(Students::iterator& sIter);
 
     unsigned push_group(const char* name);
 
-    bool pop_group(Groups::Group& gRef); // ошибка на непустую группу
+    bool pop_group(Groups::iterator& gRef); // ошибка на непустую группу
 
-    void push_visit(Student* sPtr, const unsigned& day);
+    void push_visit(Students::iterator& sIter, const unsigned& day);
+
+    template <typename Comparator>
+        void sort_students(Comparator cmp)
+    {
+        students.sort(cmp);
+    } 
 
     bool save(const char* filename = "Save.bin");
 
     void saveLoad(const char* filename = "Save.bin");
 
-    // компрораторы
-    class ByVisits
-    {
-    public:
-        bool operator()(const Student& a, const Student& b) const
-        {
-            return a.visits < b.visits;
-        }
-
-        bool operator()(const Student& a, const unsigned& b) const
-        {
-            return a.visits < b;
-        }
-
-        bool operator()(const unsigned& a, const Student& b) const
-        {
-            return a < b.visits;
-        }
-    };
-
-    class ByLastname
-    {
-    public:
-        bool operator()(const Student& a, const Student& b) const
-        {
-            return std::strcmp(a.lastname, b.lastname) < 0;
-        }
-
-        bool operator()(const Student& a, const char* b) const
-        {
-            return std::strcmp(a.lastname, b) < 0;
-        }
-
-        bool operator()(const char* a, const Student& b) const
-        {
-            return std::strcmp(a, b.lastname) < 0;
-        }
-    };
-
-    class ByStudentID
-    {
-    public:
-        bool operator()(const Student& a, const Student& b) const
-        {
-            return a.ID < b.ID;
-        }
-
-        bool operator()(const Student& a, const unsigned& b) const
-        {
-            return a.ID < b;
-        }
-
-        bool operator()(const unsigned& a, const Student& b) const
-        {
-            return a < b.ID;
-        }
-    };
+   
 
 
-    void replace(Student* destination, Student* element);
-
-
-    // сортировка
-    template <typename Compare> 
-        void sort(Compare cmp = School::ByLastname()) //????
-    {
-        if(!head || !head->next)
-            return;
-
-        Student* sotrBorder = head;
-        Student* iter = sotrBorder->next;
-        Student* inSortedPart;
-
-        while(iter)
-        {
-            if(cmp(*sotrBorder, *iter) || (!cmp(*sotrBorder, *iter) && !cmp(*iter, *sotrBorder)))   
-            {
-                sotrBorder = sotrBorder->next;
-                iter = iter->next;
-                continue;
-            }
-
-
-            else
-            {
-                inSortedPart = sotrBorder;
-
-                while( inSortedPart->prev != nullptr && cmp(*iter, *inSortedPart->prev))
-                    inSortedPart = inSortedPart->prev;
-                
-                replace(inSortedPart, iter);
-
-                iter = sotrBorder->next;
-            }
-        }
-    }
+    
 
 
 };

@@ -2,57 +2,62 @@
 #define GROUPS_H
 
 #include <cstring>
+#include "SchoolExeptions.h"
 #include "Algorithm.h"
 
 class Groups
 {
 private:
-    struct Group
-    {
-    private:
-        Group* next = nullptr;
-
-        friend class Groups;
-    public:
-        const unsigned ID;
-        char* name = nullptr;
-
-        explicit Group(const unsigned& ID, const char* name)
-        : ID(ID)
-        {
-            size_t sLen = strlen(name) + 1;
-
-            if(sLen <= MAX_NAME_BYTES)
+            struct Group
             {
-                this->name = new char[sLen];
-                strcpy(this->name, name);
+            private:
+                Group* next = nullptr;
+                Group* prev = nullptr;
 
-                size_t safePrefix = SchoolAlg::safeStrPrefix(this->name, MAX_NAME_BYTES);
-                this->name[safePrefix] = '\0';
-            }
-            else
-            {
-                this->name = new char[MAX_NAME_BYTES];
-                strncpy(this->name, name, MAX_NAME_BYTES);
+                explicit Group(const unsigned& ID, const char* name)
+                : ID(ID)
+                {
+                    size_t sLen = strlen(name) + 1;
 
-                size_t safePrefix = SchoolAlg::safeStrPrefix(this->name, MAX_NAME_BYTES);
-                this->name[safePrefix] = '\0';
-            }     
-        }
+                    if(sLen <= MAX_NAME_BYTES)
+                    {
+                        this->name = new char[sLen];
+                        strcpy(this->name, name);
 
-        ~Group()
-        {
-            delete[] name;
-        }
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, MAX_NAME_BYTES);
+                        this->name[safePrefix] = '\0';
+                    }
+                    else
+                    {
+                        this->name = new char[MAX_NAME_BYTES];
+                        strncpy(this->name, name, MAX_NAME_BYTES);
 
-        Group(Group& other)            = delete;
-        Group& operator=(Group& other) = delete;
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, MAX_NAME_BYTES);
+                        this->name[safePrefix] = '\0';
+                    }     
+                }
 
-    };
+                friend class Groups;
+            public:
+                const unsigned ID;
+                char* name = nullptr;
 
+                
+
+                ~Group()
+                {
+                    delete[] name;
+                }
+
+                Group(Group& other)            = delete;
+                Group& operator=(Group& other) = delete;
+
+            };
+
+    unsigned capacity = 0;
     Groups::Group* head = nullptr;
-
-    friend class School;
+    Groups::Group* tail = nullptr;
+    // friend class School;
     
 public:
     enum {MAX_NAME_BYTES = 40};
@@ -115,6 +120,11 @@ public:
         return iterator(nullptr); 
     }
 
+    inline iterator last()
+    {
+        return iterator(tail);
+    }
+
     class nameComparator
     {
     public:
@@ -158,45 +168,58 @@ public:
         if(!head)
         {
             head = new Group(ID, name);
-            head->next = nullptr; 
+            capacity++;
+            tail = head;
         }
         else
         {
             Group* ptr = head;
 
-            while(ptr->next != nullptr)
+            do
             {
                 if(strcmp(ptr->name, name) == 0)
-                    return;                    //exeption!!!!!
-
+                    throw HasSameGroup();                     //exeption!!!!!
+                
                 ptr = ptr->next;
-            }
-            if(strcmp(ptr->name, name) == 0)
-                    return;                      //exeption!!!!!
+            }while(ptr);
             
-            ptr->next = new Group(ID, name);
-            ptr->next->next = nullptr;
+            tail->next = new Group(ID, name);
+            tail->next->prev = tail;
+            tail = tail->next;
+
+            capacity++;
         }
     }
 
     void pop(Group* ptr)
     {
-        if(!ptr || !head)
+        if(!ptr || !head || capacity == 0)
             return;
 
         if(ptr == head)
         {
             delete head;
             head = nullptr;
+            capacity--;
+            return;
         }
+        else if(ptr == tail)
+        {
+            tail = tail->prev;
+            tail->next = nullptr;
+            delete ptr;
+        }
+        else
+        {
+            ptr->prev->next = ptr->next;
+            ptr->next->prev = ptr->prev;
+            delete ptr;
+        }
+    }
 
-        Group* prevPtr = head;
-
-        while(prevPtr->next != ptr)
-            prevPtr = prevPtr->next;
-
-        prevPtr->next = ptr->next;
-        delete ptr;
+    size_t size()
+    {
+        return capacity;
     }
 };
 
