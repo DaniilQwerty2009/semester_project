@@ -207,10 +207,12 @@ unsigned menu::SudentAddSorted()
             Students::visitComparator vCmp;
             ID = school->push_sudent_sorted(vCmp, lastname, groupID);
             inputValue = 0;
+            break;
         case(lastnameComparator):
             Students::lastnameComparator lnCmp;
             ID = school->push_sudent_sorted(lnCmp, lastname, groupID);
             inputValue = 0;
+            break;
         }
     }
     return ID;
@@ -516,11 +518,11 @@ void menu::inGroup()
 
 unsigned menu::createGroup()
 {
-    char name[Students::MAX_NAME_BYTES];
+    char name[Groups::MAX_NAME_BYTES];
     
     cout << "Название группы: ";
     cin.ignore(1000, '\n');
-    cin.getline(name, Students::MAX_NAME_BYTES);
+    cin.getline(name, Groups::MAX_NAME_BYTES);
     // Отчистка буфера!
     if(cin.fail())
     {
@@ -532,32 +534,31 @@ unsigned menu::createGroup()
     try
     {
         groupID = school->push_group(name);
+        return groupID;
     }
-    catch(CantCreateGroup& err)
+    catch(SchoolExeptions& err)
     {
         cout << err.what() << endl;
-        cout << err.why() << endl;
 
-        enum points{back, input};
+        enum points{back};
         unsigned inputValue = -1;
 
         while(inputValue)
         {
             cout << "0. Назад" << endl;
-            cout << "1. Ввести другое имя" << endl;
 
+            cin >> inputValue;
+            
             switch(inputValue)
             {
             case(back):
-                
+                return 0;
             }
         }
-        
-
-    }
     
 
     return groupID;
+    }
 }
 
 bool menu::deleteGroup()
@@ -572,11 +573,48 @@ bool menu::deleteGroup()
 
     if(gIter)
     {
-        school->pop_group(gIter);
-        return true;
-    }
+        try
+        {
+            school->pop_group(gIter);
+            return true;
+        }
+        catch(NotEmpty&)
+        {
+            cout << "Группа не пустая." << endl;           
+
+            enum points{back, disband};
+            unsigned inputValue = -1;
+
+            while(inputValue)
+            {
+                cout << "0. Назад" << endl;
+                cout << "1. Распустить группу" << endl;
+
+                switch(inputValue)
+                {
+                case(back):
+                    inputValue = 0;
+                    break;
+                case(disband):
+                    Students::iterator sIter = school->students_begin();
+                    while(sIter)
+                    {
+                        if((*sIter).groupID == groupID)
+                            (*sIter).groupID = 0;
+
+                        sIter++;
+                    }
+
+                    school->pop_group(gIter);
+                    return true;
+                }
+            }
+        
+        
+        }
     
     return false;
+    }
 }
 
 void menu::GroupFormatPrint() const

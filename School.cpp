@@ -47,9 +47,9 @@ unsigned School::push_group(const char* name)
     {
         groups.push(gIDcounter, name);
     }
-    catch(CantCreateGroup& err)
+    catch(AlreadyExist& err)
     {
-        throw err;
+        throw;
     }
     // исключение на существующую группу
     gIDcounter++;
@@ -69,7 +69,7 @@ bool School::pop_group(Groups::iterator& gIter) // ошибка на непус�
     while(sIter)
     {
         if((*sIter).groupID == (*gIter).ID)
-            return false;                       //Тут будет исключение
+            throw NotEmpty();                   
     }
 
     groups.pop(&(*gIter));

@@ -92,7 +92,7 @@ public:
 
     public:
 
-    explicit iterator():pointer(nullptr)
+        explicit iterator():pointer(nullptr)
             {   }
 
         iterator(const iterator&) = default;
@@ -178,7 +178,7 @@ public:
             do
             {
                 if(strcmp(ptr->name, name) == 0)
-                    throw HasSameGroup();                     //exeption!!!!!
+                    throw AlreadyExist();
                 
                 ptr = ptr->next;
             }while(ptr);

@@ -1,5 +1,9 @@
+#ifndef SCHOOL_EXEPTIONS_H
+#define SCHOOL_EXEPTIONS_H
+
 #include <iostream>
 #include <stdexcept>
+
 
 
 class SchoolExeptions : public std::exception
@@ -19,29 +23,21 @@ public:
 };
 
 
-// Groups =======================================================
-
-class CantCreateGroup : public SchoolExeptions
+class AlreadyExist : public SchoolExeptions
 {
-protected:
-    const char* msg;
 public:
-    CantCreateGroup(): SchoolExeptions("Не удалось создать группу.")
+    AlreadyExist() : SchoolExeptions("Такой объект уже существует")
         {   }
-
-    virtual const char* why() = 0;
 };
 
-class HasSameGroup : public CantCreateGroup
+
+class NotEmpty : public SchoolExeptions
 {
-protected:
-    const char* reason;
 public:
-    HasSameGroup(): reason("Такая группа уже существует.")
+    NotEmpty() : SchoolExeptions("Не пустая структура данных")
         {   }
-    
-    virtual const char* why()
-    {
-        return reason;
-    }
 };
+
+
+
+#endif
