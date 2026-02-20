@@ -1,3 +1,5 @@
+// Класс конвертирует дата:месяц в день с начала года
+
 #ifndef DATE_CONVERTER_H
 #define DATE_CONVERTER_H
 
@@ -11,18 +13,17 @@ public:
     explicit DateConverter()
         {   }
 
-    const char* DayToString(unsigned& day) const;
-
-
-
-    unsigned DateToDay(const unsigned& day, const unsigned& mounth) const
+    // Возвращает день с начала года по дате.
+    // Генерирует WrongDate при неверном дне или месяце
+    unsigned date_to_day(const unsigned& day, const unsigned& mounth) const
     {
-        if(day > mounthLen[mounth])
-            return 0; // Исключение
+        if(day > mounthLen[mounth] || day <= 0)
+            throw WrongDate();
 
-        if(mounth > 12)
-            return 0; // Исключение
+        if(mounth > 12 || mounth <= 0)
+            throw WrongDate();
 
+        // результат = кол-во дней в целых месяцах + остаток дней
         unsigned result = 0;
         for(unsigned i = 0; i < mounth - 1; ++i)
             result += mounthLen[i];

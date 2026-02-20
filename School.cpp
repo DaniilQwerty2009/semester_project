@@ -3,8 +3,7 @@
 
 unsigned School::push_student(const char* lastname, unsigned groupID)
     {
-        // исключение - нет такой группы
-        // обработка - присваивание группе 0
+        // Проверка на наличие группы по номеру, иначе присваиваем нулевой номер
         Groups::iterator gIter(groups.begin());
 
         while(gIter)
@@ -18,16 +17,31 @@ unsigned School::push_student(const char* lastname, unsigned groupID)
         if(!gIter)
             groupID = 0;
 
-        students.push(sIDcounter, lastname, groupID);
+        try
+        {
+            students.push(sIDcounter, lastname, groupID);
+        }
+        catch(SchoolExeptions& err)
+        {
+            err.what();
+            return 0;
+        }
+        
         sIDcounter++;
         return (sIDcounter - 1);
     }
 
 void School::push_student(const unsigned& studentID, const char* lastname, const unsigned& groupID)
     {
-
-
-        students.push(studentID, lastname, groupID);
+        try
+        {
+            students.push(studentID, lastname, groupID);
+        }
+        catch(SchoolExeptions& err)
+        {
+            err.what();
+            return;
+        }
     }
 
 void School::pop_student(Students::iterator& sIter)
@@ -35,61 +49,59 @@ void School::pop_student(Students::iterator& sIter)
     if(!sIter)
         return;
 
-    students.pop(&(*sIter));
-
-    
+    students.pop(&(*sIter)); 
 }
 
-//exeption
 unsigned School::push_group(const char* name)
 {
     try
     {
         groups.push(gIDcounter, name);
     }
-    catch(AlreadyExist& err)
+    catch(AlreadyExist&)        // такая гркппа уже существует
     {
         throw;
     }
-    // исключение на существующую группу
+    catch(EmptyPtr& err)        // пустое имя
+    {
+        err.what();
+        return 0;
+    }
     gIDcounter++;
     return (gIDcounter - 1);
 }
 
-// private, только для save_load()
 void School::push_group(const unsigned& ID, const char* name)
 {
     groups.push(ID, name);
 }
 
-bool School::pop_group(Groups::iterator& gIter) // ошибка на непустую группу
+void School::pop_group(Groups::iterator& gIter) // ошибка на непустую группу
 {
     Students::iterator sIter(students.begin());
 
     while(sIter)
     {
         if((*sIter).groupID == (*gIter).ID)
-            throw NotEmpty();                   
+            throw NotEmpty();                   // если в группе есть студенты
+            
+        sIter++;
     }
 
     groups.pop(&(*gIter));
-    
-    return true;
 }
-
 
 void School::push_visit(Students::iterator& sIter, const unsigned& day)
 {
-    // Проверка на одинаковую дату!
-    if((*sIter).has_day(day))
+    
+    if((*sIter).has_day(day))   // проверка на повторное внесение даты
         return;
 
     (*sIter).push_day(day);
 }
 
-
 // почему, если добавить const, не дает достуа к методам и полям (кроме head??)
-bool School::save(const char* filename)
+bool School::save(const char* filename) const
 {
     std::ofstream fout(filename, std::ios::binary);
     //проверка на ошибку потока - std::exeption
@@ -110,7 +122,7 @@ bool School::save(const char* filename)
         visitsAmmount = (*sIter).visits_arr_size();
         fout.write((char*)&visitsAmmount, sizeof(uint32_t));
         
-        fout.write((char*)(*sIter).getVisitsArr(), sizeof(uint32_t) * (*sIter).visits_arr_size());
+        fout.write((char*)(*sIter).get_visits_arr(), sizeof(uint32_t) * (*sIter).visits_arr_size());
 
         sIter++;
     }

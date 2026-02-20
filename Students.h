@@ -1,3 +1,6 @@
+// Класс-контейнер студентов - двусвязный список
+// поля узлов: уникальный ID, имя, номер группы, объект класса списока дней посещений
+
 #ifndef STUDENT_H
 #define STUDENT_H
 
@@ -11,8 +14,7 @@
 class Students
 {
 private:
-    unsigned capacity = 0;
-
+            // Узел-студент
             struct Student
             {
             private:
@@ -20,6 +22,7 @@ private:
                 Student* prev = nullptr;
                 Student* next = nullptr;
 
+                // Список дней посещений
                 VisitDays days;
 
                 friend class Students;
@@ -71,23 +74,26 @@ private:
                     return this->ID == ptr->ID;
                 }
                 
-                const unsigned* getVisitsArr() const
+                // Указатель на список дней посещений
+                const unsigned* get_visits_arr() const
                 {
                     return days.datesArray;
                 }
 
+                // Колличество дней посещений
                 unsigned visits_arr_size() const
                 {
                     return days.size();
                 }
 
-                void push_day(const unsigned& visitDay)
+                void push_day(const unsigned& visitDay) noexcept
                 {
                     if(!has_day(visitDay))
                         days.push(visitDay);
                 }
 
-                bool has_day(const unsigned& day)
+                // Проверка на посещение в конкретный день
+                bool has_day(const unsigned& day) noexcept
                 {
                     unsigned* ptr = days.datesArray;
 
@@ -101,54 +107,16 @@ private:
                 } 
             };
 
+            
+    unsigned capacity = 0;
     Student* head = nullptr;
     Student* tail = nullptr;
 
-    // не опнятно capacity++?
-    // void insert(Student* destination, Student* element)
-    // {
-    //     if(!destination || !element)
-    //         return;             //exeption???
-
-    //     // Корректно вставляем элемент в последовательность
-    //     if(destination->next)
-    //     {
-    //         if(destination->prev)                   // в центр
-    //         {
-    //             destination->prev->next = element;
-    //             element->prev = destination->prev;
-    //             destination->prev = element;
-    //             element->next = destination;
-    //         }
-    //         else                                    // перед началом
-    //         {
-    //             destination->prev = element;
-    //             element->next = destination;
-    //             head = element;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if(destination->prev)                   // перед концом
-    //         {
-    //             destination->prev->next = element;
-    //             element->prev = destination->prev;
-    //             destination->prev = element;
-    //             element->next = destination;
-    //         }  
-    //         else                                    // перед единственным элементом
-    //         {
-    //             destination->prev = element;
-    //             element->next = destination;
-    //             head = element;
-    //         }
-    //     }
-    // }
-    
-    void replace(Student* destination, Student* element)
+    // Перестановка элемента перед узлом destination
+    void replace(Student* destination, Student* element) noexcept
     {
         if(!destination || !element)
-            return;             //exeption???   
+            return; 
 
         // Корректно извлекаем элемент из последовательности
         if(element->next)
@@ -212,10 +180,10 @@ private:
         }
         
     }
-    // friend class School;
+
 public:
 
-    enum {MAX_NAME_BYTES = 40};
+    enum {MAX_NAME_BYTES = 40};     // Колличество байт под имя
 
     Students()
         {   }
@@ -230,11 +198,15 @@ public:
         }
     }
 
+// -----------------------------------------------------------------------------------------
+
+    // Класс-итератор контейнера Students
     class iterator
         {
         private:
             Student* pointer;
         
+            // Инициализированный бъект итератора создается только методами Students: begin, end...
             explicit iterator(Student* ptr):pointer(ptr)
                 {   }
 
@@ -245,10 +217,8 @@ public:
                 {   }
 
             iterator(const iterator&) = default;
-            iterator(iterator&) = default;
+            iterator(iterator&)       = default;
 
-            
-            // void     operator= (iterator& iterator);
             void     operator= (iterator iterator);
             bool     operator!=(iterator& iterator);
             bool     operator==(iterator& iterator);
@@ -260,26 +230,34 @@ public:
 
             
             operator bool() const;
+
+            // Оператор разыменования возвращает ссылку на узел Student
+            // синтаксис разыменования: (*node).имя_поля/метода
             Student& operator*() const;
 
         };
 
+    // Инициализация итератора первым членом списка
     inline iterator begin() const
     {
         return iterator(head);
     }
 
+    // Инициализация итератора следующим за последним членом списка
     inline iterator end() const
     {
         return iterator(nullptr);
     }
 
+    // Инициализация итератора последним членом списка
     inline iterator last() const
     {
         return iterator(tail);
     }
 
-     // компрораторы
+    // Классы-компараторы:
+    
+    // Сранение по посещениям. True, если a < b
     class visitComparator
     {
     public:
@@ -299,6 +277,7 @@ public:
         }
     };
 
+    // Сранение по имени. True, если a < b
     class lastnameComparator
     {
     public:
@@ -318,6 +297,7 @@ public:
         }
     };
 
+    // Сранение по ID. True, если a < b
     class idComparator
     {
     public:
@@ -337,9 +317,12 @@ public:
         }
     };
 
-    
-    void push(const unsigned& ID, const char* lastname, const unsigned& groupID)
+    // Генерирует исклбчение EmptyPtr по парамаметру lastname
+    void push(const unsigned& ID, const char* lastname, const unsigned& groupID) 
     {
+        if(lastname == nullptr)
+            throw EmptyPtr();
+
         if(!head)
         {
             head = new Student(ID, lastname, groupID);
@@ -357,11 +340,14 @@ public:
         }
     }
 
+    // Вставка с сохранением порядка.
+    // параметр cmp (признак сравнения) - объект класса-компаратора в области класса Students
     template <typename Comparator>
         void push_sorted(Comparator cmp, const unsigned& studentID, const char* lastname, const unsigned& groupID)
         {
             if(!head)
             {
+                
                push(studentID, lastname, groupID);
             }
             else
@@ -385,7 +371,7 @@ public:
             }
         }
 
-    void pop(Student* node)
+    void pop(Student* node) noexcept
     {
         if(!node)
             return;
@@ -427,24 +413,28 @@ public:
 
     }
 
-    unsigned size()
+    // Колличество элементов
+    unsigned size() const
     {
         return capacity;
     }
 
-    // сортировка
+    // Сортировка по признаку cmp - компаратор в области Students
     template <typename Compare> 
-        void sort(Compare cmp) //????
+        void sort(Compare cmp) noexcept
     {
+        // Сортировка вставками:
+
         if(!head || !head->next)
             return;
 
-        Student* sotrBorder = head;
-        Student* iter = sotrBorder->next;
-        Student* inSortedPart;
+        Student* sotrBorder = head;         // отсортированнная часть
+        Student* iter = sotrBorder->next;   // вставляемый элемент
+        Student* inSortedPart;              // для прохода по отстортированной части
 
         while(iter)
         {
+            // идем по списку пока элемент больше предыдущего
             if(cmp(*sotrBorder, *iter) || (!cmp(*sotrBorder, *iter) && !cmp(*iter, *sotrBorder)))   
             {
                 sotrBorder = sotrBorder->next;
@@ -452,14 +442,16 @@ public:
                 continue;
             }
 
-
+            
             else
             {
                 inSortedPart = sotrBorder;
 
+                // ищем место втсавки в отстртированной части
                 while( inSortedPart->prev != nullptr && cmp(*iter, *inSortedPart->prev))
                     inSortedPart = inSortedPart->prev;
                 
+                // пересещаем элемент в отсортированную часть
                 replace(inSortedPart, iter);
 
                 iter = sotrBorder->next;

@@ -1,3 +1,6 @@
+// Динамический массив дат в формате дня с начала года.
+// Поля: алрес массива, размер, число элементов
+
 #ifndef VISIT_DAYS_H
 #define VISIT_DAYS_H
 
@@ -7,7 +10,7 @@
 struct VisitDays
     {
     public:
-        enum averageStudyDays {studyDays = 1}; // не забыть вернуть на 165 дней
+        enum averageStudyDays {studyDays = 165}; // Среднее кол-во учебных дней в году - размер массива по умолчанию
 
         unsigned* datesArray = nullptr;
 
@@ -25,14 +28,15 @@ struct VisitDays
         VisitDays(VisitDays& other) = delete;
         VisitDays& operator=(VisitDays& other) = delete;
 
-        void push(unsigned day)
+        void push(unsigned day) noexcept
         {
             if(capacity == len)
-                expand();
+                memory_reallocation();
 
             datesArray[capacity++] = day;
         }
 
+        // Колличество элементов массива
         size_t size() const
         {
             return capacity;
@@ -42,7 +46,8 @@ struct VisitDays
         size_t capacity = 0;
         size_t len;
 
-        void expand()
+        // realloc
+        void memory_reallocation()
         {
             len *= 2;
 

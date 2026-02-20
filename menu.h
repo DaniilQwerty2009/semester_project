@@ -51,7 +51,7 @@ void     GroupFormatPrint() const;
 
     void inVisits();
 
-    bool VisitsInputDate(unsigned& day, unsigned& mounth);
+    unsigned inputVisitDay();
     void InPersonalVisitAdd();
     bool GroupVisitAdd();
 

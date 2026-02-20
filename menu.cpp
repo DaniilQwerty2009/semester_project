@@ -86,9 +86,8 @@ void menu::inStudents()
                 inStudentsList();
                 break;
             case(search):
-                sIter = school->students_begin();
-
-                if(StudentsSearch(sIter, school->students_end()))
+                sIter = StudentsSearch(school->students_begin(), school->students_end());
+                if(sIter)
                     StudentsEdit(sIter);
                 else
                     cout << "Совпадений не найдено" << endl;
@@ -100,8 +99,7 @@ void menu::inStudents()
                 SudentAddSorted();
                 break;
             case(pop):
-                sIter = school->students_begin();
-                sIter = StudentsSearch(sIter, school->students_end());
+                sIter = StudentsSearch(school->students_begin(), school->students_end());
                 if(sIter)
                     StudentsExclude(sIter);
                 else
@@ -156,10 +154,14 @@ unsigned menu::StudentsAdd()
         cin.ignore(1000, '\n');
     }
 
-   GroupFormatPrint();
+    GroupFormatPrint();
 
-    cout << "Введите номер группы или 0 для пропуска: ";
-    cin >> groupID;
+    do
+    {
+        cout << "Введите номер группы или 0 для пропуска: ";
+        cin >> groupID;
+        
+    }while(!isdigit(groupID));
 
     unsigned ID = school->push_student(lastname, groupID);
     return ID;
@@ -663,8 +665,7 @@ void menu::inVisits()
             GroupVisitAdd();
             break;
         case(showByDay):
-            VisitsInputDate(day, mounth);
-            visitDay = dateConventer.DateToDay(day, mounth);
+            visitDay = inputVisitDay();
             sIter = school->students_begin();
 
             while(sIter)
@@ -685,37 +686,68 @@ void menu::inVisits()
     }
 }
 
-bool menu::VisitsInputDate(unsigned& day, unsigned& mounth)
+unsigned menu::inputVisitDay()
 {
+    unsigned day, mounth, visitDay;
     enum point {back};
     short inputValue = -1;
 
 
-    cout << "Введите день и месяц в числовом формате" << endl;
-    cout << "Для выхода введите 0" << endl;
+    while(inputValue)
+    {
+        cout << "Введите день и месяц в числовом формате" << endl;
+        cout << "Для выхода введите 0" << endl;
 
+        cout << "День: ";
+        cin >> inputValue;
+        
+        switch(inputValue)
+        {
+        case(back):
+            return 0;
+        default:
+            day = inputValue;
+        }
 
-    cout << "День: ";
-    cin >> inputValue;
-    // проверка на влдиность - dateConverter генерирует exeption
+        cout << "Месяц: ";
+        cin >> inputValue;
 
-    if(inputValue == 0)
-        return false;
+        switch(inputValue)
+        {
+        case(back):
+            return 0;
+        default:
+            mounth = inputValue;
+        }
 
-    day = inputValue;
+        try
+        {
+            visitDay = dateConventer.date_to_day(day, mounth); 
+            return visitDay;
+        }
+        catch(WrongDate&)
+        {
+            enum points {back, repeat};
 
-    cout << "Месяц: ";
-    cin >> inputValue;
-    // проверка на влдиность - dateConverter генерирует exeption
+            cout << "Неверная дата." << endl;
+            cout << "0. Отменить" << endl;
+            cout << "1. Повторить ввод" << endl;
 
-    if(inputValue == 0)
-        return false;
+            cin >> inputValue;
 
-    mounth = inputValue;
+            switch(inputValue)
+            {
+            case(back):
+                return 0;
+            case(repeat):
+                inputValue = -1;
+                break;
+            }
+        }
 
-    return true;
+    }
 
-    
+   
 }
 
 void menu::InPersonalVisitAdd()
@@ -747,16 +779,19 @@ void menu::InPersonalVisitAdd()
             
             break;
         case(add):
-            sIter = school->students_begin();
-
-            if(StudentsSearch(sIter, school->students_end()))
+            sIter = StudentsSearch(school->students_begin(), school->students_end());
+            if(sIter)
             {
-
-                // цикл пока не true, в InputVisits обработка исключения - валидация ввода
-                VisitsInputDate(day, mounth);
-                visitDay = dateConventer.DateToDay(day, mounth);
-                school->push_visit(sIter, visitDay);
-                break;
+                visitDay = inputVisitDay();
+                if(visitDay)
+                {
+                    school->push_visit(sIter, visitDay);
+                    break;
+                }
+                else
+                {
+                    break;
+                }
             }
             else
             {
@@ -786,8 +821,7 @@ bool menu::GroupVisitAdd()
         return false;
     }
 
-    VisitsInputDate(day, mounth);
-    visitDay = dateConventer.DateToDay(day, mounth);
+    visitDay = inputVisitDay();
 
     while(sIter)
     {

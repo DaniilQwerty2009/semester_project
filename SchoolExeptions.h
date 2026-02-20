@@ -30,7 +30,6 @@ public:
         {   }
 };
 
-
 class NotEmpty : public SchoolExeptions
 {
 public:
@@ -38,6 +37,18 @@ public:
         {   }
 };
 
+class EmptyPtr : public SchoolExeptions
+{
+public:
+    EmptyPtr() : SchoolExeptions("Передача нулевого указателя")
+        {   }
+};
 
+class WrongDate : public SchoolExeptions
+{
+public:
+    WrongDate() : SchoolExeptions("Неверный формат или диапазон даты")
+        {   }
+};
 
 #endif
