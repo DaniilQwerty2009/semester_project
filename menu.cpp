@@ -1,20 +1,28 @@
 #include "menu.h"
+#include <iomanip>
 
 // cin.tie(cout&);????
 
 
 void menu::init(School* school)
 {
+
     this->school = school;
 
     enum point {exit, students, groups, visits};
     unsigned inputValue = -1;
 
     while(inputValue != 0)
-    {
+    {   
+        std::cout << "\033[2J\033[H";
+
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
         cout << "Учет посещаемости индивидуальных и коллективных занятий" << endl;
 
-        cout << "Общее колличество студентов: " << school->getStudentsAmmount() << endl;
+        cout << "Общее колличество студентов: " << school->get_students_ammount() << endl;
+
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
 
         cout << "1. Cтуденты" << endl;
 
@@ -24,7 +32,17 @@ void menu::init(School* school)
 
         cout << "0. Выход" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+        
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
@@ -33,17 +51,18 @@ void menu::init(School* school)
             break;
 
         case(point::groups):
-            inGroup();
+            in_Groups();
             break;
         case(point::students):
-            inStudents();
+            in_Students();
             break;
 
         case(point::visits):
-            inVisits();
+            in_Visits();
             break;
-            
-            
+        
+        default:
+            break;            
         }
 
 
@@ -54,7 +73,7 @@ void menu::init(School* school)
         // IN_STUDENTS
 // ================================================================================= //
 
-void menu::inStudents()
+void menu::in_Students()
 {
     enum point {back, list, search, add, addSorted, pop};
     unsigned inputValue = -1;
@@ -62,6 +81,9 @@ void menu::inStudents()
 
     while(inputValue != 0)
     {
+        std::cout << "\033[2J\033[H";
+
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Список студентов" << endl;
         cout << "2. Поиск студента" << endl;
         cout << "3. Новый студент " << endl;
@@ -69,7 +91,17 @@ void menu::inStudents()
         cout << "5. Исключить студента " << endl;
         cout << "0. Назад " << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
@@ -80,30 +112,54 @@ void menu::inStudents()
 
                 while(sIter)
                 {
-                    StudentFormatPrint(sIter);
+                    Student_format_print(sIter);
                     ++sIter;
                 }
-                inStudentsList();
+                in_Students_list();
                 break;
             case(search):
-                sIter = StudentsSearch(school->students_begin(), school->students_end());
+                sIter = Student_search(school->students_begin(), school->students_end());
                 if(sIter)
-                    StudentsEdit(sIter);
+                    Student_edit(sIter);
                 else
+                {
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
                     cout << "Совпадений не найдено" << endl;
+                    cout << "0. Назад" << endl;
+
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+                    cout << "Ввод: ";
+                    cin >> inputValue;
+                    inputValue = -1;
+                }
                 break;
             case(add):
-                StudentsAdd();
+                Student_add();
                 break;
             case(addSorted):
-                SudentAddSorted();
+                Student_add_sorted();
                 break;
             case(pop):
-                sIter = StudentsSearch(school->students_begin(), school->students_end());
+                sIter = Student_search(school->students_begin(), school->students_end());
                 if(sIter)
-                    StudentsExclude(sIter);
+                    Students_exclude(sIter);
                 else
+                {
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
                     cout << "Студент не найден" << endl;
+                    cout << "0. Назад" << endl;
+
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+                    cout << "Ввод: ";
+                    cin >> inputValue;
+                    inputValue = -1;
+                }
+                break;
+            default:
                 break;
         }
     }
@@ -111,7 +167,7 @@ void menu::inStudents()
 
 // ================================================================================= //
 
-void menu::StudentFormatPrint(Students::iterator& studIter) const
+void menu::Student_format_print(Students::iterator& studIter) const
 {
     Groups::iterator gIter = school->groups_begin();
     const char* groupName = nullptr;
@@ -127,10 +183,10 @@ void menu::StudentFormatPrint(Students::iterator& studIter) const
         gIter++;
     }
 
-    cout << (*studIter).ID << " - ";
-    cout << (*studIter).lastname << " - ";
-    cout << ((groupName)? groupName: "Нет группы") << " - ";
-    cout << (*studIter).visits_arr_size() << endl;
+    cout << std::setfill('.') <<std::setw(6) << (*studIter).ID;
+    cout << std::setfill('.') <<std::setw(30) <<(*studIter).lastname;
+    cout << std::setfill('.') <<std::setw(30) << ((groupName)? groupName: "Нет группы");
+    cout << std::setfill('.') <<std::setw(3) << (*studIter).visits_arr_size() << endl;
 
 }
 
@@ -138,30 +194,84 @@ void menu::StudentFormatPrint(Students::iterator& studIter) const
 
 // ================================================================================= //
 
-unsigned menu::StudentsAdd()
+unsigned menu::Student_add()
 {
+    short inputValue = -1;
     unsigned groupID;
     char lastname[Students::MAX_NAME_BYTES];
 
-    
-    cout << "Фамилия: ";
-    cin.ignore(1000, '\n');
-    cin.getline(lastname, Students::MAX_NAME_BYTES);
-    // Отчистка буфера!
+    while(inputValue)
+    {
+        std::cout << "\033[2J\033[H";
+        
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Добавление студента" << endl;
+
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Фамилия: ";
+        cin.ignore(1000, '\n');
+        cin.getline(lastname, Students::MAX_NAME_BYTES);
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+        }
+
+        for(size_t i = 0; lastname[i] != '\0' || lastname[i] != '\n'; ++i)
+        {
+            if(isdigit(lastname[i]))
+            {
+                enum {cancel, repeat};
+
+                std::cout << "\033[2J\033[H";
+                cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+                cout << "Не верный формат имени" << endl;
+                cout << "1. Повторить ввод" << endl;
+                cout << "0. Отменить" << endl;
+
+                cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+                cout << "Ввод: ";
+                cin >> inputValue;
+
+                if(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    inputValue = 0;
+                }
+
+                switch(inputValue)
+                {
+                case(cancel):
+                    return 0;
+                case(repeat):
+                    inputValue = -1;
+                    break;
+                default:
+                    inputValue = -1;
+                    break;
+                }
+                break;
+            } 
+        }
+    }
+    Group_format_print();
+
+    cout << "Номер группы (для пропуска введите 0): ";
+    cin >> groupID;
+
     if(cin.fail())
     {
         cin.clear();
         cin.ignore(1000, '\n');
+        groupID = 0;
     }
 
-    GroupFormatPrint();
-
-    do
-    {
-        cout << "Введите номер группы или 0 для пропуска: ";
-        cin >> groupID;
-        
-    }while(!isdigit(groupID));
 
     unsigned ID = school->push_student(lastname, groupID);
     return ID;
@@ -169,7 +279,7 @@ unsigned menu::StudentsAdd()
 
 // ================================================================================= 
 
-unsigned menu::SudentAddSorted()
+unsigned menu::Student_add_sorted()
 {
     unsigned groupID;
     char lastname[Students::MAX_NAME_BYTES];
@@ -177,7 +287,7 @@ unsigned menu::SudentAddSorted()
     cout << "Фамилия: ";
     cin.ignore(1000, '\n');
     cin.getline(lastname, Students::MAX_NAME_BYTES);
-    // Отчистка буфера!
+    
     if(cin.fail())
     {
         cin.clear();
@@ -185,9 +295,16 @@ unsigned menu::SudentAddSorted()
     }
 
     
-    GroupFormatPrint();
+    Group_format_print();
     cout << "Введите номер группы или 0 для пропуска: ";
     cin >> groupID;
+
+    if(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        groupID = 0;
+    }
 
     enum points {back, visitComparator, lastnameComparator};
     unsigned inputValue = -1;
@@ -195,11 +312,22 @@ unsigned menu::SudentAddSorted()
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. С сортировкой по посещениям" << endl;
         cout << "2. С сортировкой по фамилии" << endl;
         cout << "3. Назад" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
@@ -215,6 +343,8 @@ unsigned menu::SudentAddSorted()
             ID = school->push_sudent_sorted(lnCmp, lastname, groupID);
             inputValue = 0;
             break;
+        default:
+            break;
         }
     }
     return ID;
@@ -223,7 +353,7 @@ unsigned menu::SudentAddSorted()
 
 // ================================================================================= //
 
-Students::iterator menu::StudentsSearch(const Students::iterator& first, const Students::iterator& last)
+Students::iterator menu::Student_search(const Students::iterator& first, const Students::iterator& last)
 {
     char identificator[Students::MAX_NAME_BYTES];
     const char* groupName = nullptr;
@@ -238,8 +368,6 @@ Students::iterator menu::StudentsSearch(const Students::iterator& first, const S
         cin.clear();
         cin.ignore(1000, '\n');
     }
-    cout << endl;
-
     
 
     if(isdigit(*identificator))
@@ -309,6 +437,13 @@ Students::iterator menu::StudentsSearch(const Students::iterator& first, const S
             cout << "Введите ID: ";
             cin >> studentID;
 
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                studentID = 0;
+            }
+
             findIter = SchoolAlg::search(first, last, Students::idComparator(), studentID);
             
             return findIter;
@@ -323,33 +458,46 @@ Students::iterator menu::StudentsSearch(const Students::iterator& first, const S
 
 // ================================================================================= //
 
-void menu::StudentsEdit(Students::iterator& sIter)
+void menu::Student_edit(Students::iterator& sIter)
 {  
     enum point {back, changeGroup, changeLastname, exclude};
     short inputValue = -1;
 
     while(inputValue)
     {    
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Изменить группу" << endl;
         cout << "2. Изменить фамилию" << endl;
         cout << "3. Исключить" << endl;
         cout << "0. Назад" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                inputValue = -1;
+            }
 
         switch(inputValue)
         {
         case(back):
             break;
         case(changeGroup):
-            GroupFormatPrint();
-            StudentsEditGroup(sIter);
+            Group_format_print();
+            Student_edit_group(sIter);
             break;
         case(changeLastname):
-            StudentsEditLastname(sIter);
+            Student_edit_lastname(sIter);
             break;
         case(exclude):
-            StudentsExclude(sIter);
+            Students_exclude(sIter);
+            break;
+        default:
             break;
         }
     }
@@ -357,7 +505,7 @@ void menu::StudentsEdit(Students::iterator& sIter)
 
 // ================================================================================= //
 
-void menu::StudentsEditLastname(Students::iterator& sIter)
+void menu::Student_edit_lastname(Students::iterator& sIter)
 {
     char newLastname[Students::MAX_NAME_BYTES];
 
@@ -398,12 +546,19 @@ void menu::StudentsEditLastname(Students::iterator& sIter)
 
 // ================================================================================= //
 // Добавить проверку на группу
-bool menu::StudentsEditGroup(Students::iterator& sIter)
+bool menu::Student_edit_group(Students::iterator& sIter)
 {
     unsigned groupID;
 
     cout << "Введите номер группы или 0 для исключения из группы: ";
     cin >> groupID;
+
+    if(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        groupID = 0;
+    }
 
     if(groupID == 0)
     {
@@ -427,8 +582,8 @@ bool menu::StudentsEditGroup(Students::iterator& sIter)
 
 // ================================================================================= //
 
-// редактиррование, сортировка, добавление
-void menu::inStudentsList()
+
+void menu::in_Students_list()
 {
     enum point {back, sortLastname, sortVisits, add, pop};
     short inputValue = -1;
@@ -436,11 +591,22 @@ void menu::inStudentsList()
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Сортировка по имени" << endl;
         cout << "2. Сортировка по посещениям " << endl;
         cout << "0. Назад " << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
@@ -453,7 +619,7 @@ void menu::inStudentsList()
             cout << "ID - lastname - group - visits" << endl;
             while(sIter)
             {
-                StudentFormatPrint(sIter);
+                Student_format_print(sIter);
                 sIter++;
             }
             break;
@@ -464,9 +630,11 @@ void menu::inStudentsList()
             cout << "ID - lastname - group - visits" << endl;
             while(sIter)
             {
-                StudentFormatPrint(sIter);
+                Student_format_print(sIter);
                 sIter++;
             }
+            break;
+        default:
             break;
         }
     }
@@ -474,7 +642,7 @@ void menu::inStudentsList()
 
 // ================================================================================= //
 
-void menu::StudentsExclude(Students::iterator& sIter)
+void menu::Students_exclude(Students::iterator& sIter)
 {
     school->pop_student(sIter);
 }
@@ -483,7 +651,7 @@ void menu::StudentsExclude(Students::iterator& sIter)
         // IN_GROUPS
 // ================================================================================= //
 
-void menu::inGroup()
+void menu::in_Groups()
 {
     enum point {back, list, create, pop};
     unsigned inputValue = -1;
@@ -491,26 +659,39 @@ void menu::inGroup()
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Список груп" << endl;
         cout << "2. Создать группу" << endl;
         cout << "3. Удалить группу" << endl;
         cout << "0. Назад" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
         case(list):
-            GroupFormatPrint();
+            Group_format_print();
             break;
         case(create):
-            createGroup();
+            create_Group();
             break;
         case(pop):
-            GroupFormatPrint();
-            deleteGroup();
+            Group_format_print();
+            delete_Group();
             break;
         case(back):
+            break;
+        default:
             break;                
         }
     }
@@ -518,7 +699,7 @@ void menu::inGroup()
 
 // ================================================================================= //
 
-unsigned menu::createGroup()
+unsigned menu::create_Group()
 {
     char name[Groups::MAX_NAME_BYTES];
     
@@ -547,9 +728,20 @@ unsigned menu::createGroup()
 
         while(inputValue)
         {
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
             cout << "0. Назад" << endl;
 
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+            cout << "Ввод: ";
             cin >> inputValue;
+
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                inputValue = 0;
+            }
             
             switch(inputValue)
             {
@@ -557,69 +749,119 @@ unsigned menu::createGroup()
                 return 0;
             }
         }
-    
-
-    return groupID;
+    return 0;
     }
 }
 
-bool menu::deleteGroup()
+void menu::delete_Group()
 {
-    unsigned groupID;
+    unsigned groupID, inputValue = -1;
 
-    cout << "Введите номер группы: ";
-    cin >> groupID;
-
-    Groups::iterator gIter = 
-        SchoolAlg::search(school->groups_begin(), school->groups_end(), Groups::idComparator(), groupID);
-
-    if(gIter)
+    while(inputValue)
     {
-        try
+        cout << "Введите номер группы: ";
+        cin >> groupID;
+
+        if(cin.fail())
         {
-            school->pop_group(gIter);
-            return true;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            groupID = 0;
         }
-        catch(NotEmpty&)
+
+        Groups::iterator gIter = 
+            SchoolAlg::search(school->groups_begin(), school->groups_end(), Groups::idComparator(), groupID);
+
+        if(gIter)
         {
-            cout << "Группа не пустая." << endl;           
-
-            enum points{back, disband};
-            unsigned inputValue = -1;
-
-            while(inputValue)
+            try
             {
-                cout << "0. Назад" << endl;
-                cout << "1. Распустить группу" << endl;
+                school->pop_group(gIter);
+                return;
+            }
+            catch(NotEmpty&)
+            {
+                cout << "Группа не пустая." << endl;           
 
-                switch(inputValue)
+                enum {back, disband};
+                inputValue = -1;
+
+                while(inputValue)
                 {
-                case(back):
-                    inputValue = 0;
-                    break;
-                case(disband):
-                    Students::iterator sIter = school->students_begin();
-                    while(sIter)
-                    {
-                        if((*sIter).groupID == groupID)
-                            (*sIter).groupID = 0;
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+                    cout << "1. Распустить группу" << endl;
+                    cout << "0. Назад" << endl;
 
-                        sIter++;
+                    cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+                    cout << "Ввод: ";
+                    cin >> inputValue;
+
+                    if(cin.fail())
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        inputValue = 0;
                     }
 
-                    school->pop_group(gIter);
-                    return true;
+                    switch(inputValue)
+                    {
+                    case(back):
+                        inputValue = 0;
+                        break;
+                    case(disband):
+                        Students::iterator sIter = school->students_begin();
+                        while(sIter)
+                        {
+                            if((*sIter).groupID == groupID)
+                                (*sIter).groupID = 0;
+
+                            sIter++;
+                        }
+
+                        school->pop_group(gIter);
+                        inputValue = 0;
+                    }
                 }
+            
+            
             }
-        
-        
         }
-    
-    return false;
+        else
+        {
+            enum {back, repeat};
+
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+            cout << "Не удалось найти группу" << endl;
+            cout << "0. Назад" << endl;
+            cout << "1. Повторить ввод" << endl;
+
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+            cout << "Ввод: ";
+            cin >> inputValue;
+
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                inputValue = 0;
+            }
+
+            switch(inputValue)
+            {
+            case(back):
+                inputValue = 0;
+                break;
+            case(repeat):
+                continue;
+            }
+        }
     }
 }
 
-void menu::GroupFormatPrint() const
+void menu::Group_format_print() const
 {
     Groups::iterator gIter = school->groups_begin();
     if(gIter)
@@ -637,35 +879,45 @@ void menu::GroupFormatPrint() const
         // IN_VISITS
 // ================================================================================= //
 
-void menu::inVisits()
+void menu::in_Visits()
 {
     enum point {back, add, addToGroup, showByDay};
     short inputValue = -1;
     Students::iterator sIter; 
-    unsigned day, mounth, visitDay;
+    unsigned visitDay;
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Отметить студента" << endl;
         cout << "2. Отметить группу" << endl;
         cout << "3. Посещения по дате" << endl;
         cout << "0. Назад" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
 
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
         case(back):
             break;
         case(add):
-            InPersonalVisitAdd();
+            in_personal_visit_add();
             break;
         case(addToGroup):
-            GroupVisitAdd();
+            group_visit_add();
             break;
         case(showByDay):
-            visitDay = inputVisitDay();
+            visitDay = input_visit_day();
             sIter = school->students_begin();
 
             while(sIter)
@@ -680,13 +932,14 @@ void menu::inVisits()
 
                 ++sIter;
             }
-
+            break;
+        default:
             break;
         }
     }
 }
 
-unsigned menu::inputVisitDay()
+unsigned menu::input_visit_day()
 {
     unsigned day, mounth, visitDay;
     enum point {back};
@@ -695,11 +948,20 @@ unsigned menu::inputVisitDay()
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "Введите день и месяц в числовом формате" << endl;
         cout << "Для выхода введите 0" << endl;
 
+        cout << std::setfill('-') <<std::setw(60) << '-' << endl;
         cout << "День: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = 0;
+        }
         
         switch(inputValue)
         {
@@ -709,8 +971,16 @@ unsigned menu::inputVisitDay()
             day = inputValue;
         }
 
+        cout << std::setfill('-') <<std::setw(60) << '-' << endl;
         cout << "Месяц: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = 0;
+        }
 
         switch(inputValue)
         {
@@ -729,11 +999,22 @@ unsigned menu::inputVisitDay()
         {
             enum points {back, repeat};
 
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
             cout << "Неверная дата." << endl;
             cout << "0. Отменить" << endl;
             cout << "1. Повторить ввод" << endl;
 
+            cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+            cout << "Ввод: ";
             cin >> inputValue;
+
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                inputValue = -1;
+            }
 
             switch(inputValue)
             {
@@ -742,28 +1023,40 @@ unsigned menu::inputVisitDay()
             case(repeat):
                 inputValue = -1;
                 break;
+            default:
+                break;;
             }
         }
 
     }
-
-   
+    return 0;
 }
 
-void menu::InPersonalVisitAdd()
+void menu::in_personal_visit_add()
 {
     enum point {back, list, add};
     short inputValue = -1;
-    unsigned day, mounth, visitDay;
+    unsigned visitDay;
     Students::iterator sIter;
 
     while(inputValue)
     {
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
         cout << "1. Список студентов" << endl;
         cout << "2. Отметить студента" << endl;
         cout << "0. Назад" << endl;
 
+        cout << std::setfill('=') <<std::setw(60) << '=' << endl;
+
+        cout << "Ввод: ";
         cin >> inputValue;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            inputValue = -1;
+        }
 
         switch(inputValue)
         {
@@ -773,16 +1066,16 @@ void menu::InPersonalVisitAdd()
             sIter = school->students_begin();
             while(sIter)
             {
-                StudentFormatPrint(sIter);       
+                Student_format_print(sIter);       
                 ++sIter;
             }
             
             break;
         case(add):
-            sIter = StudentsSearch(school->students_begin(), school->students_end());
+            sIter = Student_search(school->students_begin(), school->students_end());
             if(sIter)
             {
-                visitDay = inputVisitDay();
+                visitDay = input_visit_day();
                 if(visitDay)
                 {
                     school->push_visit(sIter, visitDay);
@@ -798,19 +1091,28 @@ void menu::InPersonalVisitAdd()
                 cout << "Совпадений не найдено" << endl;
                 break;
             }
+        default:
+            break;
         }
     }
 }
 
-bool menu::GroupVisitAdd()
+bool menu::group_visit_add()
 {
-    unsigned groupID, day, mounth, visitDay;
+    unsigned groupID, visitDay;
     Students::iterator sIter = school->students_begin();
 
-    GroupFormatPrint();
+    Group_format_print();
 
     cout << "Ведите номер группы: ";
     cin >> groupID;
+
+    if(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        groupID = 0;
+    }
 
     Groups::iterator gIter = SchoolAlg::search
         (school->groups_begin(), school->groups_end(), Groups::idComparator(), groupID);
@@ -821,7 +1123,7 @@ bool menu::GroupVisitAdd()
         return false;
     }
 
-    visitDay = inputVisitDay();
+    visitDay = input_visit_day();
 
     while(sIter)
     {
@@ -834,7 +1136,7 @@ bool menu::GroupVisitAdd()
     return true;
 }
 
-void menu::VisitsFormatShow(const unsigned& day) const
+void menu::Visits_format_print(const unsigned& day) const
 {
     Students::iterator sIter = school->students_begin();
     while(sIter)

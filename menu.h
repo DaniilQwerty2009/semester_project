@@ -24,46 +24,64 @@ public:
     // Главное окно
     void init(School* school);
 
-    // вкладки
-    void inStudents();
+    // Вкладка Студенты: список, поиск, добавление, исключение
+    void in_Students();
 
-    Students::iterator StudentsSearch(const Students::iterator& first, const Students::iterator& last);
-    void StudentsEdit(Students::iterator& sIter);
-    void StudentsEditLastname(Students::iterator& sIter);
-    bool StudentsEditGroup(Students::iterator& sIter);
-    void inStudentsList();
-    unsigned StudentsAdd();
-    unsigned SudentAddSorted();
-    void StudentsExclude(Students::iterator& sIter);
-    // единое форматирование - ширина полей, выравнивание, заполнитель, разделитель...
-    void StudentFormatPrint(Students::iterator& sIter) const;
+    // Поиск студента: ввод внутри функции, параметры - диапазон поиска [first; last)
+    Students::iterator  Student_search(const Students::iterator& first, const Students::iterator& last);
+
+    // Редактирование студента: фамилия, группа
+    void                Student_edit(Students::iterator& sIter);
+
+    // Редактирование фамилии
+    void                Student_edit_lastname(Students::iterator& sIter);
+
+    // Редактирование группы
+    bool                Student_edit_group(Students::iterator& sIter);
+
+    // Вкладка список студентов: вывод списка, сортировка
+    void                in_Students_list();
+
+    // Добавление студента
+    unsigned            Student_add();
+
+    // Добавление с сохранением порядка
+    unsigned            Student_add_sorted();
+
+    // Исключение студента
+    void                Students_exclude(Students::iterator& sIter);
+
+    // Вывод инофрмации о студенете в терминал
+    void                Student_format_print(Students::iterator& sIter) const;
 
 // ======================================================================= //
+    // Вкладка Группы: список, создание, удаление
+    void     in_Groups();
 
-void     inGroup();
+    // Сохдать группу
+    unsigned create_Group();
 
-unsigned createGroup();
-bool     deleteGroup();
+    // Удалить группу
+    void     delete_Group();
 
-void     GroupFormatPrint() const;
+    // Вывод инормации о группе в терминал
+    void     Group_format_print() const;
 
 // ======================================================================= //
+    // Вкладка посещения: отметить студента, отметить группу, посещения по дате
+    void in_Visits();
 
-    void inVisits();
+    // Ввод число:месяц внутри функции, возврат дня с начала года или 0 при отмене
+    unsigned input_visit_day();
 
-    unsigned inputVisitDay();
-    void InPersonalVisitAdd();
-    bool GroupVisitAdd();
+    // Вкладка отметки студентов: список студентов, отметить студента
+    void in_personal_visit_add();
 
-    void VisitsFormatShow(const unsigned& day) const;
+    // Отметить группу
+    bool group_visit_add();
 
-
-
-
-
-    
-
-
+    // Вывод номеров и фамилий студентов, посещавших занятия в day
+    void Visits_format_print(const unsigned& day) const;
 };
 
 

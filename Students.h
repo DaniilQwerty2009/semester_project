@@ -321,7 +321,7 @@ public:
     void push(const unsigned& ID, const char* lastname, const unsigned& groupID) 
     {
         if(lastname == nullptr)
-            throw EmptyPtr();
+            throw EmptyStr();
 
         if(!head)
         {

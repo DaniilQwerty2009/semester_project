@@ -1,7 +1,7 @@
 #include "Students.h"
 #include "Groups.h"
 
-
+// Итераторы Students::
 
 void Students::iterator::
     operator=(Students::iterator iterator)
@@ -79,6 +79,8 @@ Students::iterator::operator bool() const
 }
 
 // ============================================================================
+
+// Итреаторы Groups::
 
 void Groups::iterator::
     operator= (Groups::iterator iterator)

@@ -11,7 +11,7 @@ class SchoolExeptions : public std::exception
 protected:
     const char* msg;
 public:
-    SchoolExeptions(char* msg): msg(msg)
+    SchoolExeptions(const char* msg): msg(msg)
         {   }
     SchoolExeptions(SchoolExeptions& other): msg(other.msg)
         {   }
@@ -37,10 +37,10 @@ public:
         {   }
 };
 
-class EmptyPtr : public SchoolExeptions
+class EmptyStr : public SchoolExeptions
 {
 public:
-    EmptyPtr() : SchoolExeptions("Передача нулевого указателя")
+    EmptyStr() : SchoolExeptions("Передача нулевого указателя на строку")
         {   }
 };
 

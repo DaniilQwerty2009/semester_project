@@ -62,19 +62,21 @@ public:
     }
 
     // Общее колличество студентов
-    inline size_t getStudentsAmmount()
+    inline size_t get_students_ammount()
     {
         return students.size();
     }
 
+    // Есть проверка на наличие группы по groupID. При отстутсвии присваивается 0
     unsigned push_student(const char* lastname, unsigned groupID = 0);
 
-    // Добавление студента про признаку сортировки cmp - компаратор в области Students
+    // Добавление студента про признаку сортировки cmp - компаратор в области Students.
+    // Есть проверка на наличие группы по groupID. При отстутсвии присваивается 0
     template <typename Comparator>
         unsigned push_sudent_sorted(Comparator cmp, char* lastname, unsigned groupID = 0)
         {
             if(lastname == nullptr)
-                throw EmptyPtr();
+                throw EmptyStr();
 
             // исключение - нет такой группы
             // обработка - присваивание группе 0
@@ -100,6 +102,7 @@ public:
 
     unsigned push_group(const char* name);
 
+    // Генерирует NotEmpty
     void pop_group(Groups::iterator& gIter);
 
     void push_visit(Students::iterator& sIter, const unsigned& day) noexcept;
@@ -111,9 +114,11 @@ public:
         students.sort(cmp);
     } 
 
+    // Сохранение состояния объекта в бинарном файле
     bool save(const char* filename = "Save.bin") const noexcept;
 
-    void saveLoad(const char* filename = "Save.bin") noexcept;
+    // Чтение объекта из бинарного файла
+    void save_load(const char* filename = "Save.bin") noexcept;
 
    
 

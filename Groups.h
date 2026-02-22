@@ -1,4 +1,4 @@
-// Класс-контейнер групп - двусвязный список номер-название группы
+// Класс-контейнер групп - двусвязный список "номер-название" группы
 
 #ifndef GROUPS_H
 #define GROUPS_H
@@ -87,7 +87,7 @@ public:
     void push(const unsigned& ID, const char* name)
     {
         if(name == nullptr)
-            throw EmptyPtr();
+            throw EmptyStr();
 
         if(!head)
         {
@@ -131,12 +131,14 @@ public:
         {
             tail = tail->prev;
             tail->next = nullptr;
+            capacity--;
             delete ptr;
         }
         else
         {
             ptr->prev->next = ptr->next;
             ptr->next->prev = ptr->prev;
+            capacity--;
             delete ptr;
         }
     }
