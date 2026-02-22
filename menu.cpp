@@ -183,10 +183,10 @@ void menu::Student_format_print(Students::iterator& studIter) const
         gIter++;
     }
 
-    cout << std::setfill('.') <<std::setw(6) << (*studIter).ID;
-    cout << std::setfill('.') <<std::setw(30) <<(*studIter).lastname;
-    cout << std::setfill('.') <<std::setw(30) << ((groupName)? groupName: "Нет группы");
-    cout << std::setfill('.') <<std::setw(3) << (*studIter).visits_arr_size() << endl;
+    cout << (*studIter).ID                          << std::setfill('.') <<std::setw(6);
+    cout << (*studIter).lastname                    << std::setfill('.') <<std::setw(30) ;
+    cout << ((groupName)? groupName: "Нет группы")  << std::setfill('.') << std::setw(30);
+    cout << (*studIter).visits_arr_size() << endl   << std::setfill('.') <<std::setw(3);
 
 }
 
@@ -200,7 +200,8 @@ unsigned menu::Student_add()
     unsigned groupID;
     char lastname[Students::MAX_NAME_BYTES];
 
-    while(inputValue)
+    bool correctNameFlag = false;
+    while(!correctNameFlag)
     {
         std::cout << "\033[2J\033[H";
         
@@ -220,7 +221,8 @@ unsigned menu::Student_add()
             cin.ignore(1000, '\n');
         }
 
-        for(size_t i = 0; lastname[i] != '\0' || lastname[i] != '\n'; ++i)
+        size_t i = 0;
+        for(; i < strlen(lastname) && i < Students::MAX_NAME_BYTES-1; ++i)
         {
             if(isdigit(lastname[i]))
             {
@@ -250,15 +252,15 @@ unsigned menu::Student_add()
                 case(cancel):
                     return 0;
                 case(repeat):
-                    inputValue = -1;
                     break;
                 default:
-                    inputValue = -1;
                     break;
                 }
                 break;
-            } 
+            }
         }
+        if(i == strlen(lastname) || i == Students::MAX_NAME_BYTES-1)    // прошли все слово
+                correctNameFlag = true;
     }
     Group_format_print();
 
