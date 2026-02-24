@@ -41,31 +41,6 @@ Students::iterator
     return temp;
 }
 
-Students::iterator 
-    Students::iterator::operator--()
-{
-    // ошибка при nullptr!!
-    
-    
-    if(pointer)
-        pointer = pointer->prev;
-    return *this;
-}
-
-Students::iterator 
-    Students::iterator::operator--(int)
-{
-    // ошибка при nullptr!!
-
-    Students::iterator temp = *this;
-
-    if(pointer)
-        pointer = pointer->prev;
-
-    return temp;
-
-}
-
 
 Students::Student& 
     Students::iterator::operator*() const

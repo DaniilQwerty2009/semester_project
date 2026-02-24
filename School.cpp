@@ -111,17 +111,21 @@ bool     School::save(const char* filename) const noexcept
     
     uint64_t studentsAmmount = static_cast<uint64_t>(students.size()); // кол-во студентов
     uint32_t visitsAmmount;                                          // кол-во посещений у студента
-
+    uint32_t nameLen;
     // Записываем основное состояние объекта - кол-во студентов
     fout.write((char*)&studentsAmmount, sizeof(uint64_t));
 
     // Поочередно записываем поля каждого студента.
     // Размер под каждое поле фиксированный
-    for(size_t i = 0; i < studentsAmmount; ++i)
+    for(uint64_t i = 0; i < studentsAmmount; ++i)
     {
         
         fout.write((char*)&(*sIter).ID, sizeof(uint32_t));
-        fout.write((*sIter).lastname, Students::MAX_NAME_BYTES);
+
+        nameLen = strlen((*sIter).lastname) + 1;
+        fout.write((char*)&nameLen, sizeof(uint32_t));
+
+        fout.write((*sIter).lastname, nameLen);
         fout.write((char*)&(*sIter).groupID, sizeof(uint32_t));
 
         visitsAmmount = (*sIter).visits_arr_size();
@@ -141,10 +145,14 @@ bool     School::save(const char* filename) const noexcept
     Groups::iterator gIter = groups.begin();
 
     // Поочередно записываем поля каждой группы
-    for(size_t i = 0; i < groupAmmount; ++i)
+    for(uint64_t i = 0; i < groupAmmount; ++i)
     {
         fout.write((char*)&(*gIter).ID, sizeof(uint32_t));
-        fout.write((*gIter).name, Groups::MAX_NAME_BYTES);
+
+        nameLen = strlen((*gIter).name) + 1;
+        fout.write((char*)&nameLen, sizeof(uint32_t));
+
+        fout.write((*gIter).name, nameLen);
 
         gIter++;
     }
@@ -161,8 +169,9 @@ void     School::save_load(const char* filename) noexcept
         return;
         
     // Переменные для промежуточной записи из файла
-    unsigned id, groupid, visits, visitDay;
-    size_t blockLen;                        // размер блока данных  
+    uint32_t id, groupid, visits, visitDay;
+    uint64_t blockLen;                        // размер блока данных  
+    uint32_t nameLen;
     char name[Students::MAX_NAME_BYTES];
 
     Students::iterator sIter;
@@ -174,10 +183,13 @@ void     School::save_load(const char* filename) noexcept
 
     // Записываем каждое поле в промежуточные переменные,
     // вызываем push для студентов и их посещений
-    for(size_t i = 0; i < blockLen; ++i)
+    for(uint64_t i = 0; i < blockLen; ++i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(name, Students::MAX_NAME_BYTES);
+
+        fin.read((char*)&nameLen, sizeof(uint32_t));
+
+        fin.read(name, nameLen);
 
         fin.read((char*)&groupid, sizeof(uint32_t));
 
@@ -190,7 +202,7 @@ void     School::save_load(const char* filename) noexcept
         push_student(id, name, groupid);
         sIter = students.last();
 
-        for(size_t i = 0; i < visits; ++i)
+        for(uint32_t i = 0; i < visits; ++i)
         {
             fin.read((char*)&visitDay, sizeof(uint32_t));
             push_visit(sIter, visitDay);
@@ -207,10 +219,13 @@ void     School::save_load(const char* filename) noexcept
     
     // Записываем каждое поле в промежуточные переменные,
     // вызываем push для групп
-    for(size_t i = 0; i < blockLen; ++ i)
+    for(uint64_t i = 0; i < blockLen; ++ i)
     {
         fin.read((char*)&id, sizeof(uint32_t));
-        fin.read(groupName, Groups::MAX_NAME_BYTES);
+
+        fin.read((char*)&nameLen, sizeof(uint32_t));
+
+        fin.read(groupName, nameLen);
 
         // Обновляем счетчик ID
         if(maxID < id)

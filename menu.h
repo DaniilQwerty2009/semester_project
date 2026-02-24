@@ -16,7 +16,7 @@ class menu
 private:
     School* school;
 
-    DateConverter       dateConventer;
+    DateConverter dateConventer;
 public:
     menu(): school()
         {   }
@@ -64,8 +64,7 @@ public:
     // Удалить группу
     void     delete_Group();
 
-    // Вывод инормации о группе в терминал
-    void     Group_format_print() const;
+    void     Group_format_print(Groups::iterator& gIter) const;
 
 // ======================================================================= //
     // Вкладка посещения: отметить студента, отметить группу, посещения по дате

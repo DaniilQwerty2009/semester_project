@@ -42,7 +42,8 @@ private:
                         this->lastname = new char[sLen];
                         strcpy(this->lastname, lastname);
 
-                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->lastname, MAX_NAME_BYTES);
+                        size_t nameBytesLen = strlen(this->lastname) + 1;
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->lastname, nameBytesLen);
                         this->lastname[safePrefix] = '\0';
                     }
                     else
@@ -50,7 +51,8 @@ private:
                         this->lastname = new char[MAX_NAME_BYTES];
                         strncpy(this->lastname, lastname, MAX_NAME_BYTES);
                         
-                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->lastname, MAX_NAME_BYTES);
+                        size_t nameBytesLen = strlen(this->lastname) + 1;
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->lastname, nameBytesLen);
                         this->lastname[safePrefix] = '\0';
                     }        
                 }
@@ -159,6 +161,7 @@ private:
             {
                 destination->prev = element;
                 element->next = destination;
+                element->prev = nullptr;
                 head = element;
             }
         }
@@ -175,6 +178,7 @@ private:
             {
                 destination->prev = element;
                 element->next = destination;
+                element->prev = nullptr;
                 head = element;
             }
         }
@@ -223,8 +227,6 @@ public:
             bool     operator!=(iterator& iterator);
             bool     operator==(iterator& iterator);
 
-            iterator operator--();
-            iterator operator--(int);
             iterator operator++();
             iterator operator++(int);
 
@@ -407,6 +409,7 @@ public:
             {
                 delete node;
                 head = nullptr;
+                tail = nullptr;
                 capacity--;
             }
         }

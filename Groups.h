@@ -28,7 +28,8 @@ private:
                         this->name = new char[sLen];
                         strcpy(this->name, name);
 
-                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, MAX_NAME_BYTES);
+                        size_t nameBytesLen = strlen(this->name) + 1;
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, nameBytesLen);
                         this->name[safePrefix] = '\0';
                     }
                     else
@@ -36,7 +37,8 @@ private:
                         this->name = new char[MAX_NAME_BYTES];
                         strncpy(this->name, name, MAX_NAME_BYTES);
 
-                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, MAX_NAME_BYTES);
+                        size_t nameBytesLen = strlen(this->name) + 1;
+                        size_t safePrefix = SchoolAlg::safe_cyrillic_prefix(this->name, nameBytesLen);
                         this->name[safePrefix] = '\0';
                     }     
                 }
@@ -122,15 +124,19 @@ public:
 
         if(ptr == head)
         {
-            delete head;
-            head = nullptr;
+            head = ptr->next;
+            if(head)
+                head->prev = nullptr;
+            else
+                tail = nullptr;
             capacity--;
-            return;
+            delete ptr;
         }
         else if(ptr == tail)
         {
             tail = tail->prev;
-            tail->next = nullptr;
+            if(tail)
+                tail->next = nullptr;
             capacity--;
             delete ptr;
         }

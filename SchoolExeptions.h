@@ -44,10 +44,10 @@ public:
         {   }
 };
 
-class WrongDate : public SchoolExeptions
+class WrongNumber : public SchoolExeptions
 {
 public:
-    WrongDate() : SchoolExeptions("Неверный формат или диапазон даты")
+    WrongNumber() : SchoolExeptions("Неверный формат числа")
         {   }
 };
 
