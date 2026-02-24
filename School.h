@@ -18,16 +18,18 @@ class School
 private:
     Students students;              // список студентов
      
-Groups groups;                      // список групп 
+    Groups groups;                  // список групп 
 
     unsigned gIDcounter = 100;      // счтечик ID для групп
     unsigned sIDcounter = 1000;     // счтечик ID для групп
 
-    DateConverter dateConverter;    // конвертер дат: день с начала года <-> число:месяц
+    DateConverter dateConverter;    // конвертер дат: день с начала года <-> число:месяц.
+                                    // Нужен, так как даты хранятся в виде дня с началал года, а пользователем
+                                    // вводятся как число, месяц
     
-    // Перегруженый push_student для save_load. В других случаях задавать ID вручную запрещенно
+    // Перегруженый push_student() для save_load(). В других случаях задавать ID вручную запрещенно
     void push_student(const unsigned& studentID, const char* lastname, const unsigned& groupID = 0);
-    // Перегруженый push_group для save_load. Нет проверки на уникальность имени
+    // Перегруженый push_group() для save_load(). Нет проверки на уникальность имени
     void push_group(const unsigned& ID, const char* name);
 
 public:
@@ -38,25 +40,25 @@ public:
         {    }
 
     // Итератор на первый элемент Students 
-    inline Students::iterator students_begin()
+    inline Students::iterator   students_begin()
     {
         return students.begin();
     }
 
     // Итератор на следующий за последним элемент Students 
-    inline Students::iterator students_end()
+    inline Students::iterator   students_end()
     {
         return students.end();
     }
 
     // Итератор на первый элемент Groups 
-    inline Groups::iterator groups_begin()
+    inline Groups::iterator     groups_begin()
     {
         return groups.begin();
     }
 
     // Итератор на следующий за последним элемент Groups 
-    inline Groups::iterator groups_end()
+    inline Groups::iterator     groups_end()
     {
         return groups.end();
     }
@@ -70,7 +72,7 @@ public:
     // Есть проверка на наличие группы по groupID. При отстутсвии присваивается 0
     unsigned push_student(const char* lastname, unsigned groupID = 0);
 
-    // Добавление студента про признаку сортировки cmp - компаратор в области Students.
+    // Добавление студента по признаку сортировки cmp - компаратор в области Students.
     // Есть проверка на наличие группы по groupID. При отстутсвии присваивается 0
     template <typename Comparator>
         unsigned push_sudent_sorted(Comparator cmp, char* lastname, unsigned groupID = 0)

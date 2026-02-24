@@ -109,9 +109,9 @@ bool     School::save(const char* filename) const noexcept
 
     Students::iterator sIter = students.begin();
     
-    uint64_t studentsAmmount = static_cast<uint64_t>(students.size()); // кол-во студентов
-    uint32_t visitsAmmount;                                          // кол-во посещений у студента
-    uint32_t nameLen;
+    uint64_t studentsAmmount = static_cast<uint64_t>(students.size());  // кол-во студентов
+    uint32_t visitsAmmount;                                             // кол-во посещений у студента
+    uint32_t nameLen;                                                   // размер динамической области-имени
     // Записываем основное состояние объекта - кол-во студентов
     fout.write((char*)&studentsAmmount, sizeof(uint64_t));
 
@@ -119,18 +119,24 @@ bool     School::save(const char* filename) const noexcept
     // Размер под каждое поле фиксированный
     for(uint64_t i = 0; i < studentsAmmount; ++i)
     {
-        
+        // айди
         fout.write((char*)&(*sIter).ID, sizeof(uint32_t));
 
+        // размер имени
         nameLen = strlen((*sIter).lastname) + 1;
         fout.write((char*)&nameLen, sizeof(uint32_t));
 
+        // имя
         fout.write((*sIter).lastname, nameLen);
+
+        // айди группы
         fout.write((char*)&(*sIter).groupID, sizeof(uint32_t));
 
+        // кол-во посещений
         visitsAmmount = (*sIter).visits_arr_size();
         fout.write((char*)&visitsAmmount, sizeof(uint32_t));
         
+        // дни посещений
         fout.write((char*)(*sIter).get_visits_arr(), sizeof(uint32_t) * visitsAmmount);
 
         sIter++;
@@ -147,11 +153,14 @@ bool     School::save(const char* filename) const noexcept
     // Поочередно записываем поля каждой группы
     for(uint64_t i = 0; i < groupAmmount; ++i)
     {
+        // айди
         fout.write((char*)&(*gIter).ID, sizeof(uint32_t));
 
         nameLen = strlen((*gIter).name) + 1;
+        // размер имени
         fout.write((char*)&nameLen, sizeof(uint32_t));
 
+        // имя
         fout.write((*gIter).name, nameLen);
 
         gIter++;
@@ -171,7 +180,7 @@ void     School::save_load(const char* filename) noexcept
     // Переменные для промежуточной записи из файла
     uint32_t id, groupid, visits, visitDay;
     uint64_t blockLen;                        // размер блока данных  
-    uint32_t nameLen;
+    uint32_t nameLen;                         // размер динамической области-имени
     char name[Students::MAX_NAME_BYTES];
 
     Students::iterator sIter;
@@ -183,16 +192,23 @@ void     School::save_load(const char* filename) noexcept
 
     // Записываем каждое поле в промежуточные переменные,
     // вызываем push для студентов и их посещений
+
+    // Поля Student
     for(uint64_t i = 0; i < blockLen; ++i)
     {
+        // айди
         fin.read((char*)&id, sizeof(uint32_t));
 
+        // размер имени
         fin.read((char*)&nameLen, sizeof(uint32_t));
 
+        // имя
         fin.read(name, nameLen);
 
+        // айди группы
         fin.read((char*)&groupid, sizeof(uint32_t));
 
+        // кол-во посещений
         fin.read((char*)&visits, sizeof(uint32_t));
 
         // Обновляем счетчик ID
@@ -202,6 +218,7 @@ void     School::save_load(const char* filename) noexcept
         push_student(id, name, groupid);
         sIter = students.last();
 
+        // дни посещений
         for(uint32_t i = 0; i < visits; ++i)
         {
             fin.read((char*)&visitDay, sizeof(uint32_t));
@@ -214,17 +231,20 @@ void     School::save_load(const char* filename) noexcept
     
     maxID = gIDcounter;
 
-    char groupName[Groups::MAX_NAME_BYTES];
+    char groupName[Groups::MAX_NAME_BYTES];     // временный буфер для названия группы
     fin.read((char*)&blockLen, sizeof(uint64_t));
     
     // Записываем каждое поле в промежуточные переменные,
     // вызываем push для групп
     for(uint64_t i = 0; i < blockLen; ++ i)
     {
+        // айди
         fin.read((char*)&id, sizeof(uint32_t));
 
+        // размер имени
         fin.read((char*)&nameLen, sizeof(uint32_t));
 
+        // имя
         fin.read(groupName, nameLen);
 
         // Обновляем счетчик ID

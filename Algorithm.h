@@ -29,7 +29,8 @@ namespace SchoolAlg
   
     // Алгоритм для корректной обрезки кириллической строки нуль-терминатором.
     // Возвращаемое значение - корректное место для '\0'
-    size_t safe_cyrillic_prefix(const char* str,                    // Строка
+    size_t safe_cyrillic_prefix(
+                                const char* str,                    // Строка
                                 const size_t& maxBitesWithNull);    // Макстмальный размер корректной строки 
     
 

@@ -217,6 +217,7 @@ public:
             friend class Students;
         public:
 
+            // Пустой итератор по умолчанию
             explicit iterator():pointer(nullptr)
                 {   }
 

@@ -14,9 +14,11 @@ using std::cin;
 class menu
 {
 private:
-    School* school;
+    School* school;                 // основной объект
 
-    DateConverter dateConventer;
+    DateConverter dateConventer;    // конвертер дат: день с начала года <-> число:месяц.
+                                    // Нужен, так как даты хранятся в виде дня с началал года, а пользователем
+                                    // вводятся как число, месяц
 public:
     menu(): school()
         {   }
@@ -51,7 +53,7 @@ public:
     // Исключение студента
     void                Students_exclude(Students::iterator& sIter);
 
-    // Вывод инофрмации о студенете в терминал
+    // Вывод инофрмации о студенете в терминал: айди, фамилия, группа, кол-во посещений
     void                Student_format_print(Students::iterator& sIter) const;
 
 // ======================================================================= //
@@ -64,23 +66,24 @@ public:
     // Удалить группу
     void     delete_Group();
 
+    // Вывод информации о группе в терминал: айди, название
     void     Group_format_print(Groups::iterator& gIter) const;
 
 // ======================================================================= //
     // Вкладка посещения: отметить студента, отметить группу, посещения по дате
-    void in_Visits();
+    void        in_Visits();
 
     // Ввод число:месяц внутри функции, возврат дня с начала года или 0 при отмене
-    unsigned input_visit_day();
+    unsigned    input_visit_day();
 
     // Вкладка отметки студентов: список студентов, отметить студента
-    void in_personal_visit_add();
+    void        in_personal_visit_add();
 
     // Отметить группу
-    bool group_visit_add();
+    bool        group_visit_add();
 
     // Вывод номеров и фамилий студентов, посещавших занятия в day
-    void Visits_format_print(const unsigned& day) const;
+    void        Visits_format_print(const unsigned& day) const;
 };
 
 

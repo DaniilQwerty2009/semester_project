@@ -17,7 +17,7 @@ public:
     // Генерирует WrongNumber при неверном дне или месяце
     unsigned date_to_day(const unsigned& day, const unsigned& mounth) const
     {
-        if(day > mounthLen[mounth] || day <= 0)
+        if(day > mounthLen[mounth - 1] || day <= 0)
             throw WrongNumber();
 
         if(mounth > 12 || mounth <= 0)
@@ -40,8 +40,8 @@ public:
         mounth = 1;
         while(day > mounthLen[mounth-1])
         {
-            mounth++;
             day -= mounthLen[mounth-1];
+            mounth++;
         }   
         
         dayOfMounth = day;
